@@ -10,6 +10,99 @@ class PlannerState {
   final Map<String, double> _manualAmounts = {};
   final Map<String, String> _manualNames = {};
 
+  /// Stable JSON snapshot used by the local persistence repository.
+  Map<String, Object?> toJson() => {
+    'schema_version': 1,
+    'favorites': favorites.toList()..sort(),
+    'meals': [
+      for (final slots in mealPlan.values)
+        for (final meal in slots.values)
+          {'day': meal.day, 'slot': meal.slot.name, 'recipe_id': meal.recipeId, 'servings': meal.servings},
+    ],
+    'grocery_checks': groceryChecks,
+    'pantry': [
+      for (final item in pantry.values)
+        {'id': item.id, 'name': item.name, 'amount': item.amount, 'unit': item.unit},
+    ],
+    'grocery_edits': {
+      for (final entry in groceryEdits.entries)
+        entry.key: {'name': entry.value.name, 'amount': entry.value.amount},
+    },
+    'manual_amounts': _manualAmounts,
+    'manual_names': _manualNames,
+  };
+
+  factory PlannerState.fromJson(Map<String, dynamic> json) {
+    final state = PlannerState();
+    state.restoreFromJson(json);
+    return state;
+  }
+
+  /// Replaces user-owned state from a validated local snapshot.
+  void restoreFromJson(Map<String, dynamic> json) {
+    favorites.clear(); mealPlan.clear(); groceryChecks.clear(); pantry.clear();
+    groceryEdits.clear(); _manualAmounts.clear(); _manualNames.clear();
+    if (json['schema_version'] != 1) return;
+    final rawFavorites = json['favorites'];
+    if (rawFavorites is List) favorites.addAll(rawFavorites.whereType<String>().where((id) => id.isNotEmpty));
+    final rawMeals = json['meals'];
+    if (rawMeals is List) {
+      for (final raw in rawMeals.whereType<Map>()) {
+        final map = Map<String, dynamic>.from(raw);
+        final day = map['day'], recipeId = map['recipe_id'], slotName = map['slot'];
+        if (day is! String || day.isEmpty || recipeId is! String || recipeId.isEmpty || slotName is! String) continue;
+        MealSlot? slot;
+        for (final candidate in MealSlot.values) { if (candidate.name == slotName) slot = candidate; }
+        final servings = map['servings'];
+        if (slot == null || servings is! num || servings < 1) continue;
+        assignMeal(day: day, slot: slot, recipeId: recipeId, servings: servings.toInt());
+      }
+    }
+    final rawChecks = json['grocery_checks'];
+    if (rawChecks is Map) {
+      for (final entry in rawChecks.entries) {
+        if (entry.key is String && entry.value is bool) groceryChecks[entry.key as String] = entry.value as bool;
+      }
+    }
+    final rawPantry = json['pantry'];
+    if (rawPantry is List) {
+      for (final raw in rawPantry.whereType<Map>()) {
+        final map = Map<String, dynamic>.from(raw);
+        final name = map['name'], unit = map['unit'], amount = map['amount'];
+        if (name is String && unit is String && amount is num) {
+          upsertPantryItem(name: name, unit: unit, amount: amount.toDouble());
+        }
+      }
+    }
+    final rawEdits = json['grocery_edits'];
+    if (rawEdits is Map) {
+      for (final entry in rawEdits.entries) {
+        if (entry.key is! String || entry.value is! Map) continue;
+        final value = Map<String, dynamic>.from(entry.value as Map);
+        if (value['name'] is String && value['amount'] is num) {
+          final name = (value['name'] as String).trim(), amount = (value['amount'] as num).toDouble();
+          if (name.isNotEmpty && amount >= 0) groceryEdits[entry.key as String] = GroceryEdit(name: name, amount: amount);
+        }
+      }
+    }
+    _restoreStringDoubleMap(json['manual_amounts'], _manualAmounts);
+    _restoreStringStringMap(json['manual_names'], _manualNames);
+  }
+
+  void _restoreStringDoubleMap(Object? source, Map<String, double> target) {
+    if (source is! Map) return;
+    for (final entry in source.entries) {
+      if (entry.key is String && entry.value is num && (entry.value as num) >= 0) target[entry.key as String] = (entry.value as num).toDouble();
+    }
+  }
+
+  void _restoreStringStringMap(Object? source, Map<String, String> target) {
+    if (source is! Map) return;
+    for (final entry in source.entries) {
+      if (entry.key is String && entry.value is String) target[entry.key as String] = entry.value as String;
+    }
+  }
+
   bool isFavorite(String id) => favorites.contains(id);
   void toggleFavorite(String id) { if (!favorites.add(id)) favorites.remove(id); }
 

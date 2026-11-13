@@ -9,6 +9,8 @@ import '../core/theme/app_theme.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/recipe_catalog.dart';
 import '../features/recipes/data/recipe_catalog_loader.dart';
+import '../features/recipes/data/static_recipe_content_updater.dart';
+import '../data/local/planner_repository.dart';
 import '../features/cooking/presentation/cooking_mode_screen.dart';
 import '../localization/app_localizations.dart';
 import 'app_dependencies.dart';
@@ -16,7 +18,8 @@ import 'planner_scope.dart';
 import 'recipe_catalog_scope.dart';
 
 class RecipePlannerApp extends StatefulWidget {
-  const RecipePlannerApp({super.key});
+  const RecipePlannerApp({super.key, this.repository});
+  final PlannerRepository? repository;
 
   @override
   State<RecipePlannerApp> createState() => _RecipePlannerAppState();
@@ -26,27 +29,63 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   final AppDependencies dependencies = AppDependencies();
   Locale _locale = const Locale('en');
   List<Recipe> _catalogRecipes = recipes;
+  String _contentVersion = 'bundled';
+  late final StaticRecipeContentUpdater _contentUpdater = StaticRecipeContentUpdater();
 
   @override
   void initState() {
     super.initState();
-    unawaited(_loadCatalog());
+    unawaited(_initializeLocalData());
   }
 
-  Future<void> _loadCatalog() async {
+  Future<void> _initializeLocalData() async {
     try {
-      final document = await RecipeCatalogLoader.load();
-      if (!mounted) return;
-      setState(() => _catalogRecipes = document.recipes);
+      final cached = await widget.repository?.loadCatalog();
+      if (cached != null) {
+        final document = RecipeCatalogLoader.decode(cached.payload);
+        if (mounted) setState(() { _catalogRecipes = document.recipes; _contentVersion = cached.contentVersion; });
+      } else {
+        final document = await RecipeCatalogLoader.load();
+        if (!mounted) return;
+        setState(() => _catalogRecipes = document.recipes);
+      }
+      final restored = await widget.repository?.loadPlannerState();
+      if (restored != null && mounted) {
+        dependencies.plannerState.restoreFromJson(restored.toJson());
+        setState(() {});
+      }
     } on CatalogLoadException {
       // Keep the in-code catalog active if the bundled document is invalid.
     } catch (_) {
-      // A missing asset must not block the existing planner experience.
+      // Database or asset failures must not block the in-memory starter experience.
+    }
+  }
+
+  void _onPlannerChanged() {
+    setState(() {});
+    final store = widget.repository;
+    if (store != null) unawaited(store.savePlannerState(dependencies.plannerState).catchError((_) {}));
+  }
+
+  Future<bool> _checkForContentUpdates() async {
+    final uri = Uri.parse('https://raw.githubusercontent.com/dharmesh-eww/TestApp-3/main/content/manifest.json');
+    try {
+      final update = await _contentUpdater.checkAndDownload(uri);
+      if (update.contentVersion == _contentVersion) return false;
+      await widget.repository?.activateCatalog(contentVersion: update.contentVersion, payload: update.payload);
+      if (!mounted) return false;
+      setState(() { _catalogRecipes = update.document.recipes; _contentVersion = update.contentVersion; });
+      return true;
+    } on ContentUpdateException {
+      return false;
+    } catch (_) {
+      return false;
     }
   }
 
   @override
   void dispose() {
+    _contentUpdater.close();
     dependencies.dispose();
     super.dispose();
   }
@@ -56,9 +95,11 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     return PlannerScope(
       state: dependencies.plannerState,
       cookingSession: dependencies.cookingSession,
-      onChanged: () => setState(() {}),
+      onChanged: _onPlannerChanged,
       child: RecipeCatalogScope(
         recipes: _catalogRecipes,
+        contentVersion: _contentVersion,
+        onCheckForUpdates: _checkForContentUpdates,
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Gather — Recipe Planner',
@@ -489,6 +530,36 @@ class KitchenScreen extends StatelessWidget {
         ]),
         const SizedBox(height: 24),
         Text('Your saved recipes', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 22),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Recipe library', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text('Content version: ${RecipeCatalogScope.versionOf(context)}', style: const TextStyle(color: AppTheme.muted)),
+              const SizedBox(height: 8),
+              const Text('Check for curated recipe updates. Your meal plans, pantry and saved recipes stay on this device.', style: TextStyle(color: AppTheme.muted)),
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton.icon(
+                  key: const Key('check-recipe-updates'),
+                  onPressed: RecipeCatalogScope.canCheckForUpdates(context) ? () async {
+                    final updated = await RecipeCatalogScope.checkForUpdates(context);
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(updated ? 'Recipe library updated.' : 'No update available. Current library kept.'),
+                    ));
+                  } : null,
+                  icon: const Icon(Icons.sync),
+                  label: const Text('Check for updates'),
+                ),
+              ),
+            ]),
+          ),
+        ),
+        const SizedBox(height: 20),
         const SizedBox(height: 12),
         if (saved.isEmpty)
           const Text('Recipes you save will live here. Tap the bookmark on any recipe you love.', style: TextStyle(color: AppTheme.muted))
