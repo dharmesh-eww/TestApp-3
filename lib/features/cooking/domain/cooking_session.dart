@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 /// A single countdown whose remaining time is derived from an absolute deadline.
 /// This keeps it accurate when Dart timers are throttled in the background.

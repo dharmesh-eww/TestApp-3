@@ -526,10 +526,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               width: double.infinity,
               child: FilledButton.icon(
                 key: const Key('start-cooking-button'),
-                onPressed: () => Navigator.push(
-                  context,
-                  AnimatedPageRoute(builder: (_) => CookingModeScreen(recipe: recipe)),
-                ),
+                onPressed: () {
+                  PlannerScope.cookingOf(context).setServings(recipe.id, servings);
+                  Navigator.push(
+                    context,
+                    AnimatedPageRoute(builder: (_) => CookingModeScreen(recipe: recipe)),
+                  );
+                },
                 icon: const Icon(Icons.restaurant_menu),
                 label: const Text('Start cooking'),
                 style: FilledButton.styleFrom(

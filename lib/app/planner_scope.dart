@@ -29,5 +29,5 @@ class PlannerScope extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(covariant PlannerScope oldWidget) => state != oldWidget.state || cookingSession != oldWidget.cookingSession;
+  bool updateShouldNotify(covariant PlannerScope oldWidget) => true;
 }
