@@ -56,6 +56,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                 }
                 "cancelTimerNotification" -> {
                     val id = call.argument<Int>("id") ?: 0
+                    if (pendingTimer?.first == id) pendingTimer = null
                     val intent = Intent(this, CookingTimerReceiver::class.java).setAction("com.example.testapp_3.COOKING_TIMER").putExtra("title", "Cooking timer").putExtra("body", "A timer has finished.")
                     val pending = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                     (getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(pending)

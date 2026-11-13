@@ -1023,7 +1023,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             IconButton(
               tooltip: 'Copy recipe',
               onPressed: () async {
-                final text = '${recipe.title}\\n\\n${recipe.subtitle}\\n\\nIngredients:\\n${recipe.ingredients.map((item) => '• ${item.name}: ${item.amount ?? item.amountType.name} ${item.unit}').join('\\n')}\\n\\nInstructions:\\n${recipe.steps.asMap().entries.map((entry) => '${entry.key + 1}. ${entry.value}').join('\\n')}';
+                final text = '${recipe.title}\n\n${recipe.subtitle}\n\nIngredients:\n${recipe.ingredients.map((item) => '• ${item.name}: ${item.amount ?? item.amountType.name} ${item.unit}').join('\n')}\n\nInstructions:\n${recipe.steps.asMap().entries.map((entry) => '${entry.key + 1}. ${entry.value}').join('\n')}';
                 await Clipboard.setData(ClipboardData(text: text));
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Recipe copied to clipboard.')));
               },
