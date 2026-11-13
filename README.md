@@ -29,6 +29,37 @@ Use `StatefulWidget`, `setState`, and Flutter's built-in widgets for UI updates.
 Keep state ownership explicit and move persistence into a repository layer in a
 later phase without changing this requirement.
 
+
+## Phase 2 — Recipe domain, catalog and discovery
+
+Phase 2 standardizes the catalog around one Dart domain model while keeping the
+existing Gather screens and planner interactions intact.
+
+- Canonical recipe fields cover stable IDs/slugs, display text, category and
+  cuisine IDs, food/dietary types, prep/cook minutes, servings, ingredients
+  with explicit units and quantity qualifiers, equipment, instructions, tags,
+  image attribution and verified-allergen metadata.
+- Recipe serialization emits a shared snake_case catalog representation
+  inspired by the three planning specifications. Ingredient quantities preserve
+  their original units; non-quantified entries such as “to taste” remain
+  qualifiers.
+- A curated local RecipeCatalog is the single source for Today, discovery,
+  recipe details, favourites and weekly planning. It currently includes five
+  sample recipes.
+- Discovery searches titles, descriptions, categories, cuisines, tags and
+  ingredient names; filters by meal category; and sorts by recommended order,
+  total cooking time or title. Clear-search and empty-result states are included.
+- Recipe details and serving-scaled grocery additions use the same ingredient
+  objects. Non-quantified ingredients are not added as zero-quantity grocery
+  items.
+- Added domain tests for serialization/search/filter/sort and widget coverage
+  for discovery search and category filters.
+- No state-management package was introduced. UI state remains in
+  StatefulWidget and is updated with setState.
+
+Remote manifests, checksums, atomic content activation and durable database
+storage remain later-phase work; this catalog is intentionally local.
+
 ## Current product prototype
 
 - Five-section navigation: Today, Recipes, Plan, Groceries and Kitchen.

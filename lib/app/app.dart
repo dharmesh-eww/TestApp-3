@@ -4,6 +4,7 @@ import '../core/navigation/animated_page_route.dart';
 import '../core/theme/app_theme.dart';
 import '../features/planning/domain/planner_state.dart';
 import '../features/recipes/domain/recipe.dart';
+import '../features/recipes/domain/recipe_catalog.dart';
 import 'app_dependencies.dart';
 import 'planner_scope.dart';
 
@@ -139,17 +140,25 @@ class DiscoverScreen extends StatefulWidget {
 }
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
-  String query = '';
-  String category = 'All';
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+  String _categoryId = 'all';
+  RecipeSort _sort = RecipeSort.recommended;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final categories = ['All', 'Breakfast', 'Lunch', 'Dinner'];
-    final filtered = recipes.where((recipe) {
-      final matchesQuery = recipe.title.toLowerCase().contains(query.toLowerCase()) ||
-          recipe.subtitle.toLowerCase().contains(query.toLowerCase());
-      return matchesQuery && (category == 'All' || recipe.category == category);
-    }).toList();
+    final filtered = RecipeCatalog.search(
+      recipes,
+      query: _query,
+      categoryId: _categoryId,
+      sort: _sort,
+    );
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
@@ -159,39 +168,100 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         const Text('Find your next\nfavourite.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
         TextField(
-          onChanged: (value) => setState(() => query = value),
+          key: const Key('recipe-search-field'),
+          controller: _searchController,
+          textInputAction: TextInputAction.search,
+          onChanged: (value) => setState(() => _query = value),
           decoration: InputDecoration(
             hintText: 'Search recipes or ingredients',
             prefixIcon: const Icon(Icons.search),
-            filled: true, fillColor: AppTheme.card,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppTheme.line)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppTheme.line)),
+            suffixIcon: _query.isEmpty ? null : IconButton(
+              tooltip: 'Clear search',
+              onPressed: () {
+                _searchController.clear();
+                setState(() => _query = '');
+              },
+              icon: const Icon(Icons.close),
+            ),
           ),
         ),
         const SizedBox(height: 14),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Row(children: categories.map((item) => Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(item), selected: category == item,
-              onSelected: (_) => setState(() => category = item),
-              selectedColor: AppTheme.terracotta.withOpacity(.16),
-              side: BorderSide(color: category == item ? AppTheme.terracotta : AppTheme.line),
-              labelStyle: TextStyle(color: category == item ? AppTheme.terracotta : AppTheme.muted, fontWeight: FontWeight.w600),
-            ),
-          )).toList()),
+          child: Row(children: [
+            for (final category in recipeCategories)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  key: Key('category-${category.id}'),
+                  label: Text(category.name),
+                  selected: _categoryId == category.id,
+                  onSelected: (_) => setState(() => _categoryId = category.id),
+                  selectedColor: AppTheme.terracotta.withOpacity(.16),
+                  side: BorderSide(color: _categoryId == category.id ? AppTheme.terracotta : AppTheme.line),
+                  labelStyle: TextStyle(
+                    color: _categoryId == category.id ? AppTheme.terracotta : AppTheme.muted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+          ]),
         ),
-        const SizedBox(height: 18),
-        Text('${filtered.length} recipes to try', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 12),
-        if (filtered.isEmpty)
-          const Padding(padding: EdgeInsets.all(30), child: Text('No recipes found. Try another search.'))
-        else
-          ...filtered.map((recipe) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _RecipeListTile(recipe: recipe),
+        const SizedBox(height: 14),
+        Row(children: [
+          Expanded(child: Text(
+            '${filtered.length} ${filtered.length == 1 ? 'recipe' : 'recipes'} to try',
+            style: Theme.of(context).textTheme.titleMedium,
           )),
+          DropdownButtonHideUnderline(
+            child: DropdownButton<RecipeSort>(
+              key: const Key('recipe-sort-dropdown'),
+              value: _sort,
+              borderRadius: BorderRadius.circular(14),
+              style: const TextStyle(color: AppTheme.ink, fontSize: 12, fontWeight: FontWeight.w600),
+              items: const [
+                DropdownMenuItem(value: RecipeSort.recommended, child: Text('Recommended')),
+                DropdownMenuItem(value: RecipeSort.quickest, child: Text('Quickest')),
+                DropdownMenuItem(value: RecipeSort.title, child: Text('A–Z')),
+              ],
+              onChanged: (value) {
+                if (value != null) setState(() => _sort = value);
+              },
+            ),
+          ),
+        ]),
+        const SizedBox(height: 10),
+        AnimatedSwitcher(
+          duration: AppMotion.quick,
+          switchInCurve: AppMotion.enter,
+          child: filtered.isEmpty
+              ? Container(
+                  key: const ValueKey('empty-recipes'),
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppTheme.line),
+                  ),
+                  child: const Column(children: [
+                    Icon(Icons.search_off_rounded, size: 34, color: AppTheme.olive),
+                    SizedBox(height: 10),
+                    Text('Nothing on this shelf', style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
+                    SizedBox(height: 5),
+                    Text('Try another ingredient or clear your filters.', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+                  ]),
+                )
+              : Column(
+                  key: const ValueKey('recipe-results'),
+                  children: [
+                    for (final recipe in filtered)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _RecipeListTile(recipe: recipe),
+                      ),
+                  ],
+                ),
+        ),
       ],
     );
   }

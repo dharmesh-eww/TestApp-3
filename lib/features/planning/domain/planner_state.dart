@@ -19,7 +19,9 @@ class PlannerState {
 
   void addIngredients(Recipe recipe, int servings) {
     for (final ingredient in recipe.ingredients) {
-      final amount = ingredient.amount * servings / recipe.servings;
+      final baseAmount = ingredient.amount;
+      if (baseAmount == null || ingredient.amountType != IngredientAmountType.quantity) continue;
+      final amount = baseAmount * servings / recipe.servings;
       final key = '${ingredient.name.toLowerCase()}|${ingredient.unit}';
       final old = groceryNames[key];
       final nextAmount = old == null
