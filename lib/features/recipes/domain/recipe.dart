@@ -1,3 +1,5 @@
+import 'measurement_units.dart';
+
 enum FoodType { vegetarian, vegan, eggetarian, nonVegetarian, pescatarian }
 enum RecipeDifficulty { easy, medium, hard }
 enum IngredientAmountType { quantity, toTaste, asNeeded }
@@ -190,7 +192,7 @@ class Ingredient {
     );
   }
 
-  String display(int servings, int baseServings) {
+  String display(int servings, int baseServings, {String measurementSystem = 'metric'}) {
     if (amount == null || amountType != IngredientAmountType.quantity) {
       return amountType == IngredientAmountType.toTaste ? 'to taste' : 'as needed';
     }
@@ -198,7 +200,11 @@ class Ingredient {
     final shown = value == value.roundToDouble()
         ? value.toInt().toString()
         : value.toStringAsFixed(1);
-    return '$shown $unit';
+    final converted = MeasurementUnits.convert(value, unit, measurementSystem);
+    if (converted == null || converted.unit.toLowerCase() == unit.toLowerCase()) {
+      return '$shown $unit';
+    }
+    return '≈ ${MeasurementUnits.format(converted.amount)} ${converted.unit}';
   }
 
   Map<String, Object?> toJson() => {

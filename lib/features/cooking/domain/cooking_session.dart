@@ -53,6 +53,18 @@ class CookingTimerEntry {
     isComplete = false;
   }
 
+  void restoreState({
+    required int remainingMilliseconds,
+    required bool running,
+    required bool complete,
+    DateTime? endsAt,
+  }) {
+    remaining = Duration(milliseconds: remainingMilliseconds.clamp(0, duration.inMilliseconds).toInt());
+    isComplete = complete || remaining == Duration.zero;
+    isRunning = running && !isComplete && endsAt != null;
+    _endsAt = isRunning ? endsAt : null;
+  }
+
   bool refresh() {
     if (!isRunning) return false;
     final next = remainingNow;
@@ -82,6 +94,74 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
   int _nextTimerId = 0;
 
   List<CookingTimerEntry> get timers => List.unmodifiable(_timers);
+
+  Map<String, Object?> toJson() => {
+    'schema_version': 1,
+    'steps': _steps,
+    'servings': _servings,
+    'next_timer_id': _nextTimerId,
+    'timers': [
+      for (final timer in _timers)
+        {
+          'id': timer.id,
+          'label': timer.label,
+          'duration_ms': timer.duration.inMilliseconds,
+          'remaining_ms': timer.remainingNow.inMilliseconds,
+          'is_running': timer.isRunning,
+          'is_complete': timer.isComplete,
+          'ends_at': timer._endsAt?.toIso8601String(),
+        },
+    ],
+  };
+
+  void restoreFromJson(Map<String, dynamic> json) {
+    _steps.clear();
+    _servings.clear();
+    _timers.clear();
+    if (json['schema_version'] != 1) return;
+    final steps = json['steps'];
+    if (steps is Map) {
+      for (final entry in steps.entries) {
+        if (entry.key is String && entry.value is num && (entry.value as num) >= 0) {
+          _steps[entry.key as String] = (entry.value as num).toInt();
+        }
+      }
+    }
+    final servings = json['servings'];
+    if (servings is Map) {
+      for (final entry in servings.entries) {
+        if (entry.key is String && entry.value is num && (entry.value as num) >= 1) {
+          _servings[entry.key as String] = (entry.value as num).toInt();
+        }
+      }
+    }
+    final nextId = json['next_timer_id'];
+    _nextTimerId = nextId is num && nextId >= 0 ? nextId.toInt() : 0;
+    final timers = json['timers'];
+    if (timers is List) {
+      for (final raw in timers.whereType<Map>()) {
+        final item = Map<String, dynamic>.from(raw);
+        final id = item['id'], label = item['label'];
+        final duration = item['duration_ms'], remaining = item['remaining_ms'];
+        if (id is! String || label is! String || duration is! num || remaining is! num ||
+            duration <= 0 || remaining < 0) continue;
+        final timer = CookingTimerEntry(
+          id: id,
+          label: label,
+          duration: Duration(milliseconds: duration.toInt()),
+        );
+        final endsAtValue = item['ends_at'];
+        timer.restoreState(
+          remainingMilliseconds: remaining.toInt(),
+          running: item['is_running'] == true,
+          complete: item['is_complete'] == true,
+          endsAt: endsAtValue is String ? DateTime.tryParse(endsAtValue) : null,
+        );
+        _timers.add(timer);
+      }
+    }
+    notifyListeners();
+  }
 
   int stepFor(String recipeId) => _steps[recipeId] ?? 0;
   int servingsFor(String recipeId, int fallback) => _servings[recipeId] ?? fallback;

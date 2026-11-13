@@ -81,6 +81,10 @@ subsequent phases.
 4. Weekly planning, grocery generation and pantry.
 5. Offline content, localization and accessibility.
 6. Testing, optimization and release readiness.
+7. Local persistence and static content updates.
+8. Personal library and ingredient finder.
+9. Global settings and measurement.
+10. Cooking continuity and release hardening.
 
 ## Run
 
@@ -153,12 +157,36 @@ flutter test
 - CI is configured but must execute on GitHub before a green result can be claimed. Local Flutter/Dart CLI was unavailable during implementation; no local test or analyzer pass is claimed.
 
 
-## Phase 7 — Local persistence and static content updates (in progress)
+## Phase 7 — Local persistence and static content updates
 
 - Added a SQLite repository for planner snapshots and the active recipe catalog cache. The app restores the cached catalog and personal planner state on launch when the database is available; it falls back to the bundled starter catalog and in-memory state if local storage cannot be opened.
 - Favorites, meal slots and servings, pantry quantities, grocery check states, manual grocery additions and grocery edits are serialized in a versioned snapshot and saved locally after planner interactions.
 - Added a read-only static GitHub content updater. It validates the manifest schema and relative paths, downloads the recipe index, verifies SHA-256 and optional byte size, then validates the catalog before activation.
 - Catalog payload and content version are activated together in a SQLite transaction. Failed network, checksum or schema validation leaves the previous active catalog untouched.
 - Published the starter catalog as a static content index with a versioned manifest. No user-owned data is sent to GitHub.
-- Added planner snapshot round-trip and malformed-snapshot tests. SQLite driver integration remains to be exercised on device/CI; static updater tests cover valid downloads, checksum failures and path traversal.
+- Added planner snapshot round-trip and malformed-snapshot tests, plus SQLite FFI integration and schema migration coverage in Phase 10. Static updater tests cover valid downloads, checksum failures and path traversal. Android/iOS device validation remains a manual release check.
 - No account, backend, Firebase, cloud sync or state-management package.
+
+
+## Phase 8 — Personal library and ingredient finder
+
+- Added local recipe collections with create, rename, delete, and recipe membership controls.
+- Added an ingredient finder that ranks recipes by the share of listed ingredients available, supports excluded ingredients, and clearly lists missing ingredients.
+- Collections are included in the versioned SQLite-backed planner snapshot.
+
+## Phase 9 — Global settings and measurement
+
+- Added persisted metric/US customary preference and Monday/Sunday week-start preference.
+- Added safe mass-to-mass and volume-to-volume conversion. Cross-dimension conversions are never attempted; unknown and count-based units remain unchanged.
+- Recipe detail and cooking mode display approximate converted quantities when a conversion is available.
+- The weekly planner and Today summary follow the selected week start; language preference is persisted locally.
+
+## Phase 10 — Cooking continuity and release hardening
+
+- Cooking step, serving preference, and timer state can be restored from local storage. Running timers retain absolute deadlines so elapsed time remains accurate after relaunch.
+- Added SQLite schema version 2 migration for cooking-session snapshots without discarding existing planner or catalog data.
+- Added SQLite FFI integration tests for snapshot persistence and v1-to-v2 migration.
+- Added a CI integrity test for the checked-in static recipe manifest checksum and byte size.
+- Completed cooking sessions are recorded in a local cooking history.
+
+The implementation remains offline-first and account-free. No backend, Firebase, cloud sync, social features, or state-management package has been added. Native text-to-speech, platform timer notifications, keep-screen-awake behavior, and physical-device QA remain optional follow-up work.

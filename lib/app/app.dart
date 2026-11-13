@@ -13,6 +13,7 @@ import '../features/recipes/data/recipe_catalog_loader.dart';
 import '../features/recipes/data/static_recipe_content_updater.dart';
 import '../data/local/planner_repository.dart';
 import '../features/cooking/presentation/cooking_mode_screen.dart';
+import '../features/kitchen/presentation/kitchen_tools_screen.dart';
 import '../localization/app_localizations.dart';
 import 'app_dependencies.dart';
 import 'planner_scope.dart';
@@ -28,6 +29,7 @@ class RecipePlannerApp extends StatefulWidget {
 
 class _RecipePlannerAppState extends State<RecipePlannerApp> {
   final AppDependencies dependencies = AppDependencies();
+  Timer? _cookingPersistTimer;
   Locale _locale = const Locale('en');
   List<Recipe> _catalogRecipes = recipes;
   String _contentVersion = 'bundled';
@@ -36,6 +38,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   @override
   void initState() {
     super.initState();
+    dependencies.cookingSession.addListener(_onCookingChanged);
     unawaited(_initializeLocalData());
   }
 
@@ -53,7 +56,11 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
       final restored = await widget.repository?.loadPlannerState();
       if (restored != null && mounted) {
         dependencies.plannerState.restoreFromJson(restored.toJson());
-        setState(() {});
+        setState(() => _locale = Locale(dependencies.plannerState.localeCode));
+      }
+      final cookingSnapshot = await widget.repository?.loadCookingSession();
+      if (cookingSnapshot != null && mounted) {
+        dependencies.cookingSession.restoreFromJson(cookingSnapshot);
       }
     } on CatalogLoadException {
       // Keep the in-code catalog active if the bundled document is invalid.
@@ -66,6 +73,17 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     setState(() {});
     final store = widget.repository;
     if (store != null) unawaited(store.savePlannerState(dependencies.plannerState).catchError((_) {}));
+  }
+
+  void _onCookingChanged() {
+    if (_cookingPersistTimer != null) return;
+    _cookingPersistTimer = Timer(const Duration(seconds: 1), () {
+      _cookingPersistTimer = null;
+      final store = widget.repository;
+      if (store != null) {
+        unawaited(store.saveCookingSession(dependencies.cookingSession.toJson()).catchError((_) {}));
+      }
+    });
   }
 
   Future<bool> _checkForContentUpdates() async {
@@ -86,6 +104,12 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
 
   @override
   void dispose() {
+    _cookingPersistTimer?.cancel();
+    dependencies.cookingSession.removeListener(_onCookingChanged);
+    final store = widget.repository;
+    if (store != null) {
+      unawaited(store.saveCookingSession(dependencies.cookingSession.toJson()).catchError((_) {}));
+    }
     _contentUpdater?.close();
     dependencies.dispose();
     super.dispose();
@@ -115,7 +139,11 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
           ],
           home: AppShell(
             locale: _locale,
-            onLocaleChanged: (locale) => setState(() => _locale = locale),
+            onLocaleChanged: (locale) {
+            dependencies.plannerState.localeCode = locale.languageCode;
+            setState(() => _locale = locale);
+            _onPlannerChanged();
+          },
           ),
         ),
       ),
@@ -311,6 +339,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             ),
           ),
         ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          key: const Key('ingredient-finder-button'),
+          onPressed: () async {
+            final recipe = await Navigator.push<Recipe>(context, MaterialPageRoute(
+              builder: (_) => const IngredientFinderScreen(),
+            ));
+            if (recipe != null && context.mounted) {
+              Navigator.push(context, AnimatedPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe)));
+            }
+          },
+          icon: const Icon(Icons.kitchen_outlined),
+          label: const Text('Cook with what you have'),
+        ),
         const SizedBox(height: 14),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -401,7 +443,11 @@ class PlanScreen extends StatefulWidget {
 class _PlanScreenState extends State<PlanScreen> {
   int selectedDay = 0;
   @override Widget build(BuildContext context) {
-    final state = PlannerScope.of(context), day = PlanScreen.days[selectedDay];
+    final state = PlannerScope.of(context);
+    final days = state.weekStartsOn == 7
+        ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        : PlanScreen.days;
+    final day = days[selectedDay];
     final meals = state.mealsFor(day);
     return ListView(padding: const EdgeInsets.fromLTRB(20,20,20,28), children: [
       Text(appStrings(context).weekEyebrow, style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
@@ -412,7 +458,10 @@ class _PlanScreenState extends State<PlanScreen> {
       const SizedBox(height:20),
       Container(padding:const EdgeInsets.symmetric(vertical:12,horizontal:8),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),
         child:Row(children:List.generate(7,(index){
-          final name=PlanScreen.days[index], count=state.mealsFor(name).length;
+          final orderedDays = state.weekStartsOn == 7
+              ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+              : PlanScreen.days;
+          final name=orderedDays[index], count=state.mealsFor(name).length;
           return Expanded(child:InkWell(borderRadius:BorderRadius.circular(14),onTap:()=>setState(()=>selectedDay=index),
             child:AnimatedContainer(duration:AppMotion.quick,padding:const EdgeInsets.symmetric(vertical:9),decoration:BoxDecoration(color:selectedDay==index?AppTheme.terracotta.withOpacity(.12):Colors.transparent,borderRadius:BorderRadius.circular(12)),
               child:Column(children:[Text(name.substring(0,1),style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.muted,fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:5),Text('$count',style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.ink,fontWeight:FontWeight.w800))]))));
@@ -621,7 +670,22 @@ class KitchenScreen extends StatelessWidget {
           const SizedBox(width: 10),
           _StatCard(value: '${state.plannedMealCount}', label: 'Meals planned', icon: Icons.calendar_month_outlined),
         ]),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CollectionsScreen())),
+            icon: const Icon(Icons.folder_open), label: const Text('Collections'),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CookingHistoryScreen())),
+            icon: const Icon(Icons.history), label: const Text('Cooking history'),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PlannerSettingsScreen())),
+            icon: const Icon(Icons.tune), label: const Text('Settings'),
+          ),
+        ]),
+        const SizedBox(height: 20),
         Text('Your saved recipes', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 22),
         Card(
@@ -738,7 +802,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 const Icon(Icons.circle, size: 7, color: AppTheme.olive),
                 const SizedBox(width: 10),
                 Expanded(child: Text(item.name, style: const TextStyle(color: AppTheme.ink))),
-                Text(item.display(servings, recipe.servings), style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w600)),
+                Text(item.display(servings, recipe.servings, measurementSystem: state.measurementSystem), style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w600)),
               ]),
             )),
             const SizedBox(height: 12),
@@ -902,8 +966,10 @@ class _WeekStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
-    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    const names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    final names = state.weekStartsOn == 7
+        ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        : PlanScreen.days;
+    final days = state.weekStartsOn == 7 ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: AppTheme.line)),

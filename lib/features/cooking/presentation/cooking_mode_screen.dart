@@ -118,6 +118,8 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                                 actions: [
                                   TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Keep cooking')),
                                   FilledButton(onPressed: () {
+                                    PlannerScope.of(context).recordCooked(widget.recipe);
+                                    PlannerScope.refresh(context);
                                     Navigator.pop(dialogContext);
                                     Navigator.pop(context);
                                   }, child: const Text('Finish')),
@@ -174,7 +176,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(children: [
               Expanded(child: Text(ingredient.name, style: const TextStyle(color: AppTheme.ink))),
-              Text(ingredient.display(servings, recipe.servings),
+              Text(ingredient.display(servings, recipe.servings, measurementSystem: PlannerScope.of(context).measurementSystem),
                 style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700)),
             ]),
           ),

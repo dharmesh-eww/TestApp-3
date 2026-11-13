@@ -10,6 +10,12 @@ void main() {
       ..assignMeal(day: 'Monday', slot: MealSlot.dinner, recipeId: 'lemon-pasta', servings: 4)
       ..upsertPantryItem(name: 'Pasta', amount: 100, unit: 'g')
       ..addIngredients(recipes.first, 2);
+    final collectionId = original.createCollection('Weeknight favourites');
+    original.toggleRecipeInCollection(collectionId, 'lemon-pasta');
+    original.measurementSystem = 'us';
+    original.weekStartsOn = 7;
+    original.localeCode = 'ar';
+    original.recordCooked(recipes.first);
     final pastaKey = original.buildGroceryList(recipes).singleWhere((item) => item.name == 'Pasta').key;
     original.setGroceryChecked(pastaKey, true);
     original.updateGroceryItem(pastaKey, name: 'Fresh pasta', amount: 450);
@@ -19,7 +25,19 @@ void main() {
     expect(restored.pantry.values.single.amount, 100);
     expect(restored.groceryChecks[pastaKey], isTrue);
     expect(restored.groceryEdits[pastaKey]?.name, 'Fresh pasta');
+    expect(restored.collections[collectionId], contains('lemon-pasta'));
+    expect(restored.collectionNames[collectionId], 'Weeknight favourites');
+    expect(restored.measurementSystem, 'us');
+    expect(restored.weekStartsOn, 7);
+    expect(restored.localeCode, 'ar');
+    expect(restored.cookingHistory, hasLength(1));
     expect(restored.buildGroceryList(recipes).firstWhere((item) => item.key == pastaKey).amount, 450);
+  });
+
+  test('legacy v1 snapshots remain readable after the v2 schema migration', () {
+    final restored = PlannerState.fromJson({'schema_version': 1, 'favorites': ['legacy-recipe']});
+    expect(restored.isFavorite('legacy-recipe'), isTrue);
+    expect(restored.toJson()['schema_version'], 2);
   });
 
   test('unsupported snapshots restore as an empty safe state', () {
