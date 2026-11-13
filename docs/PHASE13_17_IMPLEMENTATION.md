@@ -49,6 +49,7 @@ Not yet complete:
 ## Phase 17 — Release polish
 
 Implemented:
+- Recipe-detail copy action for sharing a formatted ingredient and instruction summary through the system clipboard.
 - Regression tests for newly added domain workflows and preference persistence.
 - CI Android debug build to compile the Kotlin bridge and validate manifest integration.
 

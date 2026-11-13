@@ -243,5 +243,6 @@ No personal data is uploaded. Dietary preferences are used only to filter the lo
 ## Phase 17 — Product polish and release QA
 
 - Added regression coverage for meal moves, shopping lists, pantry expiry, regional ingredient aliases, preference persistence and onboarding.
+- Added a recipe-detail action to copy a clean ingredient and instruction summary to the clipboard.
 - Added Android debug-build verification to CI so the native Kotlin channel and manifest are compiled alongside Flutter analysis and tests.
 - Physical-device QA, production signing, store listing preparation, licensed production photography and broader curated recipe content remain release tasks; they are not claimed complete.

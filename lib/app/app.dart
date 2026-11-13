@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 
 import '../core/navigation/animated_page_route.dart';
 import '../core/theme/app_theme.dart';
@@ -372,7 +373,7 @@ class TodayScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
       children: [
         Row(children: [
-          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('MONDAY, AT YOUR PACE', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
             SizedBox(height: 7),
             Text('A little more joy\nin the kitchen.', style: TextStyle(fontFamily: 'Georgia', fontSize: 31, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
@@ -804,7 +805,7 @@ class GroceryScreen extends StatelessWidget {
       const SizedBox(height:10),
       if(state.pantry.isEmpty)Text('Your pantry is empty for now.',style:TextStyle(color:AppTheme.muted))
       else for(final item in state.pantry.values)ListTile(contentPadding:const EdgeInsets.symmetric(horizontal:4),leading:Icon(Icons.inventory_2_outlined,color:AppTheme.olive),title:Text(item.name),subtitle:Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · Expires ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
-        trailing:Wrap(mainAxisSize:MainAxisSize.min,children:[
+        trailing:Wrap(children:[
           IconButton(tooltip:'Set expiry date',onPressed:() async {
             final current = state.pantryExpiryDates[item.id];
             final picked = await showDatePicker(context:context,initialDate:current ?? DateTime.now(),firstDate:DateTime.now().subtract(const Duration(days:3650)),lastDate:DateTime.now().add(const Duration(days:3650)));
@@ -1017,6 +1018,16 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 PlannerScope.refresh(context);
               },
               icon: Icon(favorite ? Icons.bookmark : Icons.bookmark_border, color: favorite ? AppTheme.terracotta : AppTheme.ink),
+              style: IconButton.styleFrom(backgroundColor: AppTheme.card),
+            ),
+            IconButton(
+              tooltip: 'Copy recipe',
+              onPressed: () async {
+                final text = '${recipe.title}\\n\\n${recipe.subtitle}\\n\\nIngredients:\\n${recipe.ingredients.map((item) => '• ${item.name}: ${item.amount ?? item.amountType.name} ${item.unit}').join('\\n')}\\n\\nInstructions:\\n${recipe.steps.asMap().entries.map((entry) => '${entry.key + 1}. ${entry.value}').join('\\n')}';
+                await Clipboard.setData(ClipboardData(text: text));
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Recipe copied to clipboard.')));
+              },
+              icon: const Icon(Icons.copy_outlined),
               style: IconButton.styleFrom(backgroundColor: AppTheme.card),
             ),
             const SizedBox(width: 12),

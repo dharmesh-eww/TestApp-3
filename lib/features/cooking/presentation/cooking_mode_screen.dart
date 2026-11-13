@@ -202,7 +202,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
         border: Border.all(color: AppTheme.line)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Expanded(child: Text('INGREDIENTS AT A GLANCE',
+          Expanded(child: Text('INGREDIENTS AT A GLANCE',
             style: TextStyle(fontSize: 10, letterSpacing: 1.1, color: AppTheme.olive, fontWeight: FontWeight.w800))),
           IconButton(
             visualDensity: VisualDensity.compact,
@@ -234,7 +234,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
     final timers = session.timers;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        const Expanded(child: Text('Kitchen timers', style: TextStyle(
+        Expanded(child: Text('Kitchen timers', style: TextStyle(
           color: AppTheme.ink, fontWeight: FontWeight.w800, fontSize: 16))),
         TextButton.icon(
           onPressed: () => _addTimer(initialLabel: 'Step ${currentStep + 1}'),

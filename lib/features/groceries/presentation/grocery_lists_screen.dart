@@ -97,7 +97,7 @@ class GroceryListDetailScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('Choose items from your planner’s combined grocery list. Changes stay on this device.',
+          Text('Choose items from your planner’s combined grocery list. Changes stay on this device.',
             style: TextStyle(color: AppTheme.muted)),
           const SizedBox(height: 12),
           if (items.isEmpty) const Text('Add ingredients from recipes or planned meals first.'),

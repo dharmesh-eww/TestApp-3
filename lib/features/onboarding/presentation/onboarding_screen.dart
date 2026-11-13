@@ -27,7 +27,7 @@ class OnboardingScreen extends StatelessWidget {
           const SizedBox(height: 32),
           SizedBox(width: double.infinity, child: FilledButton(key: const Key('onboarding-get-started'), onPressed: onComplete, child: const Text('Get started'))),
           const SizedBox(height: 12),
-          const Center(child: Text('Your planner stays on this device.', style: TextStyle(color: AppTheme.muted))),
+          Center(child: Text('Your planner stays on this device.', style: TextStyle(color: AppTheme.muted))),
         ],
       )),
     ))),
@@ -42,7 +42,7 @@ class _Feature extends StatelessWidget {
     Icon(icon, color: AppTheme.olive), const SizedBox(width: 14),
     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-      Text(description, style: const TextStyle(color: AppTheme.muted)),
+      Text(description, style: TextStyle(color: AppTheme.muted)),
     ])),
   ]));
 }
