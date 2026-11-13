@@ -138,6 +138,11 @@ class _AppShellState extends State<AppShell> {
     TodayScreen(), DiscoverScreen(), PlanScreen(), GroceryScreen(), KitchenScreen(),
   ];
 
+  void selectTab(int index) {
+    if (index < 0 || index >= pages.length || index == selected) return;
+    setState(() => selected = index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -248,7 +253,7 @@ class TodayScreen extends StatelessWidget {
 
 void _goTab(BuildContext context, int index) {
   final shell = context.findAncestorStateOfType<_AppShellState>();
-  shell?.setState(() => shell.selected = index);
+  shell?.selectTab(index);
 }
 
 class DiscoverScreen extends StatefulWidget {
@@ -511,12 +516,49 @@ class GroceryScreen extends StatelessWidget {
       const Text('Good things\\nto pick up.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
       Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:const TextStyle(color:AppTheme.muted)),const SizedBox(height:18),
       if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:const Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
-      else for(final item in entries)Container(margin:const EdgeInsets.only(bottom:8),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(14),border:Border.all(color:AppTheme.line)),
-        child:CheckboxListTile(value:item.isChecked,onChanged:(value){state.setGroceryChecked(item.key,value??false);PlannerScope.refresh(context);},activeColor:AppTheme.olive,contentPadding:const EdgeInsets.symmetric(horizontal:10),
-          title:Text(item.name,style:TextStyle(decoration:item.isChecked?TextDecoration.lineThrough:null,color:item.isChecked?AppTheme.muted:AppTheme.ink,fontWeight:FontWeight.w600)),
-          subtitle:Text(item.isQuantified?'${_formatAmount(item.amount)} ${item.unit} needed · ${_formatAmount(item.ownedAmount)} owned · ${_formatAmount(item.toBuyAmount)} to buy':'Non-quantified · check pantry before shopping',style:const TextStyle(color:AppTheme.muted,fontSize:11)),
-          secondary:Icon(item.toBuyAmount<=0&&item.isQuantified?Icons.inventory_2_outlined:Icons.shopping_bag_outlined,color:item.toBuyAmount<=0&&item.isQuantified?AppTheme.olive:AppTheme.terracotta),
-          trailing: IconButton(tooltip:'Edit grocery item',onPressed:()=>_showGroceryEditor(context,item),icon:const Icon(Icons.edit_outlined,size:18,color:AppTheme.muted))),
+      else for(final item in entries)
+        Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppTheme.line),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(children: [
+              Checkbox(
+                value: item.isChecked,
+                activeColor: AppTheme.olive,
+                onChanged: (value) {
+                  state.setGroceryChecked(item.key, value ?? false);
+                  PlannerScope.refresh(context);
+                },
+              ),
+              Expanded(child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.name, style: TextStyle(
+                    decoration: item.isChecked ? TextDecoration.lineThrough : null,
+                    color: item.isChecked ? AppTheme.muted : AppTheme.ink,
+                    fontWeight: FontWeight.w600,
+                  )),
+                  Text(
+                    item.isQuantified
+                      ? '${_formatAmount(item.amount)} ${item.unit} needed · ${_formatAmount(item.ownedAmount)} owned · ${_formatAmount(item.toBuyAmount)} to buy'
+                      : 'Non-quantified · check pantry before shopping',
+                    style: const TextStyle(color: AppTheme.muted, fontSize: 11),
+                  ),
+                ],
+              )),
+              IconButton(
+                tooltip: 'Edit grocery item',
+                onPressed: () => _showGroceryEditor(context, item),
+                icon: const Icon(Icons.edit_outlined, size: 18, color: AppTheme.muted),
+              ),
+            ]),
+          ),
+        ),
       const SizedBox(height:22),
       Row(children:[Expanded(child:Text('Your pantry',style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:const Icon(Icons.add,size:17),label:const Text('Add item'))]),
       const Text('Items here are deducted from what you need to buy.',style:TextStyle(color:AppTheme.muted,fontSize:12)),const SizedBox(height:10),

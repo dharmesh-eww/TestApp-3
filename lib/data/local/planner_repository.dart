@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
-import '../features/planning/domain/planner_state.dart';
+import '../../features/planning/domain/planner_state.dart';
 
 /// SQLite-backed local store. No user data is sent to a network service.
 class PlannerRepository {

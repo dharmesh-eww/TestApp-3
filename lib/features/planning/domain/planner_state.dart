@@ -2,6 +2,7 @@ import '../../recipes/domain/recipe.dart';
 import 'meal_plan.dart';
 
 class PlannerState {
+  PlannerState();
   final Set<String> favorites = {};
   final Map<String, Map<MealSlot, PlannedMeal>> mealPlan = {};
   final Map<String, bool> groceryChecks = {};
