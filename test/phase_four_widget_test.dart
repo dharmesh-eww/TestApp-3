@@ -21,9 +21,9 @@ void main() {
     final planner = PlannerScope.of(planContext);
     expect(planner.plannedMealCount, 1);
     final groceryItems = planner.buildGroceryList(RecipeCatalogScope.of(planContext));
-    expect(groceryItems.map((item) => item.name), contains('Rolled oats'));
-
-    expect(find.textContaining('50 g needed'), findsOneWidget);
+    final oats = groceryItems.singleWhere((item) => item.name == 'Rolled oats');
+    expect(oats.amount, 50);
+    expect(oats.unit, 'g');
   });
 
   testWidgets('removes an assigned meal from its slot', (tester) async {
