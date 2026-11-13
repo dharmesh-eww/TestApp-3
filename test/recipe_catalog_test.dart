@@ -40,6 +40,15 @@ void main() {
       expect(ingredient['quantity'], {'amount': 200.0, 'unit': 'g'});
     });
 
+    test('round-trips the canonical recipe JSON representation', () {
+      final original = recipes.first;
+      final restored = Recipe.fromJson(original.toJson());
+      expect(restored.id, original.id);
+      expect(restored.title, original.title);
+      expect(restored.totalMinutes, original.totalMinutes);
+      expect(restored.ingredients.first.amount, original.ingredients.first.amount);
+    });
+
     test('preserves non-quantified ingredient qualifiers', () {
       const ingredient = Ingredient(
         'Salt', null, '', id: 'salt',
