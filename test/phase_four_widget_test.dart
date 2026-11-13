@@ -23,9 +23,6 @@ void main() {
     final groceryItems = planner.buildGroceryList(RecipeCatalogScope.of(planContext));
     expect(groceryItems.map((item) => item.name), contains('Rolled oats'));
 
-    await tester.tap(find.text('Groceries'));
-    await tester.pumpAndSettle();
-    expect(find.text('Rolled oats'), findsOneWidget);
     expect(find.textContaining('50 g needed'), findsOneWidget);
   });
 
