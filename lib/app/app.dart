@@ -322,7 +322,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(color: AppTheme.line),
                   ),
-                  child: const Column(children: [
+                  child: Column(children: [
                     Icon(Icons.search_off_rounded, size: 34, color: AppTheme.olive),
                     SizedBox(height: 10),
                     Text(strings.emptyShelf, style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
