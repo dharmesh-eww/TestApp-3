@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'recipe_catalog_loader.dart';
 
@@ -21,8 +21,8 @@ class DownloadedRecipeCatalog {
 
 /// Downloads only public, read-only recipe content. Personal data is never sent.
 class StaticRecipeContentUpdater {
-  StaticRecipeContentUpdater({HttpClient? client}) : _client = client ?? HttpClient();
-  final HttpClient _client;
+  StaticRecipeContentUpdater({http.Client? client}) : _client = client ?? http.Client();
+  final http.Client _client;
 
   Future<DownloadedRecipeCatalog> checkAndDownload(Uri manifestUri) async {
     final manifestBytes = await _get(manifestUri);
@@ -69,14 +69,11 @@ class StaticRecipeContentUpdater {
   }
 
   Future<List<int>> _get(Uri uri) async {
-    final request = await _client.getUrl(uri).timeout(const Duration(seconds: 15));
-    request.followRedirects = true;
-    final response = await request.close().timeout(const Duration(seconds: 20));
-    if (response.statusCode != HttpStatus.ok) {
-      await response.drain<void>();
+    final response = await _client.get(uri).timeout(const Duration(seconds: 20));
+    if (response.statusCode != 200) {
       throw ContentUpdateException('http_${response.statusCode}', 'Content request failed with HTTP ${response.statusCode}.');
     }
-    return response.fold<List<int>>(<int>[], (bytes, chunk) => bytes..addAll(chunk));
+    return response.bodyBytes;
   }
 
   bool _isSafeRelativePath(String path) {
@@ -85,5 +82,5 @@ class StaticRecipeContentUpdater {
         !uri.pathSegments.contains('..') && !uri.pathSegments.contains('.');
   }
 
-  void close() => _client.close(force: true);
+  void close() => _client.close();
 }

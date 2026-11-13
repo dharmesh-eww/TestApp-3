@@ -15,6 +15,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Overnight berry oats'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Build your grocery list'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Build your grocery list'));
     await tester.pumpAndSettle();
     expect(find.text('Rolled oats'), findsOneWidget);
@@ -32,6 +37,12 @@ void main() {
 
     await tester.tap(find.byKey(const Key('remove-Monday-breakfast')));
     await tester.pumpAndSettle();
-    expect(find.text('Nothing planned yet'), findsNWidgets(4));
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('meal-slot-Monday-breakfast')),
+        matching: find.text('Nothing planned yet'),
+      ),
+      findsOneWidget,
+    );
   });
 }

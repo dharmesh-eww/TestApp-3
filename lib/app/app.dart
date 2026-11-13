@@ -421,7 +421,7 @@ class _PlanScreenState extends State<PlanScreen> {
       Row(children:[Expanded(child:Text(day,style:Theme.of(context).textTheme.titleLarge)),Text('${meals.length}/4 planned',style:const TextStyle(color:AppTheme.muted,fontSize:12))]),
       const SizedBox(height:10),
       for(final slot in MealSlot.values)
-        _MealSlotCard(day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
+        _MealSlotCard(key: ValueKey('meal-slot-$day-${slot.name}'), day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
           onAdd:()=>_showPlanPicker(context,day,slot),onRemove:(){state.removeMeal(day,slot);PlannerScope.refresh(context);}),
       const SizedBox(height:14),
       OutlinedButton.icon(onPressed:()=>_goTab(context,3),icon:const Icon(Icons.shopping_basket_outlined),label:const Text('Build your grocery list'),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
@@ -487,7 +487,7 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 }
 class _MealSlotCard extends StatelessWidget {
-  const _MealSlotCard({required this.day,required this.slot,required this.meal,required this.onAdd,required this.onRemove});
+  const _MealSlotCard({super.key, required this.day,required this.slot,required this.meal,required this.onAdd,required this.onRemove});
   final String day;final MealSlot slot;final PlannedMeal? meal;final VoidCallback onAdd,onRemove;
   @override Widget build(BuildContext context){
     final recipe=meal==null?null:RecipeCatalogScope.of(context).where((r)=>r.id==meal!.recipeId).firstOrNull;
