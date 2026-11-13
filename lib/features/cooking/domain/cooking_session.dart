@@ -163,6 +163,14 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
+  void clearSession() {
+    _steps.clear();
+    _servings.clear();
+    _timers.clear();
+    _nextTimerId = 0;
+    notifyListeners();
+  }
+
   int stepFor(String recipeId) => _steps[recipeId] ?? 0;
   int servingsFor(String recipeId, int fallback) => _servings[recipeId] ?? fallback;
 

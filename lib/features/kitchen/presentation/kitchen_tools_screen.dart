@@ -314,8 +314,33 @@ class PlannerSettingsScreen extends StatelessWidget {
           },
         ),
         const SizedBox(height: 24),
+        const Text('PERSONAL DISCOVERY', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        const SizedBox(height: 8),
+        const Text('Prefer recipes with these dietary tags. Discover will apply every selected tag.', style: TextStyle(color: AppTheme.muted)),
+        for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
+          CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(option.value), value: state.preferredDietaryTags.contains(option.key),
+            onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
+        const SizedBox(height: 16),
         const Text('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.',
             style: TextStyle(color: AppTheme.muted)),
+        const SizedBox(height: 28),
+        Text('LOCAL DATA', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.terracotta, letterSpacing: 1.2)),
+        const SizedBox(height: 8),
+        const Text('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', style: TextStyle(color: AppTheme.muted)),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(key: const Key('reset-local-data'), style: OutlinedButton.styleFrom(foregroundColor: Colors.red), icon: const Icon(Icons.delete_outline), label: const Text('Reset personal data'),
+          onPressed: () async {
+            final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
+              title: const Text('Reset personal data?'),
+              content: const Text('Favorites, meal plans, groceries, pantry, collections, history and preferences will be cleared from this device. Your recipe catalog stays available.'),
+              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Reset data'))],
+            ));
+            if (confirmed != true || !context.mounted) return;
+            state.clearPersonalData();
+            PlannerScope.cookingOf(context).clearSession();
+            PlannerScope.refresh(context);
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Personal data cleared from this device.')));
+          }),
       ]),
     );
   }

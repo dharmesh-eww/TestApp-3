@@ -11,8 +11,8 @@ class PantryItem {
   final String id; final String name; final double amount; final String unit;
 }
 class GroceryItem {
-  const GroceryItem({required this.key, required this.name, required this.unit, required this.amount, required this.ownedAmount, required this.toBuyAmount, required this.isQuantified, required this.isChecked});
-  final String key; final String name; final String unit; final double amount; final double ownedAmount; final double toBuyAmount; final bool isQuantified; final bool isChecked;
+  const GroceryItem({required this.key, required this.name, required this.unit, required this.amount, required this.ownedAmount, required this.toBuyAmount, required this.isQuantified, required this.isChecked, this.isCustom = false});
+  final String key; final String name; final String unit; final double amount; final double ownedAmount; final double toBuyAmount; final bool isQuantified; final bool isChecked; final bool isCustom;
 }
 
 class GroceryEdit {

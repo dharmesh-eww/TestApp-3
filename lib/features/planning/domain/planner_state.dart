@@ -12,14 +12,18 @@ class PlannerState {
   final Map<String, Set<String>> collections = {};
   final Map<String, String> collectionNames = {};
   final List<Map<String, String>> cookingHistory = [];
+  final List<Map<String, String>> recentlyViewed = [];
+  final Set<String> preferredDietaryTags = {};
+  final Set<String> preferredCuisines = {};
   String measurementSystem = 'metric';
   int weekStartsOn = 1;
   String localeCode = 'en';
   final Map<String, double> _manualAmounts = {};
   final Map<String, String> _manualNames = {};
+  final Map<String, GroceryEdit> customGroceryItems = {};
 
   Map<String, Object?> toJson() => {
-    'schema_version': 2,
+    'schema_version': 3,
     'favorites': favorites.toList()..sort(),
     'meals': [
       for (final slots in mealPlan.values)
@@ -37,12 +41,19 @@ class PlannerState {
     },
     'manual_amounts': _manualAmounts,
     'manual_names': _manualNames,
+    'custom_grocery_items': {
+      for (final entry in customGroceryItems.entries)
+        entry.key: {'name': entry.value.name, 'amount': entry.value.amount},
+    },
     'collections': {
       for (final entry in collections.entries) entry.key: entry.value.toList()..sort(),
     },
     'collection_names': collectionNames,
     'cooking_history': cookingHistory,
+    'recently_viewed': recentlyViewed,
     'preferences': {
+      'dietary_tags': preferredDietaryTags.toList()..sort(),
+      'cuisines': preferredCuisines.toList()..sort(),
       'measurement_system': measurementSystem,
       'week_starts_on': weekStartsOn,
       'locale_code': localeCode,
@@ -55,7 +66,7 @@ class PlannerState {
     return state;
   }
 
-  /// Reads both v1 and v2 snapshots. The next save always writes v2.
+  /// Reads v1, v2 and v3 snapshots. The next save always writes v3.
   void restoreFromJson(Map<String, dynamic> json) {
     favorites.clear();
     mealPlan.clear();
@@ -64,14 +75,19 @@ class PlannerState {
     groceryEdits.clear();
     _manualAmounts.clear();
     _manualNames.clear();
+    customGroceryItems.clear();
     collections.clear();
     collectionNames.clear();
     cookingHistory.clear();
+    customGroceryItems.clear();
+    recentlyViewed.clear();
+    preferredDietaryTags.clear();
+    preferredCuisines.clear();
     measurementSystem = 'metric';
     weekStartsOn = 1;
     localeCode = 'en';
     final version = json['schema_version'];
-    if (version != 1 && version != 2) return;
+    if (version != 1 && version != 2 && version != 3) return;
 
     final rawFavorites = json['favorites'];
     if (rawFavorites is List) {
@@ -126,6 +142,17 @@ class PlannerState {
     }
     _restoreStringDoubleMap(json['manual_amounts'], _manualAmounts);
     _restoreStringStringMap(json['manual_names'], _manualNames);
+    final rawCustomGroceries = json['custom_grocery_items'];
+    if (rawCustomGroceries is Map) {
+      for (final entry in rawCustomGroceries.entries) {
+        if (entry.key is! String || entry.value is! Map) continue;
+        final item = Map<String, dynamic>.from(entry.value as Map);
+        if (item['name'] is String && item['amount'] is num && (item['amount'] as num) >= 0) {
+          customGroceryItems[entry.key as String] = GroceryEdit(
+            name: (item['name'] as String).trim(), amount: (item['amount'] as num).toDouble());
+        }
+      }
+    }
 
     final rawCollections = json['collections'];
     if (rawCollections is Map) {
@@ -160,8 +187,23 @@ class PlannerState {
         cookingHistory.removeRange(100, cookingHistory.length);
       }
     }
+    final rawRecent = json['recently_viewed'];
+    if (rawRecent is List) {
+      for (final entry in rawRecent.whereType<Map>()) {
+        final item = Map<String, dynamic>.from(entry);
+        final id = item['recipe_id'], title = item['title'], viewedAt = item['viewed_at'];
+        if (id is String && title is String && viewedAt is String) {
+          recentlyViewed.add({'recipe_id': id, 'title': title, 'viewed_at': viewedAt});
+        }
+      }
+      if (recentlyViewed.length > 30) recentlyViewed.removeRange(30, recentlyViewed.length);
+    }
     final preferences = json['preferences'];
     if (preferences is Map) {
+      final tags = preferences['dietary_tags'];
+      if (tags is List) preferredDietaryTags.addAll(tags.whereType<String>());
+      final cuisines = preferences['cuisines'];
+      if (cuisines is List) preferredCuisines.addAll(cuisines.whereType<String>());
       final system = preferences['measurement_system'];
       if (system == 'metric' || system == 'us') measurementSystem = system as String;
       final week = preferences['week_starts_on'];
@@ -185,6 +227,35 @@ class PlannerState {
     for (final entry in source.entries) {
       if (entry.key is String && entry.value is String) target[entry.key as String] = entry.value as String;
     }
+  }
+
+  void recordViewed(Recipe recipe) {
+    recentlyViewed.removeWhere((item) => item['recipe_id'] == recipe.id);
+    recentlyViewed.insert(0, {
+      'recipe_id': recipe.id,
+      'title': recipe.title,
+      'viewed_at': DateTime.now().toUtc().toIso8601String(),
+    });
+    if (recentlyViewed.length > 30) recentlyViewed.removeRange(30, recentlyViewed.length);
+  }
+
+  void clearPersonalData() {
+    favorites.clear();
+    mealPlan.clear();
+    groceryChecks.clear();
+    pantry.clear();
+    groceryEdits.clear();
+    _manualAmounts.clear();
+    _manualNames.clear();
+    customGroceryItems.clear();
+    collections.clear();
+    collectionNames.clear();
+    cookingHistory.clear();
+    recentlyViewed.clear();
+    preferredDietaryTags.clear();
+    preferredCuisines.clear();
+    measurementSystem = 'metric';
+    weekStartsOn = 1;
   }
 
   bool isFavorite(String id) => favorites.contains(id);
@@ -241,6 +312,25 @@ class PlannerState {
       List.unmodifiable(mealPlan[day]?.values ?? const <PlannedMeal>[]);
   int get plannedMealCount => mealPlan.values.fold(0, (sum, slots) => sum + slots.length);
 
+  void addCustomGroceryItem({required String name, required double amount, required String unit}) {
+    final cleanName = name.trim(), cleanUnit = unit.trim();
+    if (cleanName.isEmpty || cleanUnit.isEmpty || amount < 0) return;
+    final key = _key(cleanName, cleanUnit);
+    final previous = customGroceryItems[key]?.amount ?? 0;
+    customGroceryItems[key] = GroceryEdit(name: cleanName, amount: previous + amount);
+  }
+
+  void removeCustomGroceryItem(String key) => customGroceryItems.remove(key);
+
+  void clearCheckedCustomGroceryItems() {
+    final keys = customGroceryItems.keys.where((key) => groceryChecks[key] == true).toList();
+    for (final key in keys) {
+      customGroceryItems.remove(key);
+      groceryChecks.remove(key);
+      groceryEdits.remove(key);
+    }
+  }
+
   void addIngredients(Recipe recipe, int servings) {
     for (final item in recipe.ingredients) {
       if (item.amount == null || item.amountType != IngredientAmountType.quantity) continue;
@@ -281,6 +371,12 @@ class PlannerState {
       names.putIfAbsent(entry.key, () => _manualNames[entry.key] ?? entry.key);
       units.putIfAbsent(entry.key, () => entry.key.split('|').last);
     }
+    for (final entry in customGroceryItems.entries) {
+      final key = entry.key;
+      names[key] = entry.value.name;
+      units[key] = key.split('|').last;
+      totals.update(key, (old) => old + entry.value.amount, ifAbsent: () => entry.value.amount);
+    }
     final keys = {...totals.keys, ...qualifiers}.toList()..sort();
     return keys.map((key) {
       final originalAmount = totals[key] ?? 0;
@@ -297,6 +393,7 @@ class PlannerState {
         toBuyAmount: quantified ? (needed - owned).clamp(0, double.infinity).toDouble() : 0,
         isQuantified: quantified,
         isChecked: groceryChecks[key] ?? false,
+        isCustom: customGroceryItems.containsKey(key),
       );
     }).toList();
   }

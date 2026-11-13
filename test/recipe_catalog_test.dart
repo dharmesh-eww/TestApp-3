@@ -20,6 +20,16 @@ void main() {
       expect(result.last.id, 'tomato-soup');
     });
 
+    test('combines cuisine, food type, difficulty and maximum time filters', () {
+      final result = RecipeCatalog.search(recipes, cuisineId: 'gujarati', foodType: FoodType.vegetarian, difficulty: 'easy', maxMinutes: 40);
+      expect(result.map((recipe) => recipe.id), ['gujarati-dhokla']);
+    });
+
+    test('dietary tags are applied as an all-selected filter', () {
+      expect(RecipeCatalog.search(recipes, dietaryTags: {'plant_based'}).map((recipe) => recipe.id), ['roasted-bowl']);
+      expect(RecipeCatalog.search(recipes, dietaryTags: {'plant_based', 'gluten_free'}), isEmpty);
+    });
+
     test('omits unpublished recipes from discovery', () {
       final hidden = Recipe(
         id: 'hidden', title: 'Hidden', subtitle: '', image: '',

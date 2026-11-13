@@ -16,6 +16,9 @@ void main() {
     original.weekStartsOn = 7;
     original.localeCode = 'ar';
     original.recordCooked(recipes.first);
+    original.recordViewed(recipes.last);
+    original.preferredDietaryTags.add('plant_based');
+    original.addCustomGroceryItem(name: 'Tea bags', amount: 2, unit: 'boxes');
     final pastaKey = original.buildGroceryList(recipes).singleWhere((item) => item.name == 'Pasta').key;
     original.setGroceryChecked(pastaKey, true);
     original.updateGroceryItem(pastaKey, name: 'Fresh pasta', amount: 450);
@@ -31,13 +34,16 @@ void main() {
     expect(restored.weekStartsOn, 7);
     expect(restored.localeCode, 'ar');
     expect(restored.cookingHistory, hasLength(1));
+    expect(restored.recentlyViewed.single['recipe_id'], recipes.last.id);
+    expect(restored.preferredDietaryTags, contains('plant_based'));
+    expect(restored.buildGroceryList(recipes).any((item) => item.name == 'Tea bags' && item.isCustom), isTrue);
     expect(restored.buildGroceryList(recipes).firstWhere((item) => item.key == pastaKey).amount, 450);
   });
 
-  test('legacy v1 snapshots remain readable after the v2 schema migration', () {
+  test('legacy v1 snapshots remain readable after the v3 schema migration', () {
     final restored = PlannerState.fromJson({'schema_version': 1, 'favorites': ['legacy-recipe']});
     expect(restored.isFavorite('legacy-recipe'), isTrue);
-    expect(restored.toJson()['schema_version'], 2);
+    expect(restored.toJson()['schema_version'], 3);
   });
 
   test('unsupported snapshots restore as an empty safe state', () {
@@ -59,5 +65,20 @@ void main() {
     expect(restored.favorites, {'recipe-a'});
     expect(restored.mealsFor('Monday'), hasLength(1));
     expect(restored.mealsFor('Tuesday'), isEmpty);
+  });
+
+
+test('reset personal data clears local user state without changing catalog', () {
+    final state = PlannerState()
+      ..toggleFavorite('lemon-pasta')
+      ..recordViewed(recipes.first)
+      ..addCustomGroceryItem(name: 'Tea', amount: 1, unit: 'box')
+      ..preferredDietaryTags.add('plant_based');
+    state.clearPersonalData();
+    expect(state.favorites, isEmpty);
+    expect(state.recentlyViewed, isEmpty);
+    expect(state.customGroceryItems, isEmpty);
+    expect(state.preferredDietaryTags, isEmpty);
+    expect(recipes, isNotEmpty);
   });
 }

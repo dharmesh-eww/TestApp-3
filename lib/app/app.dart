@@ -236,6 +236,64 @@ class _AppShellState extends State<AppShell> {
   }
 }
 
+
+class _DiscoveryFilterBar extends StatelessWidget {
+  const _DiscoveryFilterBar({
+    required this.cuisineId, required this.foodTypeId, required this.difficulty,
+    required this.maxMinutes, required this.cuisines, required this.onChanged,
+  });
+  final String cuisineId, foodTypeId, difficulty;
+  final int? maxMinutes;
+  final List<String> cuisines;
+  final void Function(String cuisine, String foodType, String difficulty, int? minutes) onChanged;
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    spacing: 10, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      DropdownButton<String>(
+        key: const Key('cuisine-filter'), value: cuisineId,
+        items: [const DropdownMenuItem(value: 'all', child: Text('All cuisines')),
+          ...cuisines.map((value) => DropdownMenuItem(value: value, child: Text(value)))],
+        onChanged: (value) => onChanged(value ?? 'all', foodTypeId, difficulty, maxMinutes),
+      ),
+      DropdownButton<String>(
+        key: const Key('food-type-filter'), value: foodTypeId,
+        items: const [
+          DropdownMenuItem(value: 'all', child: Text('All food types')),
+          DropdownMenuItem(value: 'vegetarian', child: Text('Vegetarian')),
+          DropdownMenuItem(value: 'vegan', child: Text('Vegan')),
+          DropdownMenuItem(value: 'eggetarian', child: Text('Eggetarian')),
+          DropdownMenuItem(value: 'nonVegetarian', child: Text('Non-vegetarian')),
+          DropdownMenuItem(value: 'pescatarian', child: Text('Pescatarian')),
+        ],
+        onChanged: (value) => onChanged(cuisineId, value ?? 'all', difficulty, maxMinutes),
+      ),
+      DropdownButton<String>(
+        key: const Key('difficulty-filter'), value: difficulty,
+        items: const [
+          DropdownMenuItem(value: 'all', child: Text('Any difficulty')),
+          DropdownMenuItem(value: 'easy', child: Text('Easy')),
+          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+          DropdownMenuItem(value: 'hard', child: Text('Hard')),
+        ],
+        onChanged: (value) => onChanged(cuisineId, foodTypeId, value ?? 'all', maxMinutes),
+      ),
+      DropdownButton<int?>(
+        key: const Key('time-filter'), value: maxMinutes,
+        items: const [
+          DropdownMenuItem<int?>(value: null, child: Text('Any time')),
+          DropdownMenuItem<int?>(value: 20, child: Text('Under 20 min')),
+          DropdownMenuItem<int?>(value: 30, child: Text('Under 30 min')),
+          DropdownMenuItem<int?>(value: 45, child: Text('Under 45 min')),
+          DropdownMenuItem<int?>(value: 60, child: Text('Under 60 min')),
+        ],
+        onChanged: (value) => onChanged(cuisineId, foodTypeId, difficulty, value),
+      ),
+    ],
+  );
+}
+
 class TodayScreen extends StatelessWidget {
   const TodayScreen({super.key});
 
@@ -296,6 +354,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   String _query = '';
   String _categoryId = 'all';
   RecipeSort _sort = RecipeSort.recommended;
+  String _cuisineId = 'all';
+  String _foodTypeId = 'all';
+  String _difficulty = 'all';
+  int? _maxMinutes;
 
   @override
   void dispose() {
@@ -311,6 +373,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       catalog,
       query: _query,
       categoryId: _categoryId,
+      cuisineId: _cuisineId,
+      foodType: _foodTypeId == 'all' ? null : FoodType.values.firstWhere((value) => value.name == _foodTypeId),
+      difficulty: _difficulty,
+      maxMinutes: _maxMinutes,
+      dietaryTags: PlannerScope.of(context).preferredDietaryTags,
       sort: _sort,
     );
 
@@ -374,6 +441,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 ),
               ),
           ]),
+        ),
+        const SizedBox(height: 10),
+        _DiscoveryFilterBar(
+          cuisineId: _cuisineId, foodTypeId: _foodTypeId, difficulty: _difficulty,
+          maxMinutes: _maxMinutes,
+          cuisines: catalog.expand((recipe) => recipe.cuisineIds).toSet().toList()..sort(),
+          onChanged: (cuisine, foodType, difficulty, minutes) => setState(() {
+            _cuisineId = cuisine; _foodTypeId = foodType; _difficulty = difficulty; _maxMinutes = minutes;
+          }),
         ),
         const SizedBox(height: 14),
         Row(children: [
@@ -560,13 +636,22 @@ class GroceryScreen extends StatelessWidget {
   @override Widget build(BuildContext context){
     final state=PlannerScope.of(context),entries=state.buildGroceryList(RecipeCatalogScope.of(context));
     final checked=entries.where((item)=>item.isChecked).length;
+    final grouped = <String, List<GroceryItem>>{};
+    for (final item in entries) { grouped.putIfAbsent(_groceryAisle(item.name), () => []).add(item); }
     return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
       const Text('THE MARKET LIST',style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
       const Text('Good things\\nto pick up.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
-      Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:const TextStyle(color:AppTheme.muted)),const SizedBox(height:18),
+      Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:const TextStyle(color:AppTheme.muted)),
+      const SizedBox(height:12),
+      Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
+        OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:const Icon(Icons.add),label:const Text('Add item')),
+        if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ for(final item in entries.where((item)=>item.isCustom && item.isChecked)) { state.removeCustomGroceryItem(item.key); state.groceryChecks.remove(item.key); } PlannerScope.refresh(context); },child:const Text('Clear checked custom items')),
+      ])),
+      const SizedBox(height:12),
       if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:const Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
-      else for(final item in entries)
-        Container(
+      else for (final aisle in grouped.entries) ...[
+        Padding(padding: const EdgeInsets.only(top: 10, bottom: 8), child: Text(aisle.key.toUpperCase(), style: const TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.3))),
+        for (final item in aisle.value) Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
             color: AppTheme.card,
@@ -600,6 +685,7 @@ class GroceryScreen extends StatelessWidget {
                   ),
                 ],
               )),
+              if (item.isCustom) IconButton(tooltip: 'Remove custom grocery item', onPressed: () { state.removeCustomGroceryItem(item.key); PlannerScope.refresh(context); }, icon: const Icon(Icons.close, size: 18)),
               IconButton(
                 tooltip: 'Edit grocery item',
                 onPressed: () => _showGroceryEditor(context, item),
@@ -608,6 +694,7 @@ class GroceryScreen extends StatelessWidget {
             ]),
           ),
         ),
+      ],
       const SizedBox(height:22),
       Row(children:[Expanded(child:Text('Your pantry',style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:const Icon(Icons.add,size:17),label:const Text('Add item'))]),
       const Text('Items here are deducted from what you need to buy.',style:TextStyle(color:AppTheme.muted,fontSize:12)),const SizedBox(height:10),
@@ -616,6 +703,30 @@ class GroceryScreen extends StatelessWidget {
         trailing:IconButton(tooltip:'Remove pantry item',onPressed:(){state.removePantryItem(item.id);PlannerScope.refresh(context);},icon:const Icon(Icons.close))),
     ]);
   }
+  void _showCustomGroceryEditor(BuildContext context) {
+    final name = TextEditingController();
+    final amount = TextEditingController(text: '1');
+    final unit = TextEditingController(text: 'item');
+    showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
+      title: const Text('Add a grocery item'),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextField(controller: name, autofocus: true, decoration: const InputDecoration(labelText: 'Item')),
+        TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Quantity')),
+        TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit')),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+        FilledButton(onPressed: () {
+          final quantity = double.tryParse(amount.text.trim());
+          if (name.text.trim().isEmpty || unit.text.trim().isEmpty || quantity == null || quantity < 0) return;
+          PlannerScope.of(context).addCustomGroceryItem(name: name.text, amount: quantity, unit: unit.text);
+          PlannerScope.refresh(context);
+          Navigator.pop(dialogContext);
+        }, child: const Text('Add')),
+      ],
+    )).then((_) { name.dispose(); amount.dispose(); unit.dispose(); });
+  }
+
   void _showGroceryEditor(BuildContext context, GroceryItem item) {
     final name = TextEditingController(text: item.name);
     final amount = TextEditingController(text: item.isQuantified ? _formatAmount(item.amount) : '');
@@ -648,6 +759,14 @@ class GroceryScreen extends StatelessWidget {
     },child:const Text('Save'))])).then((_){name.dispose();amount.dispose();unit.dispose();});
   }
 }
+String _groceryAisle(String name) {
+  final value = name.toLowerCase();
+  if (['tomato','onion','garlic','lemon','cucumber','parsley','basil','sweet potato','berries','ginger'].any((term) => value.contains(term))) return 'Produce';
+  if (['milk','yogurt','curd','cream','cheese','ricotta','parmesan','butter'].any(value.contains)) return 'Dairy & chilled';
+  if (['bread','sourdough','pasta','oats','quinoa','rice','flour','chickpea','lentil','oil','tahini','spice'].any(value.contains)) return 'Pantry';
+  return 'Other';
+}
+
 String _formatAmount(double value)=>value==value.roundToDouble()?value.toInt().toString():value.toStringAsFixed(1);
 
 
@@ -686,6 +805,17 @@ class KitchenScreen extends StatelessWidget {
           ),
         ]),
         const SizedBox(height: 20),
+        Text('Recently viewed', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 10),
+        if (state.recentlyViewed.isEmpty)
+          const Text('Recipes you open will appear here.', style: TextStyle(color: AppTheme.muted))
+        else
+          ...state.recentlyViewed.take(5).map((entry) {
+            final recipe = RecipeCatalogScope.of(context).where((item) => item.id == entry['recipe_id']).firstOrNull;
+            if (recipe == null) return const SizedBox.shrink();
+            return Padding(padding: const EdgeInsets.only(bottom: 8), child: _RecipeListTile(recipe: recipe));
+          }),
+        const SizedBox(height: 22),
         Text('Your saved recipes', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 22),
         Card(
@@ -740,11 +870,24 @@ class RecipeDetailScreen extends StatefulWidget {
 
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   int servings = 2;
+  bool _recordedView = false;
 
   @override
   void initState() {
     super.initState();
     servings = widget.recipe.servings;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_recordedView) {
+      _recordedView = true;
+      PlannerScope.of(context).recordViewed(widget.recipe);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) PlannerScope.refresh(context);
+      });
+    }
   }
 
   @override

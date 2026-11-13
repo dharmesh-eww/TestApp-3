@@ -85,6 +85,8 @@ subsequent phases.
 8. Personal library and ingredient finder.
 9. Global settings and measurement.
 10. Cooking continuity and release hardening.
+11. Discovery and personalization.
+12. Grocery workflow and privacy polish.
 
 ## Run
 
@@ -190,3 +192,21 @@ flutter test
 - Completed cooking sessions are recorded in a local cooking history.
 
 The implementation remains offline-first and account-free. No backend, Firebase, cloud sync, social features, or state-management package has been added. Native text-to-speech, platform timer notifications, keep-screen-awake behavior, and physical-device QA remain optional follow-up work.
+
+
+## Phase 11 — Discovery and personalization
+
+- Expanded recipe search filters to combine cuisine, food type, difficulty, maximum preparation/cooking time, and saved dietary preferences alongside category and text search.
+- Added persistent dietary discovery preferences in local planner settings.
+- Added a recently viewed recipe shelf in Kitchen, recorded on recipe detail entry and retained locally.
+- Upgraded planner snapshot schema to v3 while preserving v1/v2 restore compatibility.
+
+## Phase 12 — Grocery workflow and privacy polish
+
+- Grouped generated and custom grocery entries into practical aisle sections (produce, chilled, pantry, other).
+- Added custom grocery entries with editable quantity/unit, merge-by-normalized ingredient identity, and individual removal.
+- Added a clear action for checked custom grocery entries.
+- Added a confirmed local-data reset that clears favorites, plans, groceries, pantry, collections, history, recent views and discovery preferences while retaining the cached recipe catalog.
+- Added regression tests for advanced filters, snapshot v3 compatibility, custom grocery items and personal-data reset.
+
+No personal data is uploaded. Dietary preferences are used only to filter the local recipe catalog; they are not health or allergen guarantees. Aisle assignment is a convenience heuristic and can be corrected by editing/removing the item.

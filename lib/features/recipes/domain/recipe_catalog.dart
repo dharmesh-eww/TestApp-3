@@ -138,6 +138,11 @@ class RecipeCatalog {
     Iterable<Recipe> source, {
     String query = '',
     String categoryId = 'all',
+    String cuisineId = 'all',
+    FoodType? foodType,
+    String difficulty = 'all',
+    int? maxMinutes,
+    Set<String> dietaryTags = const {},
     RecipeSort sort = RecipeSort.recommended,
   }) {
     final normalized = query.trim().toLowerCase();
@@ -145,7 +150,13 @@ class RecipeCatalog {
       final matchesCategory = categoryId == 'all' ||
           recipe.categoryIds.contains(categoryId) ||
           recipe.category.toLowerCase() == categoryId.toLowerCase();
-      return recipe.isPublished && matchesCategory && recipe.matches(normalized);
+      final matchesCuisine = cuisineId == 'all' || recipe.cuisineIds.contains(cuisineId);
+      final matchesFoodType = foodType == null || recipe.foodType == foodType;
+      final matchesDifficulty = difficulty == 'all' || recipe.difficulty.toLowerCase() == difficulty.toLowerCase();
+      final matchesTime = maxMinutes == null || recipe.totalMinutes <= maxMinutes;
+      final matchesDiet = dietaryTags.isEmpty || dietaryTags.every(recipe.dietaryTags.contains);
+      return recipe.isPublished && matchesCategory && matchesCuisine && matchesFoodType &&
+          matchesDifficulty && matchesTime && matchesDiet && recipe.matches(normalized);
     }).toList();
 
     switch (sort) {

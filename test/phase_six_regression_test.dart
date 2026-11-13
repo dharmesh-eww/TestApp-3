@@ -75,4 +75,18 @@ void main() {
       );
     });
   });
+
+
+test('custom grocery entries are validated and can be removed independently', () {
+    final state = PlannerState();
+    state.addCustomGroceryItem(name: 'Tea bags', amount: 2, unit: 'boxes');
+    state.addCustomGroceryItem(name: ' Tea bags ', amount: 1, unit: 'boxes');
+    final item = state.buildGroceryList(recipes).single;
+    expect(item.amount, 3);
+    expect(item.isCustom, isTrue);
+    state.removeCustomGroceryItem(item.key);
+    expect(state.buildGroceryList(recipes), isEmpty);
+    state.addCustomGroceryItem(name: ' ', amount: 1, unit: 'each');
+    expect(state.buildGroceryList(recipes), isEmpty);
+  });
 }
