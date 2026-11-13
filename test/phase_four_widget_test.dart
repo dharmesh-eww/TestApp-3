@@ -15,12 +15,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Overnight berry oats'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('Build your grocery list'),
-      220,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.tap(find.text('Build your grocery list'));
+    await tester.tap(find.text('Groceries'));
     await tester.pumpAndSettle();
     expect(find.text('Rolled oats'), findsOneWidget);
     expect(find.textContaining('50 g needed'), findsOneWidget);
