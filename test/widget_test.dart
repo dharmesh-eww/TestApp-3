@@ -11,5 +11,13 @@ void main() {
     expect(find.text('Plan'), findsOneWidget);
     expect(find.text('Groceries'), findsOneWidget);
     expect(find.text('Kitchen'), findsOneWidget);
+
+    await tester.tap(find.text('Recipes'));
+    await tester.pumpAndSettle();
+    expect(find.text('Find your next\nfavourite.'), findsOneWidget);
+
+    await tester.tap(find.text('Today'));
+    await tester.pumpAndSettle();
+    expect(find.text('A little more joy\nin the kitchen.'), findsOneWidget);
   });
 }

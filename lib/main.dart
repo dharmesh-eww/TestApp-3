@@ -1,6 +1,7 @@
-import 'core/theme/app_theme.dart';
-
 import 'package:flutter/material.dart';
+
+import 'core/navigation/animated_page_route.dart';
+import 'core/theme/app_theme.dart';
 
 void main() {
   runApp(const RecipePlannerApp());
@@ -644,7 +645,7 @@ class _FeaturedRecipe extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(22),
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe))),
+      onTap: () => Navigator.push(context, AnimatedPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe))),
       child: Container(
         height: 300,
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(22), color: const Color(0xFFE8DFD1)),
@@ -682,7 +683,7 @@ class _RecipeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe))),
+      onTap: () => Navigator.push(context, AnimatedPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
@@ -705,7 +706,7 @@ class _RecipeListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe))),
+      onTap: () => Navigator.push(context, AnimatedPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe))),
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(color: AppTheme.card, border: Border.all(color: AppTheme.line), borderRadius: BorderRadius.circular(18)),

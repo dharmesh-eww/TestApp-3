@@ -9,6 +9,10 @@ class AppTheme {
   static const olive = Color(0xFF68724D);
   static const line = Color(0xFFE9E2D8);
 
+  static const pagePadding = 20.0;
+  static const cardRadius = 20.0;
+  static const controlRadius = 14.0;
+
   static ThemeData get light => ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: paper,
@@ -49,11 +53,45 @@ class AppTheme {
           ),
         ),
         cardTheme: CardThemeData(
-          color: card, elevation: 0,
+          color: card,
+          elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(cardRadius),
             side: const BorderSide(color: line),
           ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: card,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 15,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(controlRadius),
+            borderSide: const BorderSide(color: line),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(controlRadius),
+            borderSide: const BorderSide(color: line),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(controlRadius),
+            borderSide: const BorderSide(color: terracotta, width: 1.4),
+          ),
+        ),
+        snackBarTheme: SnackBarThemeData(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: ink,
+          contentTextStyle: const TextStyle(color: Colors.white),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        dividerTheme: const DividerThemeData(
+          color: line,
+          thickness: 1,
+          space: 1,
         ),
       );
 }
