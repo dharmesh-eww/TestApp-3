@@ -2,7 +2,7 @@
 
 ## Automated quality gate
 
-The GitHub Actions workflow at `.github/workflows/flutter-ci.yml` runs for pushes to main, pull requests targeting main, and manual dispatch. It resolves packages, runs static analysis with fatal infos, and executes the complete Flutter test suite on the stable Flutter channel.
+The GitHub Actions workflow at `.github/workflows/flutter-ci.yml` runs for pushes to main, pull requests targeting main, and manual dispatch. It resolves packages, runs Flutter static analysis, and executes the complete Flutter test suite on the stable Flutter channel.
 
 ## Regression coverage
 

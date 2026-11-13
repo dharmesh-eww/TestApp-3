@@ -8,6 +8,7 @@ import '../core/navigation/animated_page_route.dart';
 import '../core/theme/app_theme.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/recipe_catalog.dart';
+import '../features/planning/domain/meal_plan.dart';
 import '../features/recipes/data/recipe_catalog_loader.dart';
 import '../features/recipes/data/static_recipe_content_updater.dart';
 import '../data/local/planner_repository.dart';
@@ -421,13 +422,63 @@ class _PlanScreenState extends State<PlanScreen> {
       OutlinedButton.icon(onPressed:()=>_goTab(context,3),icon:const Icon(Icons.shopping_basket_outlined),label:const Text('Build your grocery list'),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
     ]);
   }
-  void _showPlanPicker(BuildContext context,String day,MealSlot slot){
-    showModalBottomSheet(context:context,isScrollControlled:true,backgroundColor:AppTheme.paper,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),
-      builder:(sheetContext)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
-        Text('Plan ${slot.label.toLowerCase()}',style:Theme.of(sheetContext).textTheme.headlineMedium),Text('$day · Choose a recipe',style:const TextStyle(color:AppTheme.muted)),const SizedBox(height:12),
-        SizedBox(height:MediaQuery.of(sheetContext).size.height*.52,child:ListView(children:RecipeCatalogScope.of(sheetContext).map((recipe)=>ListTile(contentPadding:EdgeInsets.zero,title:Text(recipe.title),subtitle:Text('${recipe.minutes} min · ${recipe.category} · serves ${recipe.servings}'),trailing:const Icon(Icons.add_circle_outline,color:AppTheme.terracotta),
-          onTap:(){PlannerScope.of(context).assignMeal(day:day,slot:slot,recipeId:recipe.id,servings:recipe.servings);PlannerScope.refresh(context);Navigator.pop(sheetContext);})).toList())),
-      ]))));
+  void _showPlanPicker(BuildContext context, String day, MealSlot slot) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Plan ${slot.label.toLowerCase()}',
+                style: Theme.of(sheetContext).textTheme.headlineMedium,
+              ),
+              Text(
+                '$day · Choose a recipe',
+                style: const TextStyle(color: AppTheme.muted),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: MediaQuery.of(sheetContext).size.height * .52,
+                child: ListView(
+                  children: RecipeCatalogScope.of(sheetContext).map((recipe) {
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(recipe.title),
+                      subtitle: Text(
+                        '${recipe.minutes} min · ${recipe.category} · serves ${recipe.servings}',
+                      ),
+                      trailing: const Icon(
+                        Icons.add_circle_outline,
+                        color: AppTheme.terracotta,
+                      ),
+                      onTap: () {
+                        PlannerScope.of(context).assignMeal(
+                          day: day,
+                          slot: slot,
+                          recipeId: recipe.id,
+                          servings: recipe.servings,
+                        );
+                        PlannerScope.refresh(context);
+                        Navigator.pop(sheetContext);
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 class _MealSlotCard extends StatelessWidget {

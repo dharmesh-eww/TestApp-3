@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/planning/domain/planner_state.dart';
-import 'package:testapp_3/features/recipes/domain/recipe.dart';
 import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 
 void main() {
