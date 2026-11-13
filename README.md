@@ -151,3 +151,14 @@ flutter test
 - Added regression coverage for empty search, unknown recipe references, pantry overstock, invalid pantry values, favorite toggling and stable grocery check identity.
 - Added a release-readiness checklist covering device sizes, accessibility, offline fallback, localization, timer limitations, licences, signing and store metadata.
 - CI is configured but must execute on GitHub before a green result can be claimed. Local Flutter/Dart CLI was unavailable during implementation; no local test or analyzer pass is claimed.
+
+
+## Phase 7 — Local persistence and static content updates (in progress)
+
+- Added a SQLite repository for planner snapshots and the active recipe catalog cache. The app restores the cached catalog and personal planner state on launch when the database is available; it falls back to the bundled starter catalog and in-memory state if local storage cannot be opened.
+- Favorites, meal slots and servings, pantry quantities, grocery check states, manual grocery additions and grocery edits are serialized in a versioned snapshot and saved locally after planner interactions.
+- Added a read-only static GitHub content updater. It validates the manifest schema and relative paths, downloads the recipe index, verifies SHA-256 and optional byte size, then validates the catalog before activation.
+- Catalog payload and content version are activated together in a SQLite transaction. Failed network, checksum or schema validation leaves the previous active catalog untouched.
+- Published the starter catalog as a static content index with a versioned manifest. No user-owned data is sent to GitHub.
+- Added planner snapshot round-trip and malformed-snapshot tests. Database integration and remote update failure tests remain to be added and run in CI.
+- No account, backend, Firebase, cloud sync or state-management package.

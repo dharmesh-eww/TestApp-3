@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "content_version": "2026.11.13.1",
+  "generated_at": "2026-11-13T00:00:00Z",
+  "default_locale": "en",
+  "supported_locales": [
+    "en",
+    "ar"
+  ],
+  "recipe_index": {
+    "path": "recipes/index.json",
+    "sha256": "550d9cbbf4c89c78c3acaf3b416a2d278941bb0eeee5c5bba34811f9a12bc7e9"
+  },
+  "ingredient_index": null,
+  "category_index": null,
+  "asset_base": "assets/",
+  "files": [
+    {
+      "path": "recipes/index.json",
+      "byte_size": 11278,
+      "sha256": "550d9cbbf4c89c78c3acaf3b416a2d278941bb0eeee5c5bba34811f9a12bc7e9",
+      "content_type": "application/json"
+    }
+  ]
+}

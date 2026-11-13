@@ -1,0 +1,464 @@
+{
+  "schema_version": 1,
+  "categories": [
+    {
+      "id": "all",
+      "name": "All recipes"
+    },
+    {
+      "id": "breakfast",
+      "name": "Breakfast"
+    },
+    {
+      "id": "lunch",
+      "name": "Lunch"
+    },
+    {
+      "id": "dinner",
+      "name": "Dinner"
+    },
+    {
+      "id": "snacks",
+      "name": "Snacks"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "lemon-pasta",
+      "slug": "lemon-ricotta-pasta",
+      "title": "Lemon ricotta pasta",
+      "description": "Silky, bright and ready in twenty minutes",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "italian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 5,
+      "cook_minutes": 15,
+      "servings": 2,
+      "calories_kcal": 480,
+      "tags": [
+        "pasta",
+        "weeknight",
+        "quick"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "pasta",
+          "display_name": "Pasta",
+          "quantity": {
+            "amount": 200,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "ricotta",
+          "display_name": "Ricotta",
+          "quantity": {
+            "amount": 120,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "lemon",
+          "display_name": "Lemon",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "parmesan",
+          "display_name": "Parmesan",
+          "quantity": {
+            "amount": 30,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "olive_oil",
+          "display_name": "Olive oil",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        },
+        {
+          "ingredient_id": "basil",
+          "display_name": "Fresh basil",
+          "quantity": {
+            "amount": 8,
+            "unit": "leaves"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Bring a large pot of salted water to a boil. Cook the pasta until just al dente."
+        },
+        {
+          "step": 2,
+          "text": "Whisk ricotta, lemon zest, lemon juice, olive oil and a splash of pasta water until creamy."
+        },
+        {
+          "step": 3,
+          "text": "Add the drained pasta and toss gently. Loosen with more pasta water as needed."
+        },
+        {
+          "step": 4,
+          "text": "Finish with parmesan, torn basil, black pepper and a little olive oil."
+        }
+      ]
+    },
+    {
+      "id": "roasted-bowl",
+      "slug": "roasted-harvest-bowl",
+      "title": "Roasted harvest bowl",
+      "description": "Crisp vegetables, grains and green tahini",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegan",
+      "dietary_tags": [
+        "plant_based"
+      ],
+      "difficulty": "easy",
+      "prep_minutes": 10,
+      "cook_minutes": 25,
+      "servings": 2,
+      "calories_kcal": 420,
+      "tags": [
+        "chickpeas",
+        "quinoa",
+        "vegetables"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "sweet_potato",
+          "display_name": "Sweet potato",
+          "quantity": {
+            "amount": 1,
+            "unit": "large"
+          }
+        },
+        {
+          "ingredient_id": "chickpeas",
+          "display_name": "Chickpeas",
+          "quantity": {
+            "amount": 240,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "quinoa",
+          "display_name": "Quinoa",
+          "quantity": {
+            "amount": 120,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tahini",
+          "display_name": "Tahini",
+          "quantity": {
+            "amount": 2,
+            "unit": "tbsp"
+          }
+        },
+        {
+          "ingredient_id": "cucumber",
+          "display_name": "Cucumber",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "parsley",
+          "display_name": "Parsley",
+          "quantity": {
+            "amount": 10,
+            "unit": "g"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Heat the oven to 220°C. Dice the sweet potato and season with olive oil, salt and pepper."
+        },
+        {
+          "step": 2,
+          "text": "Roast the sweet potato and chickpeas for 25–30 minutes until golden."
+        },
+        {
+          "step": 3,
+          "text": "Cook quinoa according to the packet instructions and fluff with a fork."
+        },
+        {
+          "step": 4,
+          "text": "Stir tahini with lemon juice and water. Build bowls with quinoa, vegetables and sauce."
+        }
+      ]
+    },
+    {
+      "id": "berry-oats",
+      "slug": "overnight-berry-oats",
+      "title": "Overnight berry oats",
+      "description": "A make-ahead breakfast with a little crunch",
+      "image": "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegetarian",
+      "prep_minutes": 10,
+      "cook_minutes": 0,
+      "servings": 1,
+      "calories_kcal": 310,
+      "tags": [
+        "oats",
+        "make ahead",
+        "berries"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "oats",
+          "display_name": "Rolled oats",
+          "quantity": {
+            "amount": 50,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "milk",
+          "display_name": "Milk",
+          "quantity": {
+            "amount": 120,
+            "unit": "ml"
+          }
+        },
+        {
+          "ingredient_id": "greek_yogurt",
+          "display_name": "Greek yogurt",
+          "quantity": {
+            "amount": 60,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "berries",
+          "display_name": "Mixed berries",
+          "quantity": {
+            "amount": 80,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "maple_syrup",
+          "display_name": "Maple syrup",
+          "quantity": {
+            "amount": 1,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "chia",
+          "display_name": "Chia seeds",
+          "quantity": {
+            "amount": 1,
+            "unit": "tsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Combine oats, milk, yogurt, chia seeds and maple syrup in a jar."
+        },
+        {
+          "step": 2,
+          "text": "Stir well, cover and refrigerate overnight or for at least four hours."
+        },
+        {
+          "step": 3,
+          "text": "Top with berries and a spoonful of yogurt before serving."
+        }
+      ]
+    },
+    {
+      "id": "tomato-soup",
+      "slug": "slow-sunday-tomato-soup",
+      "title": "Slow Sunday tomato soup",
+      "description": "A comforting bowl with toasted sourdough",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegetarian",
+      "prep_minutes": 10,
+      "cook_minutes": 30,
+      "servings": 4,
+      "calories_kcal": 360,
+      "tags": [
+        "tomato",
+        "comfort food"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Ripe tomatoes",
+          "quantity": {
+            "amount": 800,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "garlic",
+          "display_name": "Garlic",
+          "quantity": {
+            "amount": 3,
+            "unit": "cloves"
+          }
+        },
+        {
+          "ingredient_id": "vegetable_stock",
+          "display_name": "Vegetable stock",
+          "quantity": {
+            "amount": 500,
+            "unit": "ml"
+          }
+        },
+        {
+          "ingredient_id": "cream",
+          "display_name": "Cream",
+          "quantity": {
+            "amount": 60,
+            "unit": "ml"
+          }
+        },
+        {
+          "ingredient_id": "sourdough",
+          "display_name": "Sourdough",
+          "quantity": {
+            "amount": 4,
+            "unit": "slices"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Soften the onion in olive oil, then add garlic and cook until fragrant."
+        },
+        {
+          "step": 2,
+          "text": "Add tomatoes and stock. Simmer gently for 25 minutes."
+        },
+        {
+          "step": 3,
+          "text": "Blend until smooth, stir in cream and season to taste."
+        },
+        {
+          "step": 4,
+          "text": "Serve hot with toasted sourdough and fresh herbs."
+        }
+      ]
+    },
+    {
+      "id": "gujarati-dhokla",
+      "slug": "gujarati-dhokla",
+      "title": "Gujarati dhokla",
+      "description": "Soft, savory steamed dhokla with a light tempering",
+      "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=1000",
+      "category_ids": [
+        "breakfast",
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "gujarati",
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "prep_minutes": 15,
+      "cook_minutes": 20,
+      "servings": 4,
+      "calories_kcal": 210,
+      "tags": [
+        "steamed",
+        "besan",
+        "snack"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "besan",
+          "display_name": "Gram flour",
+          "quantity": {
+            "amount": 1,
+            "unit": "cup"
+          }
+        },
+        {
+          "ingredient_id": "curd",
+          "display_name": "Curd",
+          "quantity": {
+            "amount": 0.5,
+            "unit": "cup"
+          }
+        },
+        {
+          "ingredient_id": "ginger",
+          "display_name": "Ginger",
+          "quantity": {
+            "amount": 1,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "mustard_seeds",
+          "display_name": "Mustard seeds",
+          "quantity": {
+            "amount": 1,
+            "unit": "tsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Mix gram flour, curd and water into a smooth batter."
+        },
+        {
+          "step": 2,
+          "text": "Fold in ginger and seasoning, then rest the batter briefly."
+        },
+        {
+          "step": 3,
+          "text": "Steam until cooked through and finish with a light tempering."
+        }
+      ]
+    }
+  ]
+}
