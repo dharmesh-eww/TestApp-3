@@ -248,50 +248,101 @@ class _DiscoveryFilterBar extends StatelessWidget {
   final void Function(String cuisine, String foodType, String difficulty, int? minutes) onChanged;
 
   @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: 10, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center,
-    children: [
-      DropdownButton<String>(
-        key: const Key('cuisine-filter'), value: cuisineId,
-        items: [const DropdownMenuItem(value: 'all', child: Text('All cuisines')),
-          ...cuisines.map((value) => DropdownMenuItem(value: value, child: Text(value)))],
-        onChanged: (value) => onChanged(value ?? 'all', foodTypeId, difficulty, maxMinutes),
+  Widget build(BuildContext context) {
+    final active = (cuisineId != 'all' ? 1 : 0) + (foodTypeId != 'all' ? 1 : 0) +
+        (difficulty != 'all' ? 1 : 0) + (maxMinutes != null ? 1 : 0);
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: OutlinedButton.icon(
+        key: const Key('open-recipe-filters'),
+        icon: const Icon(Icons.tune, size: 17),
+        label: Text(active == 0 ? 'More filters' : 'More filters ($active)'),
+        onPressed: () async {
+          var cuisine = cuisineId;
+          var foodType = foodTypeId;
+          var level = difficulty;
+          var minutes = maxMinutes;
+          await showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: AppTheme.paper,
+            builder: (sheetContext) => StatefulBuilder(
+              builder: (sheetContext, setSheetState) => SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(sheetContext).viewInsets.bottom + 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Refine recipes', style: Theme.of(sheetContext).textTheme.headlineMedium),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: cuisine,
+                        decoration: const InputDecoration(labelText: 'Cuisine'),
+                        items: [const DropdownMenuItem(value: 'all', child: Text('All cuisines')),
+                          ...cuisines.map((value) => DropdownMenuItem(value: value, child: Text(value)))],
+                        onChanged: (value) => setSheetState(() => cuisine = value ?? 'all'),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        value: foodType,
+                        decoration: const InputDecoration(labelText: 'Food type'),
+                        items: const [
+                          DropdownMenuItem(value: 'all', child: Text('All food types')),
+                          DropdownMenuItem(value: 'vegetarian', child: Text('Vegetarian')),
+                          DropdownMenuItem(value: 'vegan', child: Text('Vegan')),
+                          DropdownMenuItem(value: 'eggetarian', child: Text('Eggetarian')),
+                          DropdownMenuItem(value: 'nonVegetarian', child: Text('Non-vegetarian')),
+                          DropdownMenuItem(value: 'pescatarian', child: Text('Pescatarian')),
+                        ],
+                        onChanged: (value) => setSheetState(() => foodType = value ?? 'all'),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        value: level,
+                        decoration: const InputDecoration(labelText: 'Difficulty'),
+                        items: const [
+                          DropdownMenuItem(value: 'all', child: Text('Any difficulty')),
+                          DropdownMenuItem(value: 'easy', child: Text('Easy')),
+                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                          DropdownMenuItem(value: 'hard', child: Text('Hard')),
+                        ],
+                        onChanged: (value) => setSheetState(() => level = value ?? 'all'),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<int?>(
+                        value: minutes,
+                        decoration: const InputDecoration(labelText: 'Maximum time'),
+                        items: const [
+                          DropdownMenuItem<int?>(value: null, child: Text('Any time')),
+                          DropdownMenuItem<int?>(value: 20, child: Text('20 minutes')),
+                          DropdownMenuItem<int?>(value: 30, child: Text('30 minutes')),
+                          DropdownMenuItem<int?>(value: 45, child: Text('45 minutes')),
+                          DropdownMenuItem<int?>(value: 60, child: Text('60 minutes')),
+                        ],
+                        onChanged: (value) => setSheetState(() => minutes = value),
+                      ),
+                      const SizedBox(height: 18),
+                      Row(children: [
+                        TextButton(onPressed: () => setSheetState(() {
+                          cuisine = 'all'; foodType = 'all'; level = 'all'; minutes = null;
+                        }), child: const Text('Reset')),
+                        const Spacer(),
+                        FilledButton(onPressed: () {
+                          onChanged(cuisine, foodType, level, minutes);
+                          Navigator.pop(sheetContext);
+                        }, child: const Text('Apply filters')),
+                      ]),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
-      DropdownButton<String>(
-        key: const Key('food-type-filter'), value: foodTypeId,
-        items: const [
-          DropdownMenuItem(value: 'all', child: Text('All food types')),
-          DropdownMenuItem(value: 'vegetarian', child: Text('Vegetarian')),
-          DropdownMenuItem(value: 'vegan', child: Text('Vegan')),
-          DropdownMenuItem(value: 'eggetarian', child: Text('Eggetarian')),
-          DropdownMenuItem(value: 'nonVegetarian', child: Text('Non-vegetarian')),
-          DropdownMenuItem(value: 'pescatarian', child: Text('Pescatarian')),
-        ],
-        onChanged: (value) => onChanged(cuisineId, value ?? 'all', difficulty, maxMinutes),
-      ),
-      DropdownButton<String>(
-        key: const Key('difficulty-filter'), value: difficulty,
-        items: const [
-          DropdownMenuItem(value: 'all', child: Text('Any difficulty')),
-          DropdownMenuItem(value: 'easy', child: Text('Easy')),
-          DropdownMenuItem(value: 'medium', child: Text('Medium')),
-          DropdownMenuItem(value: 'hard', child: Text('Hard')),
-        ],
-        onChanged: (value) => onChanged(cuisineId, foodTypeId, value ?? 'all', maxMinutes),
-      ),
-      DropdownButton<int?>(
-        key: const Key('time-filter'), value: maxMinutes,
-        items: const [
-          DropdownMenuItem<int?>(value: null, child: Text('Any time')),
-          DropdownMenuItem<int?>(value: 20, child: Text('Under 20 min')),
-          DropdownMenuItem<int?>(value: 30, child: Text('Under 30 min')),
-          DropdownMenuItem<int?>(value: 45, child: Text('Under 45 min')),
-          DropdownMenuItem<int?>(value: 60, child: Text('Under 60 min')),
-        ],
-        onChanged: (value) => onChanged(cuisineId, foodTypeId, difficulty, value),
-      ),
-    ],
-  );
+    );
+  }
 }
 
 class TodayScreen extends StatelessWidget {
