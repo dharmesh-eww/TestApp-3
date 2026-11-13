@@ -1,3 +1,5 @@
+import 'core/theme/app_theme.dart';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,6 +20,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   Widget build(BuildContext context) {
     return PlannerScope(
       state: state,
+      onChanged: () => setState(() {}),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Gather — Recipe Planner',
@@ -26,64 +29,6 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
       ),
     );
   }
-}
-
-class AppTheme {
-  static const ink = Color(0xFF30251F);
-  static const muted = Color(0xFF82756C);
-  static const paper = Color(0xFFF8F5EF);
-  static const card = Color(0xFFFFFEFA);
-  static const terracotta = Color(0xFFB85E43);
-  static const olive = Color(0xFF68724D);
-  static const line = Color(0xFFE9E2D8);
-
-  static ThemeData get light => ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: paper,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: terracotta,
-          brightness: Brightness.light,
-          surface: paper,
-        ),
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            color: ink, fontSize: 34, height: 1.08,
-            fontWeight: FontWeight.w700, letterSpacing: -1.2,
-            fontFamily: 'Georgia',
-          ),
-          headlineMedium: TextStyle(
-            color: ink, fontSize: 27, height: 1.12,
-            fontWeight: FontWeight.w700, fontFamily: 'Georgia',
-          ),
-          titleLarge: TextStyle(
-            color: ink, fontSize: 19, fontWeight: FontWeight.w700,
-          ),
-          titleMedium: TextStyle(
-            color: ink, fontSize: 15, fontWeight: FontWeight.w700,
-          ),
-          bodyLarge: TextStyle(color: ink, fontSize: 15, height: 1.45),
-          bodyMedium: TextStyle(color: muted, fontSize: 13, height: 1.4),
-          labelLarge: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: paper, foregroundColor: ink, elevation: 0,
-          centerTitle: false,
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: card,
-          indicatorColor: terracotta.withOpacity(.13),
-          labelTextStyle: WidgetStateProperty.all(
-            const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-          ),
-        ),
-        cardTheme: CardThemeData(
-          color: card, elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: const BorderSide(color: line),
-          ),
-        ),
-      );
 }
 
 class Recipe {
@@ -200,7 +145,7 @@ const recipes = <Recipe>[
   ),
 ];
 
-class PlannerState extends ChangeNotifier {
+class PlannerState {
   final Set<String> favorites = {};
   final Map<String, List<String>> mealPlan = {};
   final Map<String, bool> groceryChecks = {};
@@ -210,13 +155,11 @@ class PlannerState extends ChangeNotifier {
 
   void toggleFavorite(String id) {
     if (!favorites.add(id)) favorites.remove(id);
-    notifyListeners();
   }
 
   void addToPlan(String day, String recipeId) {
     final items = mealPlan.putIfAbsent(day, () => <String>[]);
     if (!items.contains(recipeId)) items.add(recipeId);
-    notifyListeners();
   }
 
   void addIngredients(Recipe recipe, int servings) {
@@ -233,22 +176,34 @@ class PlannerState extends ChangeNotifier {
       groceryNames[key] = '$shown|${ingredient.unit}|${ingredient.name}';
       groceryChecks.putIfAbsent(key, () => false);
     }
-    notifyListeners();
   }
 
   void toggleGrocery(String key) {
     groceryChecks[key] = !(groceryChecks[key] ?? false);
-    notifyListeners();
   }
 }
 
-class PlannerScope extends InheritedNotifier<PlannerState> {
-  const PlannerScope({super.key, required PlannerState state, required super.child})
-      : super(notifier: state);
+class PlannerScope extends InheritedWidget {
+  const PlannerScope({
+    super.key,
+    required this.state,
+    required this.onChanged,
+    required super.child,
+  });
+
+  final PlannerState state;
+  final VoidCallback onChanged;
 
   static PlannerState of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<PlannerScope>()!.notifier!;
+    return context.dependOnInheritedWidgetOfExactType<PlannerScope>()!.state;
   }
+
+  static void refresh(BuildContext context) {
+    context.dependOnInheritedWidgetOfExactType<PlannerScope>()!.onChanged();
+  }
+
+  @override
+  bool updateShouldNotify(covariant PlannerScope oldWidget) => true;
 }
 
 class AppShell extends StatefulWidget {
@@ -267,7 +222,27 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: IndexedStack(index: selected, children: pages)),
+      body: SafeArea(
+        child: AnimatedSwitcher(
+          duration: AppMotion.page,
+          switchInCurve: AppMotion.enter,
+          switchOutCurve: AppMotion.exit,
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, .018),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          ),
+          child: KeyedSubtree(
+            key: ValueKey(selected),
+            child: pages[selected],
+          ),
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: selected,
         onDestinationSelected: (value) => setState(() => selected = value),
@@ -464,6 +439,7 @@ class PlanScreen extends StatelessWidget {
               trailing: const Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
               onTap: () {
                 PlannerScope.of(context).addToPlan(day, recipe.id);
+                PlannerScope.refresh(context);
                 Navigator.pop(context);
               },
             )),
@@ -509,7 +485,10 @@ class GroceryScreen extends StatelessWidget {
             final isChecked = state.groceryChecks[entry.key] ?? false;
             return CheckboxListTile(
               value: isChecked,
-              onChanged: (_) => state.toggleGrocery(entry.key),
+              onChanged: (_) {
+                state.toggleGrocery(entry.key);
+                PlannerScope.refresh(context);
+              },
               activeColor: AppTheme.olive,
               contentPadding: const EdgeInsets.symmetric(horizontal: 4),
               title: Text(parts.length > 2 ? parts[2] : entry.key, style: TextStyle(decoration: isChecked ? TextDecoration.lineThrough : null, color: isChecked ? AppTheme.muted : AppTheme.ink)),
@@ -583,7 +562,10 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           expandedHeight: 280, pinned: true, backgroundColor: AppTheme.paper,
           actions: [
             IconButton(
-              onPressed: () => state.toggleFavorite(recipe.id),
+              onPressed: () {
+                state.toggleFavorite(recipe.id);
+                PlannerScope.refresh(context);
+              },
               icon: Icon(favorite ? Icons.bookmark : Icons.bookmark_border, color: favorite ? AppTheme.terracotta : AppTheme.ink),
               style: IconButton.styleFrom(backgroundColor: AppTheme.card),
             ),
@@ -631,6 +613,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             SizedBox(width: double.infinity, child: OutlinedButton.icon(
               onPressed: () {
                 state.addIngredients(recipe, servings);
+                PlannerScope.refresh(context);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ingredients added to your grocery list')));
               },
               icon: const Icon(Icons.add_shopping_cart), label: const Text('Add ingredients to grocery list'),
