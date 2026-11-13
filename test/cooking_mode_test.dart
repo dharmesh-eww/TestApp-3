@@ -8,6 +8,8 @@ void main() {
     await tester.pumpWidget(const RecipePlannerApp());
     await tester.tap(find.text('Recipes'));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text(recipes.first.title).first);
+    await tester.pumpAndSettle();
     await tester.tap(find.text(recipes.first.title).first);
     await tester.pumpAndSettle();
 
