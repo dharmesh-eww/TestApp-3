@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:testapp_3/main.dart';
+import 'package:testapp_3/app/app.dart';
 
 void main() {
   testWidgets('shows the Gather recipe planner home', (tester) async {
