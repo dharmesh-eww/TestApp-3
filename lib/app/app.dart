@@ -31,7 +31,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   Locale _locale = const Locale('en');
   List<Recipe> _catalogRecipes = recipes;
   String _contentVersion = 'bundled';
-  late final StaticRecipeContentUpdater _contentUpdater = StaticRecipeContentUpdater();
+  StaticRecipeContentUpdater? _contentUpdater;
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   Future<bool> _checkForContentUpdates() async {
     final uri = Uri.parse('https://raw.githubusercontent.com/dharmesh-eww/TestApp-3/main/content/manifest.json');
     try {
-      final update = await _contentUpdater.checkAndDownload(uri);
+      final update = await (_contentUpdater ??= StaticRecipeContentUpdater()).checkAndDownload(uri);
       if (update.contentVersion == _contentVersion) return false;
       await widget.repository?.activateCatalog(contentVersion: update.contentVersion, payload: update.payload);
       if (!mounted) return false;
@@ -86,7 +86,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
 
   @override
   void dispose() {
-    _contentUpdater.close();
+    _contentUpdater?.close();
     dependencies.dispose();
     super.dispose();
   }
