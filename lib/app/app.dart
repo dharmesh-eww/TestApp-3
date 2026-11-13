@@ -1,14 +1,19 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../core/navigation/animated_page_route.dart';
 import '../core/theme/app_theme.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/recipe_catalog.dart';
+import '../features/recipes/data/recipe_catalog_loader.dart';
 import '../features/cooking/presentation/cooking_mode_screen.dart';
+import '../localization/app_localizations.dart';
 import 'app_dependencies.dart';
 import 'planner_scope.dart';
+import 'recipe_catalog_scope.dart';
 
 class RecipePlannerApp extends StatefulWidget {
   const RecipePlannerApp({super.key});
@@ -19,6 +24,26 @@ class RecipePlannerApp extends StatefulWidget {
 
 class _RecipePlannerAppState extends State<RecipePlannerApp> {
   final AppDependencies dependencies = AppDependencies();
+  Locale _locale = const Locale('en');
+  List<Recipe> _catalogRecipes = recipes;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadCatalog());
+  }
+
+  Future<void> _loadCatalog() async {
+    try {
+      final document = await RecipeCatalogLoader.load();
+      if (!mounted) return;
+      setState(() => _catalogRecipes = document.recipes);
+    } on CatalogLoadException {
+      // Keep the in-code catalog active if the bundled document is invalid.
+    } catch (_) {
+      // A missing asset must not block the existing planner experience.
+    }
+  }
 
   @override
   void dispose() {
@@ -32,18 +57,34 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
       state: dependencies.plannerState,
       cookingSession: dependencies.cookingSession,
       onChanged: () => setState(() {}),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Gather — Recipe Planner',
-        theme: AppTheme.light,
-        home: const AppShell(),
+      child: RecipeCatalogScope(
+        recipes: _catalogRecipes,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Gather — Recipe Planner',
+          theme: AppTheme.light,
+          locale: _locale,
+          supportedLocales: const [Locale('en'), Locale('ar')],
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: AppShell(
+            locale: _locale,
+            onLocaleChanged: (locale) => setState(() => _locale = locale),
+          ),
+        ),
       ),
     );
   }
 }
 
 class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+  const AppShell({super.key, required this.locale, required this.onLocaleChanged});
+  final Locale locale;
+  final ValueChanged<Locale> onLocaleChanged;
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -59,35 +100,61 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: AnimatedSwitcher(
-          duration: AppMotion.page,
-          switchInCurve: AppMotion.enter,
-          switchOutCurve: AppMotion.exit,
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, .018),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
+        child: Column(
+          children: [
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(end: 12, top: 4),
+                child: Semantics(
+                  button: true,
+                  label: appStrings(context).language,
+                  child: TextButton.icon(
+                    key: const Key('locale-toggle'),
+                    onPressed: () => widget.onLocaleChanged(
+                      widget.locale.languageCode == 'en'
+                          ? const Locale('ar')
+                          : const Locale('en'),
+                    ),
+                    icon: const Icon(Icons.language, size: 18),
+                    label: Text(widget.locale.languageCode == 'en' ? 'العربية' : 'English'),
+                  ),
+                ),
+              ),
             ),
-          ),
-          child: KeyedSubtree(
-            key: ValueKey(selected),
-            child: pages[selected],
-          ),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: AppMotion.page,
+                switchInCurve: AppMotion.enter,
+                switchOutCurve: AppMotion.exit,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, .018),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  ),
+                ),
+                child: KeyedSubtree(
+                  key: ValueKey(selected),
+                  child: pages[selected],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: selected,
         onDestinationSelected: (value) => setState(() => selected = value),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.wb_sunny_outlined), selectedIcon: Icon(Icons.wb_sunny), label: 'Today'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Recipes'),
-          NavigationDestination(icon: Icon(Icons.calendar_month_outlined), label: 'Plan'),
-          NavigationDestination(icon: Icon(Icons.shopping_basket_outlined), label: 'Groceries'),
-          NavigationDestination(icon: Icon(Icons.shelves), label: 'Kitchen'),
+          NavigationDestination(icon: Icon(Icons.wb_sunny_outlined), selectedIcon: Icon(Icons.wb_sunny), label: appStrings(context).today),
+          NavigationDestination(icon: Icon(Icons.search), label: appStrings(context).recipes),
+          NavigationDestination(icon: Icon(Icons.calendar_month_outlined), label: appStrings(context).plan),
+          NavigationDestination(icon: Icon(Icons.shopping_basket_outlined), label: appStrings(context).groceries),
+          NavigationDestination(icon: Icon(Icons.shelves), label: appStrings(context).kitchen),
         ],
       ),
     );
@@ -99,7 +166,8 @@ class TodayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final featured = recipes[0];
+    final catalog = RecipeCatalogScope.of(context);
+    final featured = catalog.first;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
       children: [
@@ -126,9 +194,9 @@ class TodayScreen extends StatelessWidget {
           height: 218,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: recipes.length - 1,
+            itemCount: catalog.length - 1,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) => SizedBox(width: 174, child: _RecipeTile(recipe: recipes[index + 1])),
+            itemBuilder: (context, index) => SizedBox(width: 174, child: _RecipeTile(recipe: catalog[index + 1])),
           ),
         ),
       ],
@@ -162,8 +230,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final strings = appStrings(context);
+    final catalog = RecipeCatalogScope.of(context);
     final filtered = RecipeCatalog.search(
-      recipes,
+      catalog,
       query: _query,
       categoryId: _categoryId,
       sort: _sort,
@@ -172,9 +242,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
-        const Text('THE RECIPE SHELF', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+        const Text(strings.recipeShelf, style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
         const SizedBox(height: 8),
-        const Text('Find your next\nfavourite.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
+        const Text(strings.findFavourite, style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
         TextField(
           key: const Key('recipe-search-field'),
@@ -182,7 +252,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           textInputAction: TextInputAction.search,
           onChanged: (value) => setState(() => _query = value),
           decoration: InputDecoration(
-            hintText: 'Search recipes or ingredients',
+            hintText: strings.searchHint,
             prefixIcon: const Icon(Icons.search),
             suffixIcon: _query.isEmpty ? null : IconButton(
               tooltip: 'Clear search',
@@ -203,7 +273,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 padding: const EdgeInsets.only(right: 8),
                 child: ChoiceChip(
                   key: Key('category-${category.id}'),
-                  label: Text(category.name),
+                  label: Text(strings.category(category.id, category.name)),
                   selected: _categoryId == category.id,
                   onSelected: (_) => setState(() => _categoryId = category.id),
                   selectedColor: AppTheme.terracotta.withOpacity(.16),
@@ -255,9 +325,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   child: const Column(children: [
                     Icon(Icons.search_off_rounded, size: 34, color: AppTheme.olive),
                     SizedBox(height: 10),
-                    Text('Nothing on this shelf', style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
+                    Text(strings.emptyShelf, style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
                     SizedBox(height: 5),
-                    Text('Try another ingredient or clear your filters.', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+                    Text(strings.emptyShelfHint, textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted, fontSize: 12)),
                   ]),
                 )
               : Column(
@@ -287,11 +357,11 @@ class _PlanScreenState extends State<PlanScreen> {
     final state = PlannerScope.of(context), day = PlanScreen.days[selectedDay];
     final meals = state.mealsFor(day);
     return ListView(padding: const EdgeInsets.fromLTRB(20,20,20,28), children: [
-      const Text('A WEEK THAT TASTES GOOD', style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
+      const Text(appStrings(context).weekEyebrow, style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
       const SizedBox(height:8),
       const Text('Your meal\\nplanner.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),
       const SizedBox(height:8),
-      const Text('Seven days, four gentle prompts a day. Make the week your own.',style:TextStyle(color:AppTheme.muted)),
+      const Text(appStrings(context).weekDescription,style:TextStyle(color:AppTheme.muted)),
       const SizedBox(height:20),
       Container(padding:const EdgeInsets.symmetric(vertical:12,horizontal:8),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),
         child:Row(children:List.generate(7,(index){
@@ -314,7 +384,7 @@ class _PlanScreenState extends State<PlanScreen> {
     showModalBottomSheet(context:context,isScrollControlled:true,backgroundColor:AppTheme.paper,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),
       builder:(sheetContext)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
         Text('Plan ${slot.label.toLowerCase()}',style:Theme.of(sheetContext).textTheme.headlineMedium),Text('$day · Choose a recipe',style:const TextStyle(color:AppTheme.muted)),const SizedBox(height:12),
-        SizedBox(height:MediaQuery.of(sheetContext).size.height*.52,child:ListView(children:recipes.map((recipe)=>ListTile(contentPadding:EdgeInsets.zero,title:Text(recipe.title),subtitle:Text('${recipe.minutes} min · ${recipe.category} · serves ${recipe.servings}'),trailing:const Icon(Icons.add_circle_outline,color:AppTheme.terracotta),
+        SizedBox(height:MediaQuery.of(sheetContext).size.height*.52,child:ListView(children:RecipeCatalogScope.of(sheetContext).map((recipe)=>ListTile(contentPadding:EdgeInsets.zero,title:Text(recipe.title),subtitle:Text('${recipe.minutes} min · ${recipe.category} · serves ${recipe.servings}'),trailing:const Icon(Icons.add_circle_outline,color:AppTheme.terracotta),
           onTap:(){PlannerScope.of(context).assignMeal(day:day,slot:slot,recipeId:recipe.id,servings:recipe.servings);PlannerScope.refresh(context);Navigator.pop(sheetContext);})).toList())),
       ]))));
   }
@@ -323,7 +393,7 @@ class _MealSlotCard extends StatelessWidget {
   const _MealSlotCard({required this.day,required this.slot,required this.meal,required this.onAdd,required this.onRemove});
   final String day;final MealSlot slot;final PlannedMeal? meal;final VoidCallback onAdd,onRemove;
   @override Widget build(BuildContext context){
-    final recipe=meal==null?null:recipes.where((r)=>r.id==meal!.recipeId).firstOrNull;
+    final recipe=meal==null?null:RecipeCatalogScope.of(context).where((r)=>r.id==meal!.recipeId).firstOrNull;
     return Container(margin:const EdgeInsets.only(bottom:9),padding:const EdgeInsets.all(14),decoration:BoxDecoration(color:AppTheme.card,border:Border.all(color:AppTheme.line),borderRadius:BorderRadius.circular(16)),
       child:Row(children:[
         Container(width:40,height:40,decoration:BoxDecoration(color:AppTheme.olive.withOpacity(.12),borderRadius:BorderRadius.circular(12)),child:Icon(switch(slot){MealSlot.breakfast=>Icons.wb_twilight,MealSlot.lunch=>Icons.wb_sunny_outlined,MealSlot.dinner=>Icons.nightlight_outlined,MealSlot.snack=>Icons.cookie_outlined},color:AppTheme.olive)),
@@ -342,7 +412,7 @@ class _MealSlotCard extends StatelessWidget {
 class GroceryScreen extends StatelessWidget {
   const GroceryScreen({super.key});
   @override Widget build(BuildContext context){
-    final state=PlannerScope.of(context),entries=state.buildGroceryList(recipes);
+    final state=PlannerScope.of(context),entries=state.buildGroceryList(RecipeCatalogScope.of(context));
     final checked=entries.where((item)=>item.isChecked).length;
     return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
       const Text('THE MARKET LIST',style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
@@ -404,7 +474,7 @@ class KitchenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
-    final saved = recipes.where((recipe) => state.favorites.contains(recipe.id)).toList();
+    final saved = RecipeCatalogScope.of(context).where((recipe) => state.favorites.contains(recipe.id)).toList();
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
