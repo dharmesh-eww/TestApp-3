@@ -95,3 +95,22 @@ Run the automated checks with:
 flutter analyze
 flutter test
 ``
+
+## Phase 3 — Guided cooking and timers
+
+- Added a focused, distraction-free cooking mode with one instruction at a time,
+  step progress, large readable text and previous/next/finish controls.
+- Cooking progress and serving preference are retained per recipe in the
+  app-scoped in-memory cooking session, including when leaving and reopening
+  the cooking route during the same app run.
+- Added serving-aware ingredient quantities to the cooking view.
+- Added multiple independently labelled kitchen timers with start, pause,
+  resume, reset and remove actions.
+- Timer countdowns are derived from absolute end times and refreshed on app
+  resume, so elapsed time remains logically correct when the operating system
+  throttles background Dart timers. In-app completion is shown when the app is
+  active; platform notifications and process-death persistence are not included.
+- Cooking session uses Flutter-native ChangeNotifier/StatefulWidget patterns;
+  no state-management package was added.
+- Added unit coverage for timer lifecycle and ingredient scaling, plus widget
+  coverage for entering cooking mode and moving between steps.

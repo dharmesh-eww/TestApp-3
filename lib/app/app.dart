@@ -4,6 +4,7 @@ import '../core/navigation/animated_page_route.dart';
 import '../core/theme/app_theme.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/recipe_catalog.dart';
+import '../features/cooking/presentation/cooking_mode_screen.dart';
 import 'app_dependencies.dart';
 import 'planner_scope.dart';
 
@@ -18,9 +19,16 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   final AppDependencies dependencies = AppDependencies();
 
   @override
+  void dispose() {
+    dependencies.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PlannerScope(
       state: dependencies.plannerState,
+      cookingSession: dependencies.cookingSession,
       onChanged: () => setState(() {}),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -514,6 +522,23 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               icon: const Icon(Icons.add_shopping_cart), label: const Text('Add ingredients to grocery list'),
             )),
             const SizedBox(height: 28),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                key: const Key('start-cooking-button'),
+                onPressed: () => Navigator.push(
+                  context,
+                  AnimatedPageRoute(builder: (_) => CookingModeScreen(recipe: recipe)),
+                ),
+                icon: const Icon(Icons.restaurant_menu),
+                label: const Text('Start cooking'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppTheme.terracotta,
+                  minimumSize: const Size(0, 54),
+                ),
+              ),
+            ),
+            const SizedBox(height: 26),
             Text('Let’s make it', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 14),
             ...List.generate(recipe.steps.length, (index) => Padding(
