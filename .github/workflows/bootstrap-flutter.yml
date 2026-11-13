@@ -23,7 +23,7 @@ jobs:
           cache: true
 
       - name: Create Flutter Android project
-        run: flutter create --platforms=android .
+        run: flutter create --platforms=android --project-name testapp_3 .
 
       - name: Commit generated Flutter project
         run: |
