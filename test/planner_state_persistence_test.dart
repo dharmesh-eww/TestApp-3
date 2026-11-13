@@ -79,6 +79,7 @@ test('reset personal data clears local user state without changing catalog', () 
     expect(state.recentlyViewed, isEmpty);
     expect(state.customGroceryItems, isEmpty);
     expect(state.preferredDietaryTags, isEmpty);
+    expect(state.localeCode, 'en');
     expect(recipes, isNotEmpty);
   });
 }

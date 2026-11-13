@@ -79,7 +79,6 @@ class PlannerState {
     collections.clear();
     collectionNames.clear();
     cookingHistory.clear();
-    customGroceryItems.clear();
     recentlyViewed.clear();
     preferredDietaryTags.clear();
     preferredCuisines.clear();
@@ -256,6 +255,7 @@ class PlannerState {
     preferredCuisines.clear();
     measurementSystem = 'metric';
     weekStartsOn = 1;
+    localeCode = 'en';
   }
 
   bool isFavorite(String id) => favorites.contains(id);

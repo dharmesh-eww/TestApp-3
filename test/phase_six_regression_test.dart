@@ -89,4 +89,16 @@ test('custom grocery entries are validated and can be removed independently', ()
     state.addCustomGroceryItem(name: ' ', amount: 1, unit: 'each');
     expect(state.buildGroceryList(recipes), isEmpty);
   });
+
+  test('clearing checked custom groceries keeps recipe-derived ingredients', () {
+    final state = PlannerState()
+      ..assignMeal(day: 'Monday', slot: MealSlot.dinner, recipeId: 'lemon-pasta', servings: 2)
+      ..addCustomGroceryItem(name: 'Tea bags', amount: 2, unit: 'boxes');
+    final custom = state.buildGroceryList(recipes).singleWhere((item) => item.name == 'Tea bags');
+    state.setGroceryChecked(custom.key, true);
+    state.clearCheckedCustomGroceryItems();
+    final remaining = state.buildGroceryList(recipes);
+    expect(remaining.any((item) => item.name == 'Tea bags'), isFalse);
+    expect(remaining.any((item) => item.name == 'Pasta'), isTrue);
+  });
 }

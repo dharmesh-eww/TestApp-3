@@ -696,7 +696,7 @@ class GroceryScreen extends StatelessWidget {
       const SizedBox(height:12),
       Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
         OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:const Icon(Icons.add),label:const Text('Add item')),
-        if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ for(final item in entries.where((item)=>item.isCustom && item.isChecked)) { state.removeCustomGroceryItem(item.key); state.groceryChecks.remove(item.key); } PlannerScope.refresh(context); },child:const Text('Clear checked custom items')),
+        if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ state.clearCheckedCustomGroceryItems(); PlannerScope.refresh(context); },child:const Text('Clear checked custom items')),
       ])),
       const SizedBox(height:12),
       if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:const Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
