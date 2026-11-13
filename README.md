@@ -143,3 +143,11 @@ flutter test
 - Added screen-reader labels for the language control. Existing cooking-step live announcements and adjustable instruction text remain supported.
 - Added catalog validation and locale/RTL widget tests. No backend, cloud sync, login or state-management package was introduced.
 - Flutter analyze/test execution must be confirmed in an environment with Flutter installed before reporting checks as passed.
+
+
+## Phase 6 — Testing, optimization and release readiness
+
+- Added a GitHub Actions quality gate for dependency resolution, Flutter static analysis and the complete automated test suite on pushes, pull requests and manual runs.
+- Added regression coverage for empty search, unknown recipe references, pantry overstock, invalid pantry values, favorite toggling and stable grocery check identity.
+- Added a release-readiness checklist covering device sizes, accessibility, offline fallback, localization, timer limitations, licences, signing and store metadata.
+- CI is configured but must execute on GitHub before a green result can be claimed. Local Flutter/Dart CLI was unavailable during implementation; no local test or analyzer pass is claimed.
