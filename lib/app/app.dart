@@ -149,7 +149,7 @@ class _AppShellState extends State<AppShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: selected,
         onDestinationSelected: (value) => setState(() => selected = value),
-        destinations: const [
+        destinations: [
           NavigationDestination(icon: Icon(Icons.wb_sunny_outlined), selectedIcon: Icon(Icons.wb_sunny), label: appStrings(context).today),
           NavigationDestination(icon: Icon(Icons.search), label: appStrings(context).recipes),
           NavigationDestination(icon: Icon(Icons.calendar_month_outlined), label: appStrings(context).plan),
@@ -242,9 +242,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
-        const Text(strings.recipeShelf, style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+        Text(strings.recipeShelf, style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
         const SizedBox(height: 8),
-        const Text(strings.findFavourite, style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
+        Text(strings.findFavourite, style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
         TextField(
           key: const Key('recipe-search-field'),
@@ -289,7 +289,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         const SizedBox(height: 14),
         Row(children: [
           Expanded(child: Text(
-            '${filtered.length} ${filtered.length == 1 ? 'recipe' : 'recipes'} to try',
+            strings.recipeCount(filtered.length),
             style: Theme.of(context).textTheme.titleMedium,
           )),
           DropdownButtonHideUnderline(
@@ -357,11 +357,11 @@ class _PlanScreenState extends State<PlanScreen> {
     final state = PlannerScope.of(context), day = PlanScreen.days[selectedDay];
     final meals = state.mealsFor(day);
     return ListView(padding: const EdgeInsets.fromLTRB(20,20,20,28), children: [
-      const Text(appStrings(context).weekEyebrow, style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
+      Text(appStrings(context).weekEyebrow, style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
       const SizedBox(height:8),
-      const Text('Your meal\\nplanner.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),
+      Text(appStrings(context).mealPlanner,style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),
       const SizedBox(height:8),
-      const Text(appStrings(context).weekDescription,style:TextStyle(color:AppTheme.muted)),
+      Text(appStrings(context).weekDescription,style:TextStyle(color:AppTheme.muted)),
       const SizedBox(height:20),
       Container(padding:const EdgeInsets.symmetric(vertical:12,horizontal:8),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),
         child:Row(children:List.generate(7,(index){

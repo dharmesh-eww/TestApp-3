@@ -133,13 +133,3 @@ flutter test
   backend, persistence dependency or state-management package was introduced.
 - Added tests for slot assignment/removal, serving-scaled aggregation,
   non-quantified ingredients, pantry matching and planner navigation.
-
-
-## Phase 5 — Offline content, localization and accessibility
-
-- Added a versioned JSON asset catalog with a dedicated parser and deterministic validation errors for schema versions, required collections, duplicate identifiers, ingredient names, serving counts and cooking instructions.
-- The app loads the bundled catalog through a Flutter-native inherited scope. If the asset is missing or invalid, the existing in-code catalog remains active; planner, pantry and grocery state are not reset.
-- Added English and Arabic locale support using Flutter localization delegates. Arabic uses Flutter's RTL directionality, with translated navigation, discovery, category and weekly-planner entry copy and a visible language switch.
-- Added screen-reader labels for the language control. Existing cooking-step live announcements and adjustable instruction text remain supported.
-- Added catalog validation and locale/RTL widget tests. No backend, cloud sync, login or state-management package was introduced.
-- Flutter analyze/test execution must be confirmed in an environment with Flutter installed before reporting checks as passed.
