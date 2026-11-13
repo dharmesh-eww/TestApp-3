@@ -160,5 +160,5 @@ flutter test
 - Added a read-only static GitHub content updater. It validates the manifest schema and relative paths, downloads the recipe index, verifies SHA-256 and optional byte size, then validates the catalog before activation.
 - Catalog payload and content version are activated together in a SQLite transaction. Failed network, checksum or schema validation leaves the previous active catalog untouched.
 - Published the starter catalog as a static content index with a versioned manifest. No user-owned data is sent to GitHub.
-- Added planner snapshot round-trip and malformed-snapshot tests. Database integration and remote update failure tests remain to be added and run in CI.
+- Added planner snapshot round-trip and malformed-snapshot tests. SQLite driver integration remains to be exercised on device/CI; static updater tests cover valid downloads, checksum failures and path traversal.
 - No account, backend, Firebase, cloud sync or state-management package.

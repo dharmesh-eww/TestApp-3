@@ -10,7 +10,7 @@ void main() {
       ..assignMeal(day: 'Monday', slot: MealSlot.dinner, recipeId: 'lemon-pasta', servings: 4)
       ..upsertPantryItem(name: 'Pasta', amount: 100, unit: 'g')
       ..addIngredients(recipes.first, 2);
-    final pastaKey = original.buildGroceryList(recipes).first.key;
+    final pastaKey = original.buildGroceryList(recipes).singleWhere((item) => item.name == 'Pasta').key;
     original.setGroceryChecked(pastaKey, true);
     original.updateGroceryItem(pastaKey, name: 'Fresh pasta', amount: 450);
     final restored = PlannerState.fromJson(original.toJson());

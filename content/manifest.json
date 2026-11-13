@@ -9,7 +9,7 @@
   ],
   "recipe_index": {
     "path": "recipes/index.json",
-    "sha256": "550d9cbbf4c89c78c3acaf3b416a2d278941bb0eeee5c5bba34811f9a12bc7e9"
+    "sha256": "6e3b9ee5e41846087195e38f3f2d7df16d1697108eb7e718332fa35dfacbe40f"
   },
   "ingredient_index": null,
   "category_index": null,
@@ -18,7 +18,7 @@
     {
       "path": "recipes/index.json",
       "byte_size": 11278,
-      "sha256": "550d9cbbf4c89c78c3acaf3b416a2d278941bb0eeee5c5bba34811f9a12bc7e9",
+      "sha256": "6e3b9ee5e41846087195e38f3f2d7df16d1697108eb7e718332fa35dfacbe40f",
       "content_type": "application/json"
     }
   ]
