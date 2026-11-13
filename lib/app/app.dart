@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 
 import '../core/navigation/animated_page_route.dart';
@@ -274,134 +276,127 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 }
 
-class PlanScreen extends StatelessWidget {
+class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
-
   static const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-  @override
-  Widget build(BuildContext context) {
-    final state = PlannerScope.of(context);
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-      children: [
-        const Text('A WEEK THAT TASTES GOOD', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
-        const SizedBox(height: 8),
-        const Text('Your meal\nplanner.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        const Text('A flexible plan. Change it whenever life does.', style: TextStyle(color: AppTheme.muted)),
-        const SizedBox(height: 22),
-        ...days.map((day) {
-          final ids = state.mealPlan[day] ?? [];
-          final planned = recipes.where((recipe) => ids.contains(recipe.id)).toList();
-          return Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: AppTheme.card, border: Border.all(color: AppTheme.line), borderRadius: BorderRadius.circular(18)),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Expanded(child: Text(day, style: Theme.of(context).textTheme.titleMedium)),
-                TextButton.icon(
-                  onPressed: () => _showPlanPicker(context, day),
-                  icon: const Icon(Icons.add, size: 17), label: const Text('Add meal'),
-                ),
-              ]),
-              if (planned.isEmpty)
-                const Text('Nothing planned yet', style: TextStyle(color: AppTheme.muted, fontSize: 12))
-              else
-                ...planned.map((recipe) => Padding(
-                  padding: const EdgeInsets.only(top: 7),
-                  child: Row(children: [
-                    const Icon(Icons.restaurant, size: 16, color: AppTheme.olive),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(recipe.title, style: const TextStyle(fontWeight: FontWeight.w600))),
-                    Text('${recipe.minutes} min', style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
-                  ]),
-                )),
-            ]),
-          );
-        }),
-      ],
-    );
+  @override State<PlanScreen> createState() => _PlanScreenState();
+}
+class _PlanScreenState extends State<PlanScreen> {
+  int selectedDay = 0;
+  @override Widget build(BuildContext context) {
+    final state = PlannerScope.of(context), day = PlanScreen.days[selectedDay];
+    final meals = state.mealsFor(day);
+    return ListView(padding: const EdgeInsets.fromLTRB(20,20,20,28), children: [
+      const Text('A WEEK THAT TASTES GOOD', style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
+      const SizedBox(height:8),
+      const Text('Your meal\\nplanner.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),
+      const SizedBox(height:8),
+      const Text('Seven days, four gentle prompts a day. Make the week your own.',style:TextStyle(color:AppTheme.muted)),
+      const SizedBox(height:20),
+      Container(padding:const EdgeInsets.symmetric(vertical:12,horizontal:8),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),
+        child:Row(children:List.generate(7,(index){
+          final name=PlanScreen.days[index], count=state.mealsFor(name).length;
+          return Expanded(child:InkWell(borderRadius:BorderRadius.circular(14),onTap:()=>setState(()=>selectedDay=index),
+            child:AnimatedContainer(duration:AppMotion.quick,padding:const EdgeInsets.symmetric(vertical:9),decoration:BoxDecoration(color:selectedDay==index?AppTheme.terracotta.withOpacity(.12):Colors.transparent,borderRadius:BorderRadius.circular(12)),
+              child:Column(children:[Text(name.substring(0,1),style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.muted,fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:5),Text('$count',style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.ink,fontWeight:FontWeight.w800))]))));
+        }))),
+      const SizedBox(height:18),
+      Row(children:[Expanded(child:Text(day,style:Theme.of(context).textTheme.titleLarge)),Text('${meals.length}/4 planned',style:const TextStyle(color:AppTheme.muted,fontSize:12))]),
+      const SizedBox(height:10),
+      for(final slot in MealSlot.values)
+        _MealSlotCard(day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
+          onAdd:()=>_showPlanPicker(context,day,slot),onRemove:(){state.removeMeal(day,slot);PlannerScope.refresh(context);}),
+      const SizedBox(height:14),
+      OutlinedButton.icon(onPressed:()=>_goTab(context,3),icon:const Icon(Icons.shopping_basket_outlined),label:const Text('Build your grocery list'),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
+    ]);
   }
-
-  void _showPlanPicker(BuildContext context, String day) {
-    showModalBottomSheet(
-      context: context, isScrollControlled: true, backgroundColor: AppTheme.paper,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Add a meal to $day', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 14),
-            ...recipes.map((recipe) => ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(recipe.title),
-              subtitle: Text('${recipe.minutes} min · ${recipe.category}'),
-              trailing: const Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
-              onTap: () {
-                PlannerScope.of(context).addToPlan(day, recipe.id);
-                PlannerScope.refresh(context);
-                Navigator.pop(context);
-              },
-            )),
-          ]),
-        ),
-      ),
-    );
+  void _showPlanPicker(BuildContext context,String day,MealSlot slot){
+    showModalBottomSheet(context:context,isScrollControlled:true,backgroundColor:AppTheme.paper,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),
+      builder:(sheetContext)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
+        Text('Plan ${slot.label.toLowerCase()}',style:Theme.of(sheetContext).textTheme.headlineMedium),Text('$day · Choose a recipe',style:const TextStyle(color:AppTheme.muted)),const SizedBox(height:12),
+        SizedBox(height:MediaQuery.of(sheetContext).size.height*.52,child:ListView(children:recipes.map((recipe)=>ListTile(contentPadding:EdgeInsets.zero,title:Text(recipe.title),subtitle:Text('${recipe.minutes} min · ${recipe.category} · serves ${recipe.servings}'),trailing:const Icon(Icons.add_circle_outline,color:AppTheme.terracotta),
+          onTap:(){PlannerScope.of(context).assignMeal(day:day,slot:slot,recipeId:recipe.id,servings:recipe.servings);PlannerScope.refresh(context);Navigator.pop(sheetContext);})).toList())),
+      ]))));
   }
 }
+class _MealSlotCard extends StatelessWidget {
+  const _MealSlotCard({required this.day,required this.slot,required this.meal,required this.onAdd,required this.onRemove});
+  final String day;final MealSlot slot;final PlannedMeal? meal;final VoidCallback onAdd,onRemove;
+  @override Widget build(BuildContext context){
+    final recipe=meal==null?null:recipes.where((r)=>r.id==meal!.recipeId).firstOrNull;
+    return Container(margin:const EdgeInsets.only(bottom:9),padding:const EdgeInsets.all(14),decoration:BoxDecoration(color:AppTheme.card,border:Border.all(color:AppTheme.line),borderRadius:BorderRadius.circular(16)),
+      child:Row(children:[
+        Container(width:40,height:40,decoration:BoxDecoration(color:AppTheme.olive.withOpacity(.12),borderRadius:BorderRadius.circular(12)),child:Icon(switch(slot){MealSlot.breakfast=>Icons.wb_twilight,MealSlot.lunch=>Icons.wb_sunny_outlined,MealSlot.dinner=>Icons.nightlight_outlined,MealSlot.snack=>Icons.cookie_outlined},color:AppTheme.olive)),
+        const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+          Text(slot.label.toUpperCase(),style:const TextStyle(color:AppTheme.terracotta,fontSize:9,letterSpacing:1.1,fontWeight:FontWeight.w800)),const SizedBox(height:4),
+          Text(recipe?.title??'Nothing planned yet',style:TextStyle(color:recipe==null?AppTheme.muted:AppTheme.ink,fontWeight:FontWeight.w700)),
+          if(meal!=null)Text('${meal!.servings} servings · ${recipe?.minutes??0} min',style:const TextStyle(color:AppTheme.muted,fontSize:11)),
+        ])),
+        if(meal==null)IconButton(key:Key('add-${day}-${slot.name}'),tooltip:'Add ${slot.label}',onPressed:onAdd,icon:const Icon(Icons.add_circle_outline,color:AppTheme.terracotta))
+        else IconButton(key:Key('remove-${day}-${slot.name}'),tooltip:'Remove ${slot.label}',onPressed:onRemove,icon:const Icon(Icons.close,color:AppTheme.muted)),
+      ]));
+  }
+}
+
 
 class GroceryScreen extends StatelessWidget {
   const GroceryScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final state = PlannerScope.of(context);
-    final entries = state.groceryNames.entries.toList();
-    final checked = entries.where((entry) => state.groceryChecks[entry.key] == true).length;
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-      children: [
-        const Text('THE MARKET LIST', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
-        const SizedBox(height: 8),
-        const Text('Good things\nto pick up.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        Text(entries.isEmpty ? 'Add ingredients from any recipe.' : '$checked of ${entries.length} items picked up', style: const TextStyle(color: AppTheme.muted)),
-        const SizedBox(height: 20),
-        if (entries.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: AppTheme.line)),
-            child: const Column(children: [
-              Icon(Icons.shopping_basket_outlined, size: 36, color: AppTheme.olive),
-              SizedBox(height: 10),
-              Text('Your list is waiting', style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
-              SizedBox(height: 5),
-              Text('Open a recipe and tap “Add ingredients” to start your shopping list.', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted)),
-            ]),
-          )
-        else
-          ...entries.map((entry) {
-            final parts = entry.value.split('|');
-            final isChecked = state.groceryChecks[entry.key] ?? false;
-            return CheckboxListTile(
-              value: isChecked,
-              onChanged: (_) {
-                state.toggleGrocery(entry.key);
-                PlannerScope.refresh(context);
-              },
-              activeColor: AppTheme.olive,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              title: Text(parts.length > 2 ? parts[2] : entry.key, style: TextStyle(decoration: isChecked ? TextDecoration.lineThrough : null, color: isChecked ? AppTheme.muted : AppTheme.ink)),
-              subtitle: Text(parts.length > 1 ? '${parts[0]} ${parts[1]}' : parts.first),
-            );
-          }),
+  @override Widget build(BuildContext context){
+    final state=PlannerScope.of(context),entries=state.buildGroceryList(recipes);
+    final checked=entries.where((item)=>item.isChecked).length;
+    return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
+      const Text('THE MARKET LIST',style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
+      const Text('Good things\\nto pick up.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
+      Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:const TextStyle(color:AppTheme.muted)),const SizedBox(height:18),
+      if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:const Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
+      else for(final item in entries)Container(margin:const EdgeInsets.only(bottom:8),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(14),border:Border.all(color:AppTheme.line)),
+        child:CheckboxListTile(value:item.isChecked,onChanged:(value){state.setGroceryChecked(item.key,value??false);PlannerScope.refresh(context);},activeColor:AppTheme.olive,contentPadding:const EdgeInsets.symmetric(horizontal:10),
+          title:Text(item.name,style:TextStyle(decoration:item.isChecked?TextDecoration.lineThrough:null,color:item.isChecked?AppTheme.muted:AppTheme.ink,fontWeight:FontWeight.w600)),
+          subtitle:Text(item.isQuantified?'${_formatAmount(item.amount)} ${item.unit} needed · ${_formatAmount(item.ownedAmount)} owned · ${_formatAmount(item.toBuyAmount)} to buy':'Non-quantified · check pantry before shopping',style:const TextStyle(color:AppTheme.muted,fontSize:11)),
+          secondary:Icon(item.toBuyAmount<=0&&item.isQuantified?Icons.inventory_2_outlined:Icons.shopping_bag_outlined,color:item.toBuyAmount<=0&&item.isQuantified?AppTheme.olive:AppTheme.terracotta),
+          trailing: IconButton(tooltip:'Edit grocery item',onPressed:()=>_showGroceryEditor(context,item),icon:const Icon(Icons.edit_outlined,size:18,color:AppTheme.muted))),
+      const SizedBox(height:22),
+      Row(children:[Expanded(child:Text('Your pantry',style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:const Icon(Icons.add,size:17),label:const Text('Add item'))]),
+      const Text('Items here are deducted from what you need to buy.',style:TextStyle(color:AppTheme.muted,fontSize:12)),const SizedBox(height:10),
+      if(state.pantry.isEmpty)const Text('Your pantry is empty for now.',style:TextStyle(color:AppTheme.muted))
+      else for(final item in state.pantry.values)ListTile(contentPadding:const EdgeInsets.symmetric(horizontal:4),leading:const Icon(Icons.inventory_2_outlined,color:AppTheme.olive),title:Text(item.name),subtitle:Text('${_formatAmount(item.amount)} ${item.unit}'),
+        trailing:IconButton(tooltip:'Remove pantry item',onPressed:(){state.removePantryItem(item.id);PlannerScope.refresh(context);},icon:const Icon(Icons.close))),
+    ]);
+  }
+  void _showGroceryEditor(BuildContext context, GroceryItem item) {
+    final name = TextEditingController(text: item.name);
+    final amount = TextEditingController(text: item.isQuantified ? _formatAmount(item.amount) : '');
+    showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
+      title: const Text('Edit grocery item'),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextField(controller: name, decoration: const InputDecoration(labelText: 'Ingredient')),
+        if (item.isQuantified) TextField(controller: amount, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Amount (${item.unit})')),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+        FilledButton(onPressed: () {
+          final parsed = item.isQuantified ? double.tryParse(amount.text.trim()) : item.amount;
+          if (parsed == null || parsed < 0 || name.text.trim().isEmpty) return;
+          PlannerScope.of(context).updateGroceryItem(item.key, name: name.text, amount: parsed);
+          PlannerScope.refresh(context);
+          Navigator.pop(dialogContext);
+        }, child: const Text('Save')),
       ],
-    );
+    )).then((_) { name.dispose(); amount.dispose(); });
+  }
+
+  void _showPantryEditor(BuildContext context){
+    final name=TextEditingController(),amount=TextEditingController(text:'1'),unit=TextEditingController(text:'g');
+    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:const Text('Add to your pantry'),content:Column(mainAxisSize:MainAxisSize.min,children:[
+      TextField(controller:name,decoration:const InputDecoration(labelText:'Ingredient')),TextField(controller:amount,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'Quantity')),TextField(controller:unit,decoration:const InputDecoration(labelText:'Unit (g, ml, whole…)')),
+    ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('Cancel')),FilledButton(onPressed:(){
+      final value=double.tryParse(amount.text.trim());if(value==null||value<0||name.text.trim().isEmpty||unit.text.trim().isEmpty)return;
+      PlannerScope.of(context).upsertPantryItem(name:name.text,amount:value,unit:unit.text);PlannerScope.refresh(context);Navigator.pop(dialogContext);
+    },child:const Text('Save'))])).then((_){name.dispose();amount.dispose();unit.dispose();});
   }
 }
+String _formatAmount(double value)=>value==value.roundToDouble()?value.toInt().toString():value.toStringAsFixed(1);
+
 
 class KitchenScreen extends StatelessWidget {
   const KitchenScreen({super.key});
@@ -420,7 +415,7 @@ class KitchenScreen extends StatelessWidget {
         Row(children: [
           _StatCard(value: '${saved.length}', label: 'Saved recipes', icon: Icons.bookmark_outline),
           const SizedBox(width: 10),
-          _StatCard(value: '${state.mealPlan.values.fold<int>(0, (sum, list) => sum + list.length)}', label: 'Meals planned', icon: Icons.calendar_month_outlined),
+          _StatCard(value: '${state.plannedMealCount}', label: 'Meals planned', icon: Icons.calendar_month_outlined),
         ]),
         const SizedBox(height: 24),
         Text('Your saved recipes', style: Theme.of(context).textTheme.titleLarge),
@@ -679,7 +674,7 @@ class _WeekStrip extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: AppTheme.line)),
       child: Row(children: List.generate(7, (index) {
-        final count = state.mealPlan[names[index]]?.length ?? 0;
+        final count = state.mealsFor(names[index]).length;
         return Expanded(child: Column(children: [
           Text(days[index], style: const TextStyle(color: AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),

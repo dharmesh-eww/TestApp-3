@@ -114,3 +114,22 @@ flutter test
   no state-management package was added.
 - Added unit coverage for timer lifecycle and ingredient scaling, plus widget
   coverage for entering cooking mode and moving between steps.
+
+## Phase 4 — Weekly planning, groceries and pantry
+
+- Replaced the loose day-to-recipe list with a seven-day planner and four
+  explicit meal slots per day: breakfast, lunch, dinner and snack.
+- Recipes can be assigned to a slot, replaced, and removed independently.
+  Each planned meal stores its serving count.
+- Grocery requirements are derived from all planned meals and scaled servings.
+  Matching ingredient names and units combine deterministically; different
+  units remain separate. Non-quantified ingredients remain visible as
+  check-before-shopping entries rather than zero-quantity rows.
+- Existing recipe-detail grocery additions remain supported.
+- Added an editable in-memory pantry with ingredient, amount and unit. Matching
+  pantry quantities are deducted from quantified grocery needs.
+- Grocery items can be renamed, have their needed quantity edited, and be checked off; the planner links directly to the list.
+- State remains local and in-memory through PlannerState and PlannerScope. No
+  backend, persistence dependency or state-management package was introduced.
+- Added tests for slot assignment/removal, serving-scaled aggregation,
+  non-quantified ingredients, pantry matching and planner navigation.
