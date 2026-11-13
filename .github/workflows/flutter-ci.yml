@@ -35,3 +35,5 @@ jobs:
         run: flutter analyze --no-fatal-infos
       - name: Automated tests
         run: flutter test --reporter expanded
+      - name: Compile Android debug app
+        run: flutter build apk --debug

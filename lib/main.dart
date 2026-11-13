@@ -10,5 +10,5 @@ Future<void> main() async {
   } catch (_) {
     // SQLite may be unavailable on an unsupported host; continue in memory.
   }
-  runApp(RecipePlannerApp(repository: repository));
+  runApp(RecipePlannerApp(repository: repository, showOnboarding: true));
 }

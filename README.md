@@ -210,3 +210,38 @@ The implementation remains offline-first and account-free. No backend, Firebase,
 - Added regression tests for advanced filters, snapshot v3 compatibility, custom grocery items and personal-data reset.
 
 No personal data is uploaded. Dietary preferences are used only to filter the local recipe catalog; they are not health or allergen guarantees. Aisle assignment is a convenience heuristic and can be corrected by editing/removing the item.
+
+
+## Phase 13 — Core workflow completion
+
+- Added a first-run, dismissible onboarding introduction. Completion is persisted locally; automated widget tests can opt out of the intro.
+- Planned meals can be moved between days and meal slots. A move preserves servings and refuses to overwrite an occupied destination.
+- Added named local shopping lists. Users can create, rename and delete lists, then select entries from the generated grocery list.
+- Pantry entries support optional best-before dates and an expiring-within-seven-days query. Dates are local reminders, not food-safety assessments.
+- Planner snapshot schema v4 preserves the new lists, expiry dates and preferences while continuing to read v1–v3.
+
+## Phase 14 — Advanced cooking experience
+
+- Cooking mode now offers optional Android text-to-speech for the current instruction and a keep-screen-awake toggle.
+- Timer creation can prefill the current step number; timers continue to use absolute deadlines and local persistence.
+- Added a leave-confirmation prompt when a timer is running.
+- Added Android timer-completion notifications using a local alarm and notification channel, including runtime notification permission handling. Unsupported platforms retain in-app timers without claiming notification delivery.
+
+## Phase 15 — Global UX and accessibility
+
+- Added system/light/dark theme selection and theme-aware Gather palette tokens.
+- Added a persisted reduced-motion preference for major page transitions.
+- Ingredient finder now recognizes curated regional aliases (for example, aubergine/eggplant, coriander/cilantro and curd/yogurt). Canonical IDs remain preferred.
+- Existing English/Arabic localization and RTL directionality remain in place. New locales still require complete reviewed translations before being exposed.
+
+## Phase 16 — Content and notification infrastructure
+
+- Added native Android timer notification scheduling, cancellation and permission request handling.
+- Kept recipe content delivery static, checksum-validated and offline-first. Failed updates preserve the active catalog.
+- iOS native notification, TTS and keep-screen-awake implementations are not included because this repository currently has no iOS Runner project. They must be added and tested when the iOS platform scaffold is introduced.
+
+## Phase 17 — Product polish and release QA
+
+- Added regression coverage for meal moves, shopping lists, pantry expiry, regional ingredient aliases, preference persistence and onboarding.
+- Added Android debug-build verification to CI so the native Kotlin channel and manifest are compiled alongside Flutter analysis and tests.
+- Physical-device QA, production signing, store listing preparation, licensed production photography and broader curated recipe content remain release tasks; they are not claimed complete.

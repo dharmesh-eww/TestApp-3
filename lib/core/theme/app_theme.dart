@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const ink = Color(0xFF30251F);
-  static const muted = Color(0xFF82756C);
-  static const paper = Color(0xFFF8F5EF);
-  static const card = Color(0xFFFFFEFA);
+  static bool _darkMode = false;
+  static void setDarkMode(bool enabled) => _darkMode = enabled;
+  static Color get ink => _darkMode ? const Color(0xFFF2EDE6) : const Color(0xFF30251F);
+  static Color get muted => _darkMode ? const Color(0xFFB9ADA2) : const Color(0xFF82756C);
+  static Color get paper => _darkMode ? const Color(0xFF171411) : const Color(0xFFF8F5EF);
+  static Color get card => _darkMode ? const Color(0xFF24201C) : const Color(0xFFFFFEFA);
   static const terracotta = Color(0xFFB85E43);
-  static const olive = Color(0xFF68724D);
-  static const line = Color(0xFFE9E2D8);
+  static Color get olive => _darkMode ? const Color(0xFFA7B58A) : const Color(0xFF68724D);
+  static Color get line => _darkMode ? const Color(0xFF3B332D) : const Color(0xFFE9E2D8);
 
   static const pagePadding = 20.0;
   static const cardRadius = 20.0;
   static const controlRadius = 14.0;
+
+  static ThemeData get dark => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(seedColor: terracotta, brightness: Brightness.dark),
+        scaffoldBackgroundColor: const Color(0xFF171411),
+        cardTheme: CardThemeData(color: const Color(0xFF24201C), elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(cardRadius), side: const BorderSide(color: Color(0xFF3B332D)))),
+      );
 
   static ThemeData get light => ThemeData(
         useMaterial3: true,
@@ -21,7 +32,7 @@ class AppTheme {
           brightness: Brightness.light,
           surface: paper,
         ),
-        textTheme: const TextTheme(
+        textTheme: TextTheme(
           headlineLarge: TextStyle(
             color: ink, fontSize: 34, height: 1.08,
             fontWeight: FontWeight.w700, letterSpacing: -1.2,
@@ -41,7 +52,7 @@ class AppTheme {
           bodyMedium: TextStyle(color: muted, fontSize: 13, height: 1.4),
           labelLarge: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
         ),
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           backgroundColor: paper, foregroundColor: ink, elevation: 0,
           centerTitle: false,
         ),
@@ -57,7 +68,7 @@ class AppTheme {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(cardRadius),
-            side: const BorderSide(color: line),
+            side: BorderSide(color: line),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -69,11 +80,11 @@ class AppTheme {
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(controlRadius),
-            borderSide: const BorderSide(color: line),
+            borderSide: BorderSide(color: line),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(controlRadius),
-            borderSide: const BorderSide(color: line),
+            borderSide: BorderSide(color: line),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(controlRadius),
@@ -88,7 +99,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        dividerTheme: const DividerThemeData(
+        dividerTheme: DividerThemeData(
           color: line,
           thickness: 1,
           space: 1,

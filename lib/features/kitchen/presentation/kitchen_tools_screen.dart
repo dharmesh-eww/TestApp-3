@@ -30,7 +30,7 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
     }
     final results = IngredientMatcher.rank(recipes, available: _available, excluded: _excluded);
     return Scaffold(
-      appBar: AppBar(title: const Text('Cook with what you have')),
+      appBar: AppBar(title: Text('Cook with what you have')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -39,7 +39,7 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
           const SizedBox(height: 8),
           Text('What’s in your kitchen?', style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
-          const Text('Choose ingredients you have, or switch to ingredients you want to avoid. Matches show what is still missing.',
+          Text('Choose ingredients you have, or switch to ingredients you want to avoid. Matches show what is still missing.',
               style: TextStyle(color: AppTheme.muted)),
           const SizedBox(height: 16),
           SegmentedButton<bool>(
@@ -67,11 +67,11 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
           const SizedBox(height: 20),
           Row(children: [
             Expanded(child: Text('Recipe matches', style: Theme.of(context).textTheme.titleLarge)),
-            Text('${results.length} found', style: const TextStyle(color: AppTheme.muted)),
+            Text('${results.length} found', style: TextStyle(color: AppTheme.muted)),
           ]),
           const SizedBox(height: 10),
           if (_available.isEmpty)
-            const Text('Select at least one ingredient to see match percentages.',
+            Text('Select at least one ingredient to see match percentages.',
                 style: TextStyle(color: AppTheme.muted)),
           for (final match in results)
             Card(
@@ -80,19 +80,19 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Row(children: [
-                    Expanded(child: Text(match.recipe.title, style: const TextStyle(fontWeight: FontWeight.w700))),
-                    Text('${match.matchPercent}%', style: const TextStyle(color: AppTheme.olive, fontWeight: FontWeight.w800)),
+                    Expanded(child: Text(match.recipe.title, style: TextStyle(fontWeight: FontWeight.w700))),
+                    Text('${match.matchPercent}%', style: TextStyle(color: AppTheme.olive, fontWeight: FontWeight.w800)),
                   ]),
                   const SizedBox(height: 5),
                   Text(match.isExactMatch
                       ? 'You have every listed ingredient'
                       : 'Missing: ${match.missingIngredients.map((item) => item.name).join(', ')}',
-                    style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+                    style: TextStyle(color: AppTheme.muted, fontSize: 12)),
                   Align(
                     alignment: AlignmentDirectional.centerEnd,
                     child: TextButton(
                       onPressed: () => Navigator.pop(context, match.recipe),
-                      child: const Text('View recipe'),
+                      child: Text('View recipe'),
                     ),
                   ),
                 ]),
@@ -111,11 +111,11 @@ class CollectionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('My collections')),
+      appBar: AppBar(title: Text('My collections')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _createCollection(context),
-        icon: const Icon(Icons.create_new_folder_outlined),
-        label: const Text('New collection'),
+        icon: Icon(Icons.create_new_folder_outlined),
+        label: Text('New collection'),
       ),
       body: state.collections.isEmpty
           ? const Center(child: Text('Create a collection for recipes you love.'))
@@ -123,7 +123,7 @@ class CollectionsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               children: state.collections.entries.map((entry) => Card(
                 child: ListTile(
-                  leading: const Icon(Icons.folder_open, color: AppTheme.terracotta),
+                  leading: Icon(Icons.folder_open, color: AppTheme.terracotta),
                   title: Text(state.collectionNames[entry.key] ?? 'Collection'),
                   subtitle: Text('${entry.value.length} recipes'),
                   trailing: PopupMenuButton<String>(
@@ -150,12 +150,12 @@ class CollectionsScreen extends StatelessWidget {
   Future<void> _createCollection(BuildContext context) async {
     final controller = TextEditingController();
     final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: const Text('New collection'),
+      title: Text('New collection'),
       content: TextField(controller: controller, autofocus: true,
           decoration: const InputDecoration(labelText: 'Collection name')),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: const Text('Create')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text('Create')),
       ],
     ));
     controller.dispose();
@@ -168,11 +168,11 @@ class CollectionsScreen extends StatelessWidget {
     final state = PlannerScope.of(context);
     final controller = TextEditingController(text: state.collectionNames[id]);
     final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: const Text('Rename collection'),
+      title: Text('Rename collection'),
       content: TextField(controller: controller, decoration: const InputDecoration(labelText: 'Collection name')),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: const Text('Save')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text('Save')),
       ],
     ));
     controller.dispose();
@@ -196,8 +196,8 @@ class CollectionDetailScreen extends StatelessWidget {
       appBar: AppBar(title: Text(state.collectionNames[collectionId] ?? 'Collection')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addRecipes(context, catalog),
-        icon: const Icon(Icons.add),
-        label: const Text('Add recipes'),
+        icon: Icon(Icons.add),
+        label: Text('Add recipes'),
       ),
       body: recipes.isEmpty
           ? const Center(child: Text('This collection is ready for your recipes.'))
@@ -210,7 +210,7 @@ class CollectionDetailScreen extends StatelessWidget {
                   state.toggleRecipeInCollection(collectionId, recipe.id);
                   PlannerScope.refresh(context);
                 },
-                icon: const Icon(Icons.remove_circle_outline),
+                icon: Icon(Icons.remove_circle_outline),
               ),
             )).toList()),
     );
@@ -251,7 +251,7 @@ class CookingHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final history = PlannerScope.of(context).cookingHistory;
     return Scaffold(
-      appBar: AppBar(title: const Text('Cooking history')),
+      appBar: AppBar(title: Text('Cooking history')),
       body: history.isEmpty
           ? const Center(child: Text('Recipes you finish cooking will appear here.'))
           : ListView.builder(
@@ -261,7 +261,7 @@ class CookingHistoryScreen extends StatelessWidget {
                 final item = history[index];
                 final date = DateTime.tryParse(item['completed_at'] ?? '');
                 return ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.restaurant_menu)),
+                  leading: CircleAvatar(child: Icon(Icons.restaurant_menu)),
                   title: Text(item['title'] ?? 'Recipe'),
                   subtitle: Text(date == null ? '' : MaterialLocalizations.of(context).formatMediumDate(date)),
                 );
@@ -278,7 +278,7 @@ class PlannerSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Kitchen settings')),
+      appBar: AppBar(title: Text('Kitchen settings')),
       body: ListView(padding: const EdgeInsets.all(20), children: [
         Text('MEASUREMENTS', style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
@@ -314,26 +314,47 @@ class PlannerSettingsScreen extends StatelessWidget {
           },
         ),
         const SizedBox(height: 24),
-        const Text('PERSONAL DISCOVERY', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        Text('APPEARANCE', style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
-        const Text('Prefer recipes with these dietary tags. Discover will apply every selected tag.', style: TextStyle(color: AppTheme.muted)),
+        DropdownButtonFormField<String>(
+          value: state.themePreference,
+          decoration: const InputDecoration(labelText: 'Theme'),
+          items: const [
+            DropdownMenuItem(value: 'system', child: Text('Use device setting')),
+            DropdownMenuItem(value: 'light', child: Text('Light')),
+            DropdownMenuItem(value: 'dark', child: Text('Dark')),
+          ],
+          onChanged: (value) { if (value == null) return; state.themePreference = value; PlannerScope.refresh(context); },
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text('Reduce motion'),
+          subtitle: Text('Use simpler transitions throughout the app.'),
+          value: state.reduceMotion,
+          onChanged: (value) { state.reduceMotion = value; PlannerScope.refresh(context); },
+        ),
+        const SizedBox(height: 24),
+        Text('PERSONAL DISCOVERY', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        const SizedBox(height: 8),
+        Text('Prefer recipes with these dietary tags. Discover will apply every selected tag.', style: TextStyle(color: AppTheme.muted)),
         for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
           CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(option.value), value: state.preferredDietaryTags.contains(option.key),
             onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
         const SizedBox(height: 16),
-        const Text('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.',
+        Text('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.',
             style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 28),
         Text('LOCAL DATA', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.terracotta, letterSpacing: 1.2)),
         const SizedBox(height: 8),
-        const Text('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', style: TextStyle(color: AppTheme.muted)),
+        Text('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 10),
-        OutlinedButton.icon(key: const Key('reset-local-data'), style: OutlinedButton.styleFrom(foregroundColor: Colors.red), icon: const Icon(Icons.delete_outline), label: const Text('Reset personal data'),
+        OutlinedButton.icon(key: const Key('reset-local-data'), style: OutlinedButton.styleFrom(foregroundColor: Colors.red), icon: Icon(Icons.delete_outline), label: Text('Reset personal data'),
           onPressed: () async {
             final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
-              title: const Text('Reset personal data?'),
-              content: const Text('Favorites, meal plans, groceries, pantry, collections, history and preferences will be cleared from this device. Your recipe catalog stays available.'),
-              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Reset data'))],
+              title: Text('Reset personal data?'),
+              content: Text('Favorites, meal plans, groceries, pantry, collections, history and preferences will be cleared from this device. Your recipe catalog stays available.'),
+              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text('Reset data'))],
             ));
             if (confirmed != true || !context.mounted) return;
             state.clearPersonalData();

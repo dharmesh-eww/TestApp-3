@@ -14,14 +14,17 @@ import '../features/recipes/data/static_recipe_content_updater.dart';
 import '../data/local/planner_repository.dart';
 import '../features/cooking/presentation/cooking_mode_screen.dart';
 import '../features/kitchen/presentation/kitchen_tools_screen.dart';
+import '../features/groceries/presentation/grocery_lists_screen.dart';
+import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../localization/app_localizations.dart';
 import 'app_dependencies.dart';
 import 'planner_scope.dart';
 import 'recipe_catalog_scope.dart';
 
 class RecipePlannerApp extends StatefulWidget {
-  const RecipePlannerApp({super.key, this.repository});
+  const RecipePlannerApp({super.key, this.repository, this.showOnboarding = false});
   final PlannerRepository? repository;
+  final bool showOnboarding;
 
   @override
   State<RecipePlannerApp> createState() => _RecipePlannerAppState();
@@ -117,6 +120,8 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
 
   @override
   Widget build(BuildContext context) {
+    AppTheme.setDarkMode(dependencies.plannerState.themePreference == 'dark' ||
+        (dependencies.plannerState.themePreference == 'system' && WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark));
     return PlannerScope(
       state: dependencies.plannerState,
       cookingSession: dependencies.cookingSession,
@@ -129,6 +134,12 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
           debugShowCheckedModeBanner: false,
           title: 'Gather — Recipe Planner',
           theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: switch (dependencies.plannerState.themePreference) {
+            'light' => ThemeMode.light,
+            'dark' => ThemeMode.dark,
+            _ => ThemeMode.system,
+          },
           locale: _locale,
           supportedLocales: const [Locale('en'), Locale('ar')],
           localizationsDelegates: const [
@@ -137,14 +148,19 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          home: AppShell(
+          home: (!widget.showOnboarding || dependencies.plannerState.onboardingComplete)
+              ? AppShell(
             locale: _locale,
             onLocaleChanged: (locale) {
             dependencies.plannerState.localeCode = locale.languageCode;
             setState(() => _locale = locale);
             _onPlannerChanged();
           },
-          ),
+          )
+              : OnboardingScreen(onComplete: () {
+                  dependencies.plannerState.onboardingComplete = true;
+                  _onPlannerChanged();
+                }),
         ),
       ),
     );
@@ -191,7 +207,7 @@ class _AppShellState extends State<AppShell> {
                           ? const Locale('ar')
                           : const Locale('en'),
                     ),
-                    icon: const Icon(Icons.language, size: 18),
+                    icon: Icon(Icons.language, size: 18),
                     label: Text(widget.locale.languageCode == 'en' ? 'العربية' : 'English'),
                   ),
                 ),
@@ -199,7 +215,7 @@ class _AppShellState extends State<AppShell> {
             ),
             Expanded(
               child: AnimatedSwitcher(
-                duration: AppMotion.page,
+                duration: PlannerScope.of(context).reduceMotion ? Duration.zero : AppMotion.page,
                 switchInCurve: AppMotion.enter,
                 switchOutCurve: AppMotion.exit,
                 transitionBuilder: (child, animation) => FadeTransition(
@@ -255,7 +271,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
       alignment: AlignmentDirectional.centerStart,
       child: OutlinedButton.icon(
         key: const Key('open-recipe-filters'),
-        icon: const Icon(Icons.tune, size: 17),
+        icon: Icon(Icons.tune, size: 17),
         label: Text(active == 0 ? 'More filters' : 'More filters ($active)'),
         onPressed: () async {
           var cuisine = cuisineId;
@@ -326,12 +342,12 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       Row(children: [
                         TextButton(onPressed: () => setSheetState(() {
                           cuisine = 'all'; foodType = 'all'; level = 'all'; minutes = null;
-                        }), child: const Text('Reset')),
+                        }), child: Text('Reset')),
                         const Spacer(),
                         FilledButton(onPressed: () {
                           onChanged(cuisine, foodType, level, minutes);
                           Navigator.pop(sheetContext);
-                        }, child: const Text('Apply filters')),
+                        }, child: Text('Apply filters')),
                       ]),
                     ],
                   ),
@@ -361,7 +377,7 @@ class TodayScreen extends StatelessWidget {
             SizedBox(height: 7),
             Text('A little more joy\nin the kitchen.', style: TextStyle(fontFamily: 'Georgia', fontSize: 31, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
           ])),
-          CircleAvatar(radius: 24, backgroundColor: const Color(0xFFE9E4D8), child: const Icon(Icons.spa_outlined, color: AppTheme.olive)),
+          CircleAvatar(radius: 24, backgroundColor: const Color(0xFFE9E4D8), child: Icon(Icons.spa_outlined, color: AppTheme.olive)),
         ]),
         const SizedBox(height: 24),
         _SectionHeading(title: 'Today’s inspiration', action: 'See all', onTap: () => _goTab(context, 1)),
@@ -446,14 +462,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           onChanged: (value) => setState(() => _query = value),
           decoration: InputDecoration(
             hintText: strings.searchHint,
-            prefixIcon: const Icon(Icons.search),
+            prefixIcon: Icon(Icons.search),
             suffixIcon: _query.isEmpty ? null : IconButton(
               tooltip: 'Clear search',
               onPressed: () {
                 _searchController.clear();
                 setState(() => _query = '');
               },
-              icon: const Icon(Icons.close),
+              icon: Icon(Icons.close),
             ),
           ),
         ),
@@ -468,8 +484,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               Navigator.push(context, AnimatedPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe)));
             }
           },
-          icon: const Icon(Icons.kitchen_outlined),
-          label: const Text('Cook with what you have'),
+          icon: Icon(Icons.kitchen_outlined),
+          label: Text('Cook with what you have'),
         ),
         const SizedBox(height: 14),
         SingleChildScrollView(
@@ -513,7 +529,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               key: const Key('recipe-sort-dropdown'),
               value: _sort,
               borderRadius: BorderRadius.circular(14),
-              style: const TextStyle(color: AppTheme.ink, fontSize: 12, fontWeight: FontWeight.w600),
+              style: TextStyle(color: AppTheme.ink, fontSize: 12, fontWeight: FontWeight.w600),
               items: const [
                 DropdownMenuItem(value: RecipeSort.recommended, child: Text('Recommended')),
                 DropdownMenuItem(value: RecipeSort.quickest, child: Text('Quickest')),
@@ -594,15 +610,46 @@ class _PlanScreenState extends State<PlanScreen> {
               child:Column(children:[Text(name.substring(0,1),style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.muted,fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:5),Text('$count',style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.ink,fontWeight:FontWeight.w800))]))));
         }))),
       const SizedBox(height:18),
-      Row(children:[Expanded(child:Text(day,style:Theme.of(context).textTheme.titleLarge)),Text('${meals.length}/4 planned',style:const TextStyle(color:AppTheme.muted,fontSize:12))]),
+      Row(children:[Expanded(child:Text(day,style:Theme.of(context).textTheme.titleLarge)),Text('${meals.length}/4 planned',style:TextStyle(color:AppTheme.muted,fontSize:12))]),
       const SizedBox(height:10),
       for(final slot in MealSlot.values)
         _MealSlotCard(key: ValueKey('meal-slot-$day-${slot.name}'), day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
-          onAdd:()=>_showPlanPicker(context,day,slot),onRemove:(){state.removeMeal(day,slot);PlannerScope.refresh(context);}),
+          onAdd:()=>_showPlanPicker(context,day,slot),onRemove:(){state.removeMeal(day,slot);PlannerScope.refresh(context);},onMove:()=>_showMoveMeal(context,day,slot)),
       const SizedBox(height:14),
-      OutlinedButton.icon(onPressed:()=>_goTab(context,3),icon:const Icon(Icons.shopping_basket_outlined),label:const Text('Build your grocery list'),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
+      OutlinedButton.icon(onPressed:()=>_goTab(context,3),icon:Icon(Icons.shopping_basket_outlined),label:Text('Build your grocery list'),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
     ]);
   }
+  Future<void> _showMoveMeal(BuildContext context, String fromDay, MealSlot fromSlot) async {
+    var targetDay = fromDay;
+    var targetSlot = fromSlot;
+    final state = PlannerScope.of(context);
+    final days = state.weekStartsOn == 7
+        ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        : PlanScreen.days;
+    final result = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
+      builder: (dialogContext, setDialogState) => AlertDialog(
+        title: Text('Move planned meal'),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          DropdownButtonFormField<String>(value: targetDay, decoration: const InputDecoration(labelText: 'Day'),
+            items: days.map((day) => DropdownMenuItem(value: day, child: Text(day))).toList(),
+            onChanged: (value) => setDialogState(() => targetDay = value ?? fromDay)),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<MealSlot>(value: targetSlot, decoration: const InputDecoration(labelText: 'Meal'),
+            items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(slot.label))).toList(),
+            onChanged: (value) => setDialogState(() => targetSlot = value ?? fromSlot)),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text('Move')),
+        ],
+      ),
+    ));
+    if (result != true || !context.mounted) return;
+    final moved = state.moveMeal(fromDay: fromDay, fromSlot: fromSlot, toDay: targetDay, toSlot: targetSlot);
+    if (moved) PlannerScope.refresh(context);
+    else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('That destination is occupied. Choose an empty meal slot.')));
+  }
+
   void _showPlanPicker(BuildContext context, String day, MealSlot slot) {
     showModalBottomSheet<void>(
       context: context,
@@ -624,7 +671,7 @@ class _PlanScreenState extends State<PlanScreen> {
               ),
               Text(
                 '$day · Choose a recipe',
-                style: const TextStyle(color: AppTheme.muted),
+                style: TextStyle(color: AppTheme.muted),
               ),
               const SizedBox(height: 12),
               SizedBox(
@@ -637,7 +684,7 @@ class _PlanScreenState extends State<PlanScreen> {
                       subtitle: Text(
                         '${recipe.minutes} min · ${recipe.category} · serves ${recipe.servings}',
                       ),
-                      trailing: const Icon(
+                      trailing: Icon(
                         Icons.add_circle_outline,
                         color: AppTheme.terracotta,
                       ),
@@ -663,20 +710,23 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 }
 class _MealSlotCard extends StatelessWidget {
-  const _MealSlotCard({super.key, required this.day,required this.slot,required this.meal,required this.onAdd,required this.onRemove});
-  final String day;final MealSlot slot;final PlannedMeal? meal;final VoidCallback onAdd,onRemove;
+  const _MealSlotCard({super.key, required this.day,required this.slot,required this.meal,required this.onAdd,required this.onRemove,required this.onMove});
+  final String day;final MealSlot slot;final PlannedMeal? meal;final VoidCallback onAdd,onRemove,onMove;
   @override Widget build(BuildContext context){
     final recipe=meal==null?null:RecipeCatalogScope.of(context).where((r)=>r.id==meal!.recipeId).firstOrNull;
     return Container(margin:const EdgeInsets.only(bottom:9),padding:const EdgeInsets.all(14),decoration:BoxDecoration(color:AppTheme.card,border:Border.all(color:AppTheme.line),borderRadius:BorderRadius.circular(16)),
       child:Row(children:[
         Container(width:40,height:40,decoration:BoxDecoration(color:AppTheme.olive.withOpacity(.12),borderRadius:BorderRadius.circular(12)),child:Icon(switch(slot){MealSlot.breakfast=>Icons.wb_twilight,MealSlot.lunch=>Icons.wb_sunny_outlined,MealSlot.dinner=>Icons.nightlight_outlined,MealSlot.snack=>Icons.cookie_outlined},color:AppTheme.olive)),
         const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-          Text(slot.label.toUpperCase(),style:const TextStyle(color:AppTheme.terracotta,fontSize:9,letterSpacing:1.1,fontWeight:FontWeight.w800)),const SizedBox(height:4),
+          Text(slot.label.toUpperCase(),style:TextStyle(color:AppTheme.terracotta,fontSize:9,letterSpacing:1.1,fontWeight:FontWeight.w800)),const SizedBox(height:4),
           Text(recipe?.title??'Nothing planned yet',style:TextStyle(color:recipe==null?AppTheme.muted:AppTheme.ink,fontWeight:FontWeight.w700)),
-          if(meal!=null)Text('${meal!.servings} servings · ${recipe?.minutes??0} min',style:const TextStyle(color:AppTheme.muted,fontSize:11)),
+          if(meal!=null)Text('${meal!.servings} servings · ${recipe?.minutes??0} min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
         ])),
-        if(meal==null)IconButton(key:Key('add-${day}-${slot.name}'),tooltip:'Add ${slot.label}',onPressed:onAdd,icon:const Icon(Icons.add_circle_outline,color:AppTheme.terracotta))
-        else IconButton(key:Key('remove-${day}-${slot.name}'),tooltip:'Remove ${slot.label}',onPressed:onRemove,icon:const Icon(Icons.close,color:AppTheme.muted)),
+        if(meal==null)IconButton(key:Key('add-${day}-${slot.name}'),tooltip:'Add ${slot.label}',onPressed:onAdd,icon:Icon(Icons.add_circle_outline,color:AppTheme.terracotta))
+        else Row(mainAxisSize:MainAxisSize.min,children:[
+          IconButton(tooltip:'Move meal',onPressed:onMove,icon:Icon(Icons.drive_file_move_outline,color:AppTheme.olive)),
+          IconButton(key:Key('remove-${day}-${slot.name}'),tooltip:'Remove ${slot.label}',onPressed:onRemove,icon:Icon(Icons.close,color:AppTheme.muted)),
+        ]),
       ]));
   }
 }
@@ -690,18 +740,19 @@ class GroceryScreen extends StatelessWidget {
     final grouped = <String, List<GroceryItem>>{};
     for (final item in entries) { grouped.putIfAbsent(_groceryAisle(item.name), () => []).add(item); }
     return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
-      const Text('THE MARKET LIST',style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
-      const Text('Good things\\nto pick up.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
-      Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:const TextStyle(color:AppTheme.muted)),
+      Text('THE MARKET LIST',style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
+      Text('Good things\\nto pick up.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
+      Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:TextStyle(color:AppTheme.muted)),
       const SizedBox(height:12),
       Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
-        OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:const Icon(Icons.add),label:const Text('Add item')),
-        if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ state.clearCheckedCustomGroceryItems(); PlannerScope.refresh(context); },child:const Text('Clear checked custom items')),
+        OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:Icon(Icons.add),label:Text('Add item')),
+        OutlinedButton.icon(onPressed:()=>Navigator.push(context, MaterialPageRoute(builder: (_) => const GroceryListsScreen())),icon:Icon(Icons.list_alt),label:Text('Shopping lists')),
+        if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ state.clearCheckedCustomGroceryItems(); PlannerScope.refresh(context); },child:Text('Clear checked custom items')),
       ])),
       const SizedBox(height:12),
-      if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:const Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
+      if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
       else for (final aisle in grouped.entries) ...[
-        Padding(padding: const EdgeInsets.only(top: 10, bottom: 8), child: Text(aisle.key.toUpperCase(), style: const TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.3))),
+        Padding(padding: const EdgeInsets.only(top: 10, bottom: 8), child: Text(aisle.key.toUpperCase(), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.3))),
         for (final item in aisle.value) Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
@@ -732,26 +783,35 @@ class GroceryScreen extends StatelessWidget {
                     item.isQuantified
                       ? '${_formatAmount(item.amount)} ${item.unit} needed · ${_formatAmount(item.ownedAmount)} owned · ${_formatAmount(item.toBuyAmount)} to buy'
                       : 'Non-quantified · check pantry before shopping',
-                    style: const TextStyle(color: AppTheme.muted, fontSize: 11),
+                    style: TextStyle(color: AppTheme.muted, fontSize: 11),
                   ),
                 ],
               )),
-              if (item.isCustom) IconButton(tooltip: 'Remove custom grocery item', onPressed: () { state.removeCustomGroceryItem(item.key); PlannerScope.refresh(context); }, icon: const Icon(Icons.close, size: 18)),
+              if (item.isCustom) IconButton(tooltip: 'Remove custom grocery item', onPressed: () { state.removeCustomGroceryItem(item.key); PlannerScope.refresh(context); }, icon: Icon(Icons.close, size: 18)),
               IconButton(
                 tooltip: 'Edit grocery item',
                 onPressed: () => _showGroceryEditor(context, item),
-                icon: const Icon(Icons.edit_outlined, size: 18, color: AppTheme.muted),
+                icon: Icon(Icons.edit_outlined, size: 18, color: AppTheme.muted),
               ),
             ]),
           ),
         ),
       ],
       const SizedBox(height:22),
-      Row(children:[Expanded(child:Text('Your pantry',style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:const Icon(Icons.add,size:17),label:const Text('Add item'))]),
-      const Text('Items here are deducted from what you need to buy.',style:TextStyle(color:AppTheme.muted,fontSize:12)),const SizedBox(height:10),
-      if(state.pantry.isEmpty)const Text('Your pantry is empty for now.',style:TextStyle(color:AppTheme.muted))
-      else for(final item in state.pantry.values)ListTile(contentPadding:const EdgeInsets.symmetric(horizontal:4),leading:const Icon(Icons.inventory_2_outlined,color:AppTheme.olive),title:Text(item.name),subtitle:Text('${_formatAmount(item.amount)} ${item.unit}'),
-        trailing:IconButton(tooltip:'Remove pantry item',onPressed:(){state.removePantryItem(item.id);PlannerScope.refresh(context);},icon:const Icon(Icons.close))),
+      Row(children:[Expanded(child:Text('Your pantry',style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:Icon(Icons.add,size:17),label:Text('Add item'))]),
+      Text('Items here are deducted from what you need to buy.',style:TextStyle(color:AppTheme.muted,fontSize:12)),
+      if(state.expiringPantryItems.isNotEmpty) Padding(padding:const EdgeInsets.only(top:8),child:Text('${state.expiringPantryItems.length} pantry item(s) expire within seven days.',style:TextStyle(color:AppTheme.terracotta,fontWeight:FontWeight.w700))),
+      const SizedBox(height:10),
+      if(state.pantry.isEmpty)Text('Your pantry is empty for now.',style:TextStyle(color:AppTheme.muted))
+      else for(final item in state.pantry.values)ListTile(contentPadding:const EdgeInsets.symmetric(horizontal:4),leading:Icon(Icons.inventory_2_outlined,color:AppTheme.olive),title:Text(item.name),subtitle:Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · Expires ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
+        trailing:Wrap(mainAxisSize:MainAxisSize.min,children:[
+          IconButton(tooltip:'Set expiry date',onPressed:() async {
+            final current = state.pantryExpiryDates[item.id];
+            final picked = await showDatePicker(context:context,initialDate:current ?? DateTime.now(),firstDate:DateTime.now().subtract(const Duration(days:3650)),lastDate:DateTime.now().add(const Duration(days:3650)));
+            if(picked != null){state.setPantryExpiry(item.id,picked);PlannerScope.refresh(context);}
+          },icon:Icon(Icons.event_outlined)),
+          IconButton(tooltip:'Remove pantry item',onPressed:(){state.removePantryItem(item.id);PlannerScope.refresh(context);},icon:Icon(Icons.close)),
+        ])),
     ]);
   }
   void _showCustomGroceryEditor(BuildContext context) {
@@ -759,21 +819,21 @@ class GroceryScreen extends StatelessWidget {
     final amount = TextEditingController(text: '1');
     final unit = TextEditingController(text: 'item');
     showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-      title: const Text('Add a grocery item'),
+      title: Text('Add a grocery item'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         TextField(controller: name, autofocus: true, decoration: const InputDecoration(labelText: 'Item')),
         TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Quantity')),
         TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit')),
       ]),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
         FilledButton(onPressed: () {
           final quantity = double.tryParse(amount.text.trim());
           if (name.text.trim().isEmpty || unit.text.trim().isEmpty || quantity == null || quantity < 0) return;
           PlannerScope.of(context).addCustomGroceryItem(name: name.text, amount: quantity, unit: unit.text);
           PlannerScope.refresh(context);
           Navigator.pop(dialogContext);
-        }, child: const Text('Add')),
+        }, child: Text('Add')),
       ],
     )).then((_) { name.dispose(); amount.dispose(); unit.dispose(); });
   }
@@ -782,32 +842,32 @@ class GroceryScreen extends StatelessWidget {
     final name = TextEditingController(text: item.name);
     final amount = TextEditingController(text: item.isQuantified ? _formatAmount(item.amount) : '');
     showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-      title: const Text('Edit grocery item'),
+      title: Text('Edit grocery item'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         TextField(controller: name, decoration: const InputDecoration(labelText: 'Ingredient')),
         if (item.isQuantified) TextField(controller: amount, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Amount (${item.unit})')),
       ]),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
         FilledButton(onPressed: () {
           final parsed = item.isQuantified ? double.tryParse(amount.text.trim()) : item.amount;
           if (parsed == null || parsed < 0 || name.text.trim().isEmpty) return;
           PlannerScope.of(context).updateGroceryItem(item.key, name: name.text, amount: parsed);
           PlannerScope.refresh(context);
           Navigator.pop(dialogContext);
-        }, child: const Text('Save')),
+        }, child: Text('Save')),
       ],
     )).then((_) { name.dispose(); amount.dispose(); });
   }
 
   void _showPantryEditor(BuildContext context){
     final name=TextEditingController(),amount=TextEditingController(text:'1'),unit=TextEditingController(text:'g');
-    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:const Text('Add to your pantry'),content:Column(mainAxisSize:MainAxisSize.min,children:[
+    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:Text('Add to your pantry'),content:Column(mainAxisSize:MainAxisSize.min,children:[
       TextField(controller:name,decoration:const InputDecoration(labelText:'Ingredient')),TextField(controller:amount,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'Quantity')),TextField(controller:unit,decoration:const InputDecoration(labelText:'Unit (g, ml, whole…)')),
-    ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('Cancel')),FilledButton(onPressed:(){
+    ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:Text('Cancel')),FilledButton(onPressed:(){
       final value=double.tryParse(amount.text.trim());if(value==null||value<0||name.text.trim().isEmpty||unit.text.trim().isEmpty)return;
       PlannerScope.of(context).upsertPantryItem(name:name.text,amount:value,unit:unit.text);PlannerScope.refresh(context);Navigator.pop(dialogContext);
-    },child:const Text('Save'))])).then((_){name.dispose();amount.dispose();unit.dispose();});
+    },child:Text('Save'))])).then((_){name.dispose();amount.dispose();unit.dispose();});
   }
 }
 String _groceryAisle(String name) {
@@ -831,9 +891,9 @@ class KitchenScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
-        const Text('YOUR LITTLE COOKBOOK', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+        Text('YOUR LITTLE COOKBOOK', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
         const SizedBox(height: 8),
-        const Text('Your kitchen,\nyour rhythm.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
+        Text('Your kitchen,\nyour rhythm.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
         Row(children: [
           _StatCard(value: '${saved.length}', label: 'Saved recipes', icon: Icons.bookmark_outline),
@@ -844,22 +904,22 @@ class KitchenScreen extends StatelessWidget {
         Wrap(spacing: 8, runSpacing: 8, children: [
           OutlinedButton.icon(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CollectionsScreen())),
-            icon: const Icon(Icons.folder_open), label: const Text('Collections'),
+            icon: Icon(Icons.folder_open), label: Text('Collections'),
           ),
           OutlinedButton.icon(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CookingHistoryScreen())),
-            icon: const Icon(Icons.history), label: const Text('Cooking history'),
+            icon: Icon(Icons.history), label: Text('Cooking history'),
           ),
           OutlinedButton.icon(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PlannerSettingsScreen())),
-            icon: const Icon(Icons.tune), label: const Text('Settings'),
+            icon: Icon(Icons.tune), label: Text('Settings'),
           ),
         ]),
         const SizedBox(height: 20),
         Text('Recently viewed', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 10),
         if (state.recentlyViewed.isEmpty)
-          const Text('Recipes you open will appear here.', style: TextStyle(color: AppTheme.muted))
+          Text('Recipes you open will appear here.', style: TextStyle(color: AppTheme.muted))
         else
           ...state.recentlyViewed.take(5).map((entry) {
             final recipe = RecipeCatalogScope.of(context).where((item) => item.id == entry['recipe_id']).firstOrNull;
@@ -875,9 +935,9 @@ class KitchenScreen extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('Recipe library', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 4),
-              Text('Content version: ${RecipeCatalogScope.versionOf(context)}', style: const TextStyle(color: AppTheme.muted)),
+              Text('Content version: ${RecipeCatalogScope.versionOf(context)}', style: TextStyle(color: AppTheme.muted)),
               const SizedBox(height: 8),
-              const Text('Check for curated recipe updates. Your meal plans, pantry and saved recipes stay on this device.', style: TextStyle(color: AppTheme.muted)),
+              Text('Check for curated recipe updates. Your meal plans, pantry and saved recipes stay on this device.', style: TextStyle(color: AppTheme.muted)),
               const SizedBox(height: 8),
               Align(
                 alignment: AlignmentDirectional.centerEnd,
@@ -890,8 +950,8 @@ class KitchenScreen extends StatelessWidget {
                       content: Text(updated ? 'Recipe library updated.' : 'No update available. Current library kept.'),
                     ));
                   } : null,
-                  icon: const Icon(Icons.sync),
-                  label: const Text('Check for updates'),
+                  icon: Icon(Icons.sync),
+                  label: Text('Check for updates'),
                 ),
               ),
             ]),
@@ -900,7 +960,7 @@ class KitchenScreen extends StatelessWidget {
         const SizedBox(height: 20),
         const SizedBox(height: 12),
         if (saved.isEmpty)
-          const Text('Recipes you save will live here. Tap the bookmark on any recipe you love.', style: TextStyle(color: AppTheme.muted))
+          Text('Recipes you save will live here. Tap the bookmark on any recipe you love.', style: TextStyle(color: AppTheme.muted))
         else
           ...saved.map((recipe) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -963,13 +1023,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           ],
           flexibleSpace: FlexibleSpaceBar(
             background: Image.network(recipe.image, fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(color: const Color(0xFFE6DED1), child: const Icon(Icons.restaurant, size: 48))),
+              errorBuilder: (_, __, ___) => Container(color: const Color(0xFFE6DED1), child: Icon(Icons.restaurant, size: 48))),
           ),
         ),
         SliverToBoxAdapter(child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 22, 20, 36),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(recipe.category.toUpperCase(), style: const TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.4)),
+            Text(recipe.category.toUpperCase(), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.4)),
             const SizedBox(height: 8),
             Text(recipe.title, style: Theme.of(context).textTheme.headlineLarge),
             const SizedBox(height: 8),
@@ -985,18 +1045,18 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             const SizedBox(height: 26),
             Row(children: [
               Expanded(child: Text('Ingredients', style: Theme.of(context).textTheme.headlineMedium)),
-              IconButton(onPressed: servings > 1 ? () => setState(() => servings--) : null, icon: const Icon(Icons.remove_circle_outline)),
-              Text('$servings servings', style: const TextStyle(fontWeight: FontWeight.w700)),
-              IconButton(onPressed: () => setState(() => servings++), icon: const Icon(Icons.add_circle_outline)),
+              IconButton(onPressed: servings > 1 ? () => setState(() => servings--) : null, icon: Icon(Icons.remove_circle_outline)),
+              Text('$servings servings', style: TextStyle(fontWeight: FontWeight.w700)),
+              IconButton(onPressed: () => setState(() => servings++), icon: Icon(Icons.add_circle_outline)),
             ]),
             const SizedBox(height: 8),
             ...recipe.ingredients.map((item) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(children: [
-                const Icon(Icons.circle, size: 7, color: AppTheme.olive),
+                Icon(Icons.circle, size: 7, color: AppTheme.olive),
                 const SizedBox(width: 10),
-                Expanded(child: Text(item.name, style: const TextStyle(color: AppTheme.ink))),
-                Text(item.display(servings, recipe.servings, measurementSystem: state.measurementSystem), style: const TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w600)),
+                Expanded(child: Text(item.name, style: TextStyle(color: AppTheme.ink))),
+                Text(item.display(servings, recipe.servings, measurementSystem: state.measurementSystem), style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w600)),
               ]),
             )),
             const SizedBox(height: 12),
@@ -1006,7 +1066,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 PlannerScope.refresh(context);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ingredients added to your grocery list')));
               },
-              icon: const Icon(Icons.add_shopping_cart), label: const Text('Add ingredients to grocery list'),
+              icon: Icon(Icons.add_shopping_cart), label: Text('Add ingredients to grocery list'),
             )),
             const SizedBox(height: 28),
             SizedBox(
@@ -1020,8 +1080,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                     AnimatedPageRoute(builder: (_) => CookingModeScreen(recipe: recipe)),
                   );
                 },
-                icon: const Icon(Icons.restaurant_menu),
-                label: const Text('Start cooking'),
+                icon: Icon(Icons.restaurant_menu),
+                label: Text('Start cooking'),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppTheme.terracotta,
                   minimumSize: const Size(0, 54),
@@ -1034,7 +1094,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             ...List.generate(recipe.steps.length, (index) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                CircleAvatar(radius: 16, backgroundColor: AppTheme.terracotta.withOpacity(.13), child: Text('${index + 1}', style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800))),
+                CircleAvatar(radius: 16, backgroundColor: AppTheme.terracotta.withOpacity(.13), child: Text('${index + 1}', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800))),
                 const SizedBox(width: 12),
                 Expanded(child: Text(recipe.steps[index], style: Theme.of(context).textTheme.bodyLarge)),
               ]),
@@ -1063,20 +1123,20 @@ class _FeaturedRecipe extends StatelessWidget {
           Image.network(recipe.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE8DFD1))),
           const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xCC211A16)], stops: [0.35, 1]))),
           Positioned(left: 18, right: 18, bottom: 18, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('EDITOR’S PICK', style: TextStyle(color: Color(0xFFFFD5B9), fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w800)),
+            Text('EDITOR’S PICK', style: TextStyle(color: Color(0xFFFFD5B9), fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
-            Text(recipe.title, style: const TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'Georgia', fontWeight: FontWeight.bold)),
+            Text(recipe.title, style: TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'Georgia', fontWeight: FontWeight.bold)),
             const SizedBox(height: 7),
             Row(children: [
-              const Icon(Icons.schedule, color: Colors.white70, size: 15),
+              Icon(Icons.schedule, color: Colors.white70, size: 15),
               const SizedBox(width: 5),
-              Text('${recipe.minutes} min', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Text('${recipe.minutes} min', style: TextStyle(color: Colors.white70, fontSize: 12)),
               const SizedBox(width: 12),
-              const Icon(Icons.circle, color: Color(0xFFB8C18F), size: 7),
+              Icon(Icons.circle, color: Color(0xFFB8C18F), size: 7),
               const SizedBox(width: 5),
-              Text(recipe.difficulty, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Text(recipe.difficulty, style: TextStyle(color: Colors.white70, fontSize: 12)),
               const Spacer(),
-              const Icon(Icons.arrow_forward, color: Colors.white),
+              Icon(Icons.arrow_forward, color: Colors.white),
             ]),
           ])),
         ]),
@@ -1100,8 +1160,8 @@ class _RecipeTile extends StatelessWidget {
             errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE8DFD1), child: Icon(Icons.restaurant))),
         )),
         const SizedBox(height: 8),
-        Text(recipe.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
-        Text('${recipe.minutes} min · ${recipe.category}', style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+        Text(recipe.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
+        Text('${recipe.minutes} min · ${recipe.category}', style: TextStyle(color: AppTheme.muted, fontSize: 11)),
       ]),
     );
   }
@@ -1126,15 +1186,15 @@ class _RecipeListTile extends StatelessWidget {
           )),
           const SizedBox(width: 13),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(recipe.category.toUpperCase(), style: const TextStyle(color: AppTheme.terracotta, fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w800)),
+            Text(recipe.category.toUpperCase(), style: TextStyle(color: AppTheme.terracotta, fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w800)),
             const SizedBox(height: 4),
-            Text(recipe.title, style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700, fontSize: 15)),
+            Text(recipe.title, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700, fontSize: 15)),
             const SizedBox(height: 4),
-            Text(recipe.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+            Text(recipe.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
             const SizedBox(height: 5),
-            Text('${recipe.minutes} min · ${recipe.difficulty}', style: const TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
+            Text('${recipe.minutes} min · ${recipe.difficulty}', style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
           ])),
-          const Icon(Icons.chevron_right, color: AppTheme.muted),
+          Icon(Icons.chevron_right, color: AppTheme.muted),
         ]),
       ),
     );
@@ -1150,7 +1210,7 @@ class _SectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(children: [
     Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge)),
-    TextButton(onPressed: onTap, child: Text(action, style: const TextStyle(color: AppTheme.terracotta))),
+    TextButton(onPressed: onTap, child: Text(action, style: TextStyle(color: AppTheme.terracotta))),
   ]);
 }
 
@@ -1170,7 +1230,7 @@ class _WeekStrip extends StatelessWidget {
       child: Row(children: List.generate(7, (index) {
         final count = state.mealsFor(names[index]).length;
         return Expanded(child: Column(children: [
-          Text(days[index], style: const TextStyle(color: AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700)),
+          Text(days[index], style: TextStyle(color: AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           CircleAvatar(radius: 15, backgroundColor: count > 0 ? AppTheme.olive.withOpacity(.15) : AppTheme.paper,
             child: Text('$count', style: TextStyle(color: count > 0 ? AppTheme.olive : AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700))),
@@ -1189,7 +1249,7 @@ class _MetaPill extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(30), border: Border.all(color: AppTheme.line)),
-    child: Row(children: [Icon(icon, size: 14, color: AppTheme.olive), const SizedBox(width: 5), Text(text, style: const TextStyle(fontSize: 11, color: AppTheme.ink, fontWeight: FontWeight.w600))]),
+    child: Row(children: [Icon(icon, size: 14, color: AppTheme.olive), const SizedBox(width: 5), Text(text, style: TextStyle(fontSize: 11, color: AppTheme.ink, fontWeight: FontWeight.w600))]),
   );
 }
 
@@ -1207,7 +1267,7 @@ class _StatCard extends StatelessWidget {
       Icon(icon, color: AppTheme.olive),
       const SizedBox(height: 12),
       Text(value, style: Theme.of(context).textTheme.headlineMedium),
-      Text(label, style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+      Text(label, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
     ]),
   ));
 }

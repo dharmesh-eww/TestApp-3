@@ -15,6 +15,12 @@ void main() {
     original.measurementSystem = 'us';
     original.weekStartsOn = 7;
     original.localeCode = 'ar';
+    original.themePreference = 'dark';
+    original.reduceMotion = true;
+    original.onboardingComplete = true;
+    final groceryListId = original.createGroceryList('Saturday market');
+    original.assignGroceryItem(groceryListId, 'pasta|g');
+    original.setPantryExpiry(original.pantry.keys.first, DateTime(2027, 1, 10));
     original.recordCooked(recipes.first);
     original.recordViewed(recipes.last);
     original.preferredDietaryTags.add('plant_based');
@@ -33,6 +39,12 @@ void main() {
     expect(restored.measurementSystem, 'us');
     expect(restored.weekStartsOn, 7);
     expect(restored.localeCode, 'ar');
+    expect(restored.themePreference, 'dark');
+    expect(restored.reduceMotion, isTrue);
+    expect(restored.onboardingComplete, isTrue);
+    expect(restored.groceryListNames[groceryListId], 'Saturday market');
+    expect(restored.groceryLists[groceryListId], contains('pasta|g'));
+    expect(restored.pantryExpiryDates.values, contains(DateTime(2027, 1, 10)));
     expect(restored.cookingHistory, hasLength(1));
     expect(restored.recentlyViewed.single['recipe_id'], recipes.last.id);
     expect(restored.preferredDietaryTags, contains('plant_based'));
@@ -43,7 +55,7 @@ void main() {
   test('legacy v1 snapshots remain readable after the v3 schema migration', () {
     final restored = PlannerState.fromJson({'schema_version': 1, 'favorites': ['legacy-recipe']});
     expect(restored.isFavorite('legacy-recipe'), isTrue);
-    expect(restored.toJson()['schema_version'], 3);
+    expect(restored.toJson()['schema_version'], 4);
   });
 
   test('unsupported snapshots restore as an empty safe state', () {

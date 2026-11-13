@@ -18,6 +18,35 @@ class IngredientMatch {
 class IngredientMatcher {
   const IngredientMatcher._();
 
+  /// Common regional and grocery-label variants. IDs remain the preferred key;
+  /// aliases only improve name-based discovery and are not food-safety rules.
+  static const Map<String, Set<String>> _aliases = {
+    'chickpea': {'chana', 'garbanzo', 'garbanzo bean'},
+    'coriander': {'cilantro', 'dhaniya'},
+    'eggplant': {'aubergine', 'brinjal', 'baingan'},
+    'bell pepper': {'capsicum', 'shimla mirch'},
+    'yogurt': {'curd', 'dahi'},
+    'okra': {'lady finger', 'bhindi'},
+    'cumin': {'jeera'},
+    'turmeric': {'haldi'},
+    'red lentil': {'masoor dal', 'masoor'},
+    'mung bean': {'moong dal', 'moong'},
+  };
+
+  static Set<String> _names(String value) {
+    final normalized = _normalize(value);
+    final result = <String>{normalized};
+    for (final entry in _aliases.entries) {
+      final canonical = _normalize(entry.key);
+      final aliases = entry.value.map(_normalize).toSet();
+      if (normalized == canonical || aliases.contains(normalized)) {
+        result.add(canonical);
+        result.addAll(aliases);
+      }
+    }
+    return result;
+  }
+
   static List<IngredientMatch> rank(
     Iterable<Recipe> recipes, {
     required Set<String> available,
@@ -29,10 +58,13 @@ class IngredientMatcher {
     for (final recipe in recipes.where((item) => item.isPublished)) {
       bool matchesAny(Ingredient ingredient, Set<String> values) {
         final id = _normalize(ingredient.id);
-        final name = _normalize(ingredient.name);
-        return values.any((value) =>
-            value == id || value == name ||
-            (value.length > 2 && (name.contains(value) || value.contains(name))));
+        final names = _names(ingredient.name);
+        return values.any((value) {
+          final aliases = _names(value);
+          if (aliases.any((alias) => names.contains(alias)) || value == id) return true;
+          return aliases.any((alias) => names.any((name) =>
+              alias.length > 2 && (name.contains(alias) || alias.contains(name))));
+        });
       }
 
       if (recipe.ingredients.any((item) => matchesAny(item, normalizedExcluded))) {

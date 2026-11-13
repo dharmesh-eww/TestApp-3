@@ -21,9 +21,15 @@ class PlannerState {
   final Map<String, double> _manualAmounts = {};
   final Map<String, String> _manualNames = {};
   final Map<String, GroceryEdit> customGroceryItems = {};
+  final Map<String, Set<String>> groceryLists = {};
+  final Map<String, String> groceryListNames = {};
+  final Map<String, DateTime?> pantryExpiryDates = {};
+  bool onboardingComplete = false;
+  bool reduceMotion = false;
+  String themePreference = 'system';
 
   Map<String, Object?> toJson() => {
-    'schema_version': 3,
+    'schema_version': 4,
     'favorites': favorites.toList()..sort(),
     'meals': [
       for (final slots in mealPlan.values)
@@ -45,6 +51,9 @@ class PlannerState {
       for (final entry in customGroceryItems.entries)
         entry.key: {'name': entry.value.name, 'amount': entry.value.amount},
     },
+    'grocery_lists': {for (final entry in groceryLists.entries) entry.key: entry.value.toList()..sort()},
+    'grocery_list_names': groceryListNames,
+    'pantry_expiry_dates': {for (final entry in pantryExpiryDates.entries) entry.key: entry.value?.toIso8601String()},
     'collections': {
       for (final entry in collections.entries) entry.key: entry.value.toList()..sort(),
     },
@@ -57,6 +66,9 @@ class PlannerState {
       'measurement_system': measurementSystem,
       'week_starts_on': weekStartsOn,
       'locale_code': localeCode,
+      'theme_preference': themePreference,
+      'reduce_motion': reduceMotion,
+      'onboarding_complete': onboardingComplete,
     },
   };
 
@@ -66,7 +78,7 @@ class PlannerState {
     return state;
   }
 
-  /// Reads v1, v2 and v3 snapshots. The next save always writes v3.
+  /// Reads v1-v4 snapshots. The next save always writes v4.
   void restoreFromJson(Map<String, dynamic> json) {
     favorites.clear();
     mealPlan.clear();
@@ -76,6 +88,12 @@ class PlannerState {
     _manualAmounts.clear();
     _manualNames.clear();
     customGroceryItems.clear();
+    groceryLists.clear();
+    groceryListNames.clear();
+    pantryExpiryDates.clear();
+    onboardingComplete = false;
+    reduceMotion = false;
+    themePreference = 'system';
     collections.clear();
     collectionNames.clear();
     cookingHistory.clear();
@@ -86,7 +104,7 @@ class PlannerState {
     weekStartsOn = 1;
     localeCode = 'en';
     final version = json['schema_version'];
-    if (version != 1 && version != 2 && version != 3) return;
+    if (version != 1 && version != 2 && version != 3 && version != 4) return;
 
     final rawFavorites = json['favorites'];
     if (rawFavorites is List) {
@@ -153,6 +171,24 @@ class PlannerState {
       }
     }
 
+    final rawLists = json['grocery_lists'];
+    if (rawLists is Map) {
+      for (final entry in rawLists.entries) {
+        if (entry.key is String && entry.value is List) groceryLists[entry.key as String] = entry.value.whereType<String>().toSet();
+      }
+    }
+    final rawListNames = json['grocery_list_names'];
+    if (rawListNames is Map) {
+      for (final entry in rawListNames.entries) {
+        if (entry.key is String && entry.value is String) groceryListNames[entry.key as String] = entry.value as String;
+      }
+    }
+    final rawExpiry = json['pantry_expiry_dates'];
+    if (rawExpiry is Map) {
+      for (final entry in rawExpiry.entries) {
+        if (entry.key is String && entry.value is String) pantryExpiryDates[entry.key as String] = DateTime.tryParse(entry.value as String);
+      }
+    }
     final rawCollections = json['collections'];
     if (rawCollections is Map) {
       for (final entry in rawCollections.entries) {
@@ -209,6 +245,10 @@ class PlannerState {
       if (week == 1 || week == 7) weekStartsOn = week as int;
       final locale = preferences['locale_code'];
       if (locale == 'en' || locale == 'ar') localeCode = locale as String;
+      final theme = preferences['theme_preference'];
+      if (theme == 'system' || theme == 'light' || theme == 'dark') themePreference = theme as String;
+      reduceMotion = preferences['reduce_motion'] == true;
+      onboardingComplete = preferences['onboarding_complete'] == true;
     }
   }
 
@@ -247,6 +287,9 @@ class PlannerState {
     _manualAmounts.clear();
     _manualNames.clear();
     customGroceryItems.clear();
+    groceryLists.clear();
+    groceryListNames.clear();
+    pantryExpiryDates.clear();
     collections.clear();
     collectionNames.clear();
     cookingHistory.clear();
@@ -256,6 +299,9 @@ class PlannerState {
     measurementSystem = 'metric';
     weekStartsOn = 1;
     localeCode = 'en';
+    themePreference = 'system';
+    reduceMotion = false;
+    onboardingComplete = false;
   }
 
   bool isFavorite(String id) => favorites.contains(id);
@@ -302,6 +348,14 @@ class PlannerState {
         PlannedMeal(day: day, slot: slot, recipeId: recipeId, servings: servings < 1 ? 1 : servings);
   }
 
+  bool moveMeal({required String fromDay, required MealSlot fromSlot, required String toDay, required MealSlot toSlot}) {
+    final source = mealPlan[fromDay]?[fromSlot];
+    if (source == null || (fromDay == toDay && fromSlot == toSlot) || mealPlan[toDay]?.containsKey(toSlot) == true) return false;
+    removeMeal(fromDay, fromSlot);
+    assignMeal(day: toDay, slot: toSlot, recipeId: source.recipeId, servings: source.servings);
+    return true;
+  }
+
   void removeMeal(String day, MealSlot slot) {
     final slots = mealPlan[day];
     slots?.remove(slot);
@@ -321,6 +375,25 @@ class PlannerState {
   }
 
   void removeCustomGroceryItem(String key) => customGroceryItems.remove(key);
+
+  String createGroceryList(String name) {
+    final clean = name.trim();
+    if (clean.isEmpty) return '';
+    final id = 'grocery-${DateTime.now().microsecondsSinceEpoch}';
+    groceryLists[id] = <String>{};
+    groceryListNames[id] = clean;
+    return id;
+  }
+
+  void renameGroceryList(String id, String name) { final clean = name.trim(); if (groceryLists.containsKey(id) && clean.isNotEmpty) groceryListNames[id] = clean; }
+  void deleteGroceryList(String id) { groceryLists.remove(id); groceryListNames.remove(id); }
+  void assignGroceryItem(String listId, String itemKey) { if (groceryLists.containsKey(listId) && itemKey.isNotEmpty) groceryLists[listId]!.add(itemKey); }
+  void removeGroceryItemFromList(String listId, String itemKey) => groceryLists[listId]?.remove(itemKey);
+  void setPantryExpiry(String pantryId, DateTime? expiry) { if (pantry.containsKey(pantryId)) pantryExpiryDates[pantryId] = expiry == null ? null : DateTime(expiry.year, expiry.month, expiry.day); }
+  List<PantryItem> get expiringPantryItems {
+    final now = DateTime.now(); final today = DateTime(now.year, now.month, now.day); final cutoff = today.add(const Duration(days: 7));
+    return pantry.values.where((item) { final date = pantryExpiryDates[item.id]; return date != null && !date.isAfter(cutoff); }).toList(growable: false);
+  }
 
   void clearCheckedCustomGroceryItems() {
     final keys = customGroceryItems.keys.where((key) => groceryChecks[key] == true).toList();
@@ -413,7 +486,7 @@ class PlannerState {
     pantry[key] = PantryItem(id: key, name: cleanName, amount: amount, unit: cleanUnit);
   }
 
-  void removePantryItem(String id) => pantry.remove(id);
+  void removePantryItem(String id) { pantry.remove(id); pantryExpiryDates.remove(id); }
   static int _safeServings(Recipe recipe) => recipe.servings < 1 ? 1 : recipe.servings;
   static String _key(String name, String unit) => '${name.trim().toLowerCase()}|${unit.trim().toLowerCase()}';
 }
