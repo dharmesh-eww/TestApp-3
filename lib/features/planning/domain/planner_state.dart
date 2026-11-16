@@ -377,16 +377,20 @@ class PlannerState {
 
   void removeCustomGroceryItem(String key) {
     if (customGroceryItems.remove(key) != null) return;
-    final match = customGroceryItems.entries.where((entry) {
+    String? match;
+    for (final entry in customGroceryItems.entries) {
       final parts = entry.key.split('|');
-      if (parts.length < 2) return false;
+      if (parts.length < 2) continue;
       final unit = parts.sublist(1).join('|');
       final converted = MeasurementUnits.convert(entry.value.amount, unit, 'metric');
       var normalizedUnit = converted?.unit.toLowerCase() ?? unit.toLowerCase();
       if (normalizedUnit == 'kg') normalizedUnit = 'g';
       if (normalizedUnit == 'l') normalizedUnit = 'ml';
-      return _key(entry.value.name, normalizedUnit) == key;
-    }).map((entry) => entry.key).firstOrNull;
+      if (_key(entry.value.name, normalizedUnit) == key) {
+        match = entry.key;
+        break;
+      }
+    }
     if (match != null) customGroceryItems.remove(match);
   }
 
