@@ -305,7 +305,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       DropdownButtonFormField<String>(
                         value: foodType,
                         decoration: InputDecoration(labelText: appStrings(sheetContext).label('Food type', 'نوع الطعام')),
-                        items: const [
+                        items: [
                           DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All food types', 'كل أنواع الطعام'))),
                           DropdownMenuItem(value: 'vegetarian', child: Text(appStrings(sheetContext).label('Vegetarian', 'نباتي'))),
                           DropdownMenuItem(value: 'vegan', child: Text(appStrings(sheetContext).label('Vegan', 'نباتي صرف'))),
@@ -319,7 +319,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       DropdownButtonFormField<String>(
                         value: level,
                         decoration: InputDecoration(labelText: appStrings(sheetContext).label('Difficulty', 'مستوى الصعوبة')),
-                        items: const [
+                        items: [
                           DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('Any difficulty', 'أي مستوى'))),
                           DropdownMenuItem(value: 'easy', child: Text(appStrings(sheetContext).label('Easy', 'سهل'))),
                           DropdownMenuItem(value: 'medium', child: Text(appStrings(sheetContext).label('Medium', 'متوسط'))),
@@ -331,12 +331,12 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       DropdownButtonFormField<int?>(
                         value: minutes,
                         decoration: InputDecoration(labelText: appStrings(sheetContext).label('Maximum time', 'الوقت الأقصى')),
-                        items: const [
+                        items: [
                           DropdownMenuItem<int?>(value: null, child: Text(appStrings(sheetContext).label('Any time', 'أي وقت'))),
-                          DropdownMenuItem<int?>(value: 20, child: Text(appStrings(context).label('20 minutes', '20 دقيقة'))),
-                          DropdownMenuItem<int?>(value: 30, child: Text(appStrings(context).label('30 minutes', '30 دقيقة'))),
-                          DropdownMenuItem<int?>(value: 45, child: Text(appStrings(context).label('45 minutes', '45 دقيقة'))),
-                          DropdownMenuItem<int?>(value: 60, child: Text(appStrings(context).label('60 minutes', '60 دقيقة'))),
+                          DropdownMenuItem<int?>(value: 20, child: Text(appStrings(sheetContext).label('20 minutes', '20 دقيقة'))),
+                          DropdownMenuItem<int?>(value: 30, child: Text(appStrings(sheetContext).label('30 minutes', '30 دقيقة'))),
+                          DropdownMenuItem<int?>(value: 45, child: Text(appStrings(sheetContext).label('45 minutes', '45 دقيقة'))),
+                          DropdownMenuItem<int?>(value: 60, child: Text(appStrings(sheetContext).label('60 minutes', '60 دقيقة'))),
                         ],
                         onChanged: (value) => setSheetState(() => minutes = value),
                       ),
@@ -377,7 +377,7 @@ class TodayScreen extends StatelessWidget {
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(appStrings(context).label('MONDAY, AT YOUR PACE', 'أسبوعك على إيقاعك'), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
             SizedBox(height: 7),
-            Text('A little more joy\nin the kitchen.', style: TextStyle(fontFamily: 'Georgia', fontSize: 31, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
+            Text(appStrings(context).label('A little more joy\nin the kitchen.', 'مزيد من البهجة\nفي مطبخك.'), style: TextStyle(fontFamily: 'Georgia', fontSize: 31, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
           ])),
           CircleAvatar(radius: 24, backgroundColor: const Color(0xFFE9E4D8), child: Icon(Icons.spa_outlined, color: AppTheme.olive)),
         ]),
@@ -744,7 +744,7 @@ class GroceryScreen extends StatelessWidget {
     return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
       Text(appStrings(context).label('THE MARKET LIST', 'قائمة المشتريات'),style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
       Text(appStrings(context).label('Good things\\nto pick up.', 'أشياء جيدة\\nلشرائها.'),style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
-      Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:TextStyle(color:AppTheme.muted)),
+      Text(entries.isEmpty?appStrings(context).label('Your planned meals will gather ingredients here.', 'ستظهر مكونات وجباتك المخططة هنا.') : appStrings(context).label('$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy', 'تم تحديد $checked من ${entries.length} عناصر · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} للشراء'),style:TextStyle(color:AppTheme.muted)),
       const SizedBox(height:12),
       Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
         OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:Icon(Icons.add),label:Text(appStrings(context).label('Add item', 'إضافة عنصر'))),
@@ -783,8 +783,8 @@ class GroceryScreen extends StatelessWidget {
                   )),
                   Text(
                     item.isQuantified
-                      ? '${_formatAmount(item.amount)} ${item.unit} needed · ${_formatAmount(item.ownedAmount)} owned · ${_formatAmount(item.toBuyAmount)} to buy'
-                      : 'Non-quantified · check pantry before shopping',
+                      ? appStrings(context).label('${_formatAmount(item.amount)} ${item.unit} needed · ${_formatAmount(item.ownedAmount)} owned · ${_formatAmount(item.toBuyAmount)} to buy', '${_formatAmount(item.amount)} ${item.unit} مطلوب · ${_formatAmount(item.ownedAmount)} متوفر · ${_formatAmount(item.toBuyAmount)} للشراء')
+                      : appStrings(context).label('Non-quantified · check pantry before shopping', 'كمية غير محددة · تحقق من المخزن قبل التسوق'),
                     style: TextStyle(color: AppTheme.muted, fontSize: 11),
                   ),
                 ],
@@ -807,12 +807,12 @@ class GroceryScreen extends StatelessWidget {
       if(state.pantry.isEmpty)Text(appStrings(context).label('Your pantry is empty for now.', 'مخزنك فارغ حاليًا.'),style:TextStyle(color:AppTheme.muted))
       else for(final item in state.pantry.values)ListTile(contentPadding:const EdgeInsets.symmetric(horizontal:4),leading:Icon(Icons.inventory_2_outlined,color:AppTheme.olive),title:Text(item.name),subtitle:Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · ${appStrings(context).label('Expires', 'تنتهي الصلاحية')} ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
         trailing:Wrap(children:[
-          IconButton(tooltip:'Set expiry date',onPressed:() async {
+          IconButton(tooltip:appStrings(context).label('Set expiry date', 'تحديد تاريخ الصلاحية'),onPressed:() async {
             final current = state.pantryExpiryDates[item.id];
             final picked = await showDatePicker(context:context,initialDate:current ?? DateTime.now(),firstDate:DateTime.now().subtract(const Duration(days:3650)),lastDate:DateTime.now().add(const Duration(days:3650)));
             if(picked != null){state.setPantryExpiry(item.id,picked);PlannerScope.refresh(context);}
           },icon:Icon(Icons.event_outlined)),
-          IconButton(tooltip:'Remove pantry item',onPressed:(){state.removePantryItem(item.id);PlannerScope.refresh(context);},icon:Icon(Icons.close)),
+          IconButton(tooltip:appStrings(context).label('Remove pantry item', 'إزالة عنصر من المخزن'),onPressed:(){state.removePantryItem(item.id);PlannerScope.refresh(context);},icon:Icon(Icons.close)),
         ])),
     ]);
   }
@@ -865,7 +865,7 @@ class GroceryScreen extends StatelessWidget {
   void _showPantryEditor(BuildContext context){
     final name=TextEditingController(),amount=TextEditingController(text:'1'),unit=TextEditingController(text:'g');
     showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:Text(appStrings(context).label('Add to your pantry', 'إضافة إلى المخزن')),content:Column(mainAxisSize:MainAxisSize.min,children:[
-      TextField(controller:name,decoration:const InputDecoration(labelText:'Ingredient')),TextField(controller:amount,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'Quantity')),TextField(controller:unit,decoration:const InputDecoration(labelText:'Unit (g, ml, whole…)')),
+      TextField(controller:name,decoration:InputDecoration(labelText:appStrings(context).label('Ingredient', 'المكوّن'))),TextField(controller:amount,keyboardType:TextInputType.number,decoration:InputDecoration(labelText:appStrings(context).label('Quantity', 'الكمية'))),TextField(controller:unit,decoration:InputDecoration(labelText:appStrings(context).label('Unit (g, ml, whole…)', 'الوحدة (g، ml، كامل…)'))),
     ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:Text(appStrings(context).label('Cancel', 'إلغاء'))),FilledButton(onPressed:(){
       final value=double.tryParse(amount.text.trim());if(value==null||value<0||name.text.trim().isEmpty||unit.text.trim().isEmpty)return;
       PlannerScope.of(context).upsertPantryItem(name:name.text,amount:value,unit:unit.text);PlannerScope.refresh(context);Navigator.pop(dialogContext);
@@ -895,7 +895,7 @@ class KitchenScreen extends StatelessWidget {
       children: [
         Text(appStrings(context).label('YOUR LITTLE COOKBOOK', 'كتاب وصفاتك الصغير'), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
         const SizedBox(height: 8),
-        Text('Your kitchen,\nyour rhythm.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
+        Text(appStrings(context).label('Your kitchen,\nyour rhythm.', 'مطبخك،\nإيقاعك الخاص.'), style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
         Row(children: [
           _StatCard(value: '${saved.length}', label: 'Saved recipes', icon: Icons.bookmark_outline),
