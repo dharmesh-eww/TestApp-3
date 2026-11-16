@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:testapp_3/features/recipes/domain/ingredient_matcher.dart';
 import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
+import 'package:testapp_3/features/recipes/domain/recipe.dart';
 
 void main() {
   test('ranks recipes by available ingredient coverage and missing items', () {
