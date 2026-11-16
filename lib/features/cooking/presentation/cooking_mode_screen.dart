@@ -304,11 +304,12 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
   }
 
   Future<void> _startTimer(CookingSession session, String id, String label, Duration remaining) async {
+    final startedAt = DateTime.now();
     session.startTimer(id);
     await CookingAssistService.requestNotificationPermission();
     await CookingAssistService.scheduleTimerNotification(
       id: id, title: 'Cooking timer finished', body: label,
-      fireAt: DateTime.now().add(remaining),
+      fireAt: startedAt.add(remaining),
     );
   }
 
