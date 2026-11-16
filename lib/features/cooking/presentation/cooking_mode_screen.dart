@@ -81,7 +81,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                   final enabled = !_keepAwake;
                   final applied = await CookingAssistService.setKeepScreenOn(enabled);
                   if (mounted) setState(() => _keepAwake = applied);
-                  if (!applied && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(strings.label('Keep-screen-awake is unavailable on this platform.', 'ميزة إبقاء الشاشة قيد التشغيل غير متاحة على هذا الجهاز.'))));
+                  if (!applied && mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(strings.label('Keep-screen-awake is unavailable on this platform.', 'ميزة إبقاء الشاشة قيد التشغيل غير متاحة على هذا الجهاز.'))));
                 },
                 icon: Icon(_keepAwake ? Icons.screen_lock_portrait : Icons.screen_lock_landscape),
               ),
@@ -185,7 +185,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                     ),
                   ]),
                 ] else ...[
-                  const Expanded(child: Center(child: Text(strings.label('This recipe has no instructions yet.', 'لا توجد تعليمات لهذه الوصفة بعد.')))),
+                  Expanded(child: Center(child: Text(strings.label('This recipe has no instructions yet.', 'لا توجد تعليمات لهذه الوصفة بعد.')))),
                 ],
               ]),
             ),
@@ -320,7 +320,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
       builder: (dialogContext) => AlertDialog(
         title: Text(appStrings(context).label('Add a kitchen timer', 'إضافة مؤقت للمطبخ')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: labelController, decoration: const InputDecoration(labelText: appStrings(context).label('Timer label', 'اسم المؤقت'))),
+          TextField(controller: labelController, decoration: InputDecoration(labelText: appStrings(context).label('Timer label', 'اسم المؤقت'))),
           const SizedBox(height: 10),
           TextField(controller: minutesController, keyboardType: TextInputType.number,
             decoration: const InputDecoration(labelText: appStrings(context).label('Minutes', 'الدقائق'))),
