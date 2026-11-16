@@ -60,6 +60,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                     val intent = Intent(this, CookingTimerReceiver::class.java).setAction("com.example.testapp_3.COOKING_TIMER").putExtra("title", "Cooking timer").putExtra("body", "A timer has finished.")
                     val pending = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                     (getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(pending)
+                    (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(id)
                     result.success(null)
                 }
                 else -> result.notImplemented()
@@ -78,7 +79,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
             return false
         }
         val intent = Intent(this, CookingTimerReceiver::class.java).setAction("com.example.testapp_3.COOKING_TIMER")
-            .putExtra("title", title).putExtra("body", body)
+            .putExtra("notification_id", id).putExtra("title", title).putExtra("body", body)
         val pending = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarm.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAt, pending)
@@ -128,6 +129,7 @@ class CookingTimerReceiver : BroadcastReceiver() {
             .setContentTitle(intent.getStringExtra("title") ?: "Cooking timer finished")
             .setContentText(intent.getStringExtra("body") ?: "Your timer is complete.")
             .setAutoCancel(true)
-        manager.notify((System.currentTimeMillis() % Int.MAX_VALUE).toInt(), notification.build())
+        val notificationId = intent.getIntExtra("notification_id", 0)
+        manager.notify(notificationId, notification.build())
     }
 }
