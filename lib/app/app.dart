@@ -333,10 +333,10 @@ class _DiscoveryFilterBar extends StatelessWidget {
                         decoration: InputDecoration(labelText: appStrings(sheetContext).label('Maximum time', 'الوقت الأقصى')),
                         items: const [
                           DropdownMenuItem<int?>(value: null, child: Text(appStrings(sheetContext).label('Any time', 'أي وقت'))),
-                          DropdownMenuItem<int?>(value: 20, child: Text('20 minutes')),
-                          DropdownMenuItem<int?>(value: 30, child: Text('30 minutes')),
-                          DropdownMenuItem<int?>(value: 45, child: Text('45 minutes')),
-                          DropdownMenuItem<int?>(value: 60, child: Text('60 minutes')),
+                          DropdownMenuItem<int?>(value: 20, child: Text(appStrings(context).label('20 minutes', '20 دقيقة'))),
+                          DropdownMenuItem<int?>(value: 30, child: Text(appStrings(context).label('30 minutes', '30 دقيقة'))),
+                          DropdownMenuItem<int?>(value: 45, child: Text(appStrings(context).label('45 minutes', '45 دقيقة'))),
+                          DropdownMenuItem<int?>(value: 60, child: Text(appStrings(context).label('60 minutes', '60 دقيقة'))),
                         ],
                         onChanged: (value) => setSheetState(() => minutes = value),
                       ),
@@ -752,7 +752,7 @@ class GroceryScreen extends StatelessWidget {
         if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ state.clearCheckedCustomGroceryItems(); PlannerScope.refresh(context); },child:Text(appStrings(context).label('Clear checked custom items', 'مسح العناصر المخصصة المحددة'))),
       ])),
       const SizedBox(height:12),
-      if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
+      if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text(appStrings(context).label('Your list is waiting', 'قائمتك بانتظارك'),style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text(appStrings(context).label('Add meals to your weekly plan or add ingredients from a recipe.', 'أضف وجبات إلى خطتك الأسبوعية أو أضف مكونات من وصفة.'),textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
       else for (final aisle in grouped.entries) ...[
         Padding(padding: const EdgeInsets.only(top: 10, bottom: 8), child: Text(aisle.key.toUpperCase(), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.3))),
         for (final item in aisle.value) Container(
@@ -866,7 +866,7 @@ class GroceryScreen extends StatelessWidget {
     final name=TextEditingController(),amount=TextEditingController(text:'1'),unit=TextEditingController(text:'g');
     showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:Text(appStrings(context).label('Add to your pantry', 'إضافة إلى المخزن')),content:Column(mainAxisSize:MainAxisSize.min,children:[
       TextField(controller:name,decoration:const InputDecoration(labelText:'Ingredient')),TextField(controller:amount,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'Quantity')),TextField(controller:unit,decoration:const InputDecoration(labelText:'Unit (g, ml, whole…)')),
-    ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:Text('Cancel')),FilledButton(onPressed:(){
+    ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:Text(appStrings(context).label('Cancel', 'إلغاء'))),FilledButton(onPressed:(){
       final value=double.tryParse(amount.text.trim());if(value==null||value<0||name.text.trim().isEmpty||unit.text.trim().isEmpty)return;
       PlannerScope.of(context).upsertPantryItem(name:name.text,amount:value,unit:unit.text);PlannerScope.refresh(context);Navigator.pop(dialogContext);
     },child:Text(appStrings(context).label('Save', 'حفظ')))])).then((_){name.dispose();amount.dispose();unit.dispose();});
