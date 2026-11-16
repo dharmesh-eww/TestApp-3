@@ -49,6 +49,19 @@ void main() {
     expect(item.toBuyAmount, closeTo(.5, .0001));
   });
 
+  test('removing a merged custom grocery row removes all compatible entries', () {
+    final state = PlannerState();
+    state.addCustomGroceryItem(name: 'Flour', amount: 500, unit: 'g');
+    state.addCustomGroceryItem(name: 'Flour', amount: .5, unit: 'kg');
+    final item = state.buildGroceryList(const []).single;
+
+    expect(item.amount, closeTo(1, .0001));
+    expect(item.unit, 'kg');
+    state.removeCustomGroceryItem(item.key);
+
+    expect(state.buildGroceryList(const []), isEmpty);
+  });
+
   test('owned and to-buy quantities use the same displayed unit', () {
     final state = PlannerState()..measurementSystem = 'us';
     final recipe = _recipe('mass', 400, 'g');
