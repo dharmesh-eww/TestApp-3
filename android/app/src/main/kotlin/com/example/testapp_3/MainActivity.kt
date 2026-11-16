@@ -23,8 +23,8 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
     private var permissionRequestInFlight = false
-    private var pendingTimer: Triple<Int, String, String>? = null
-    private var pendingFireAt: Long = 0L
+    private data class PendingTimer(val title: String, val body: String, val fireAt: Long)
+    private val pendingTimers = linkedMapOf<Int, PendingTimer>()
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -56,7 +56,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                 }
                 "cancelTimerNotification" -> {
                     val id = call.argument<Int>("id") ?: 0
-                    if (pendingTimer?.first == id) pendingTimer = null
+                    pendingTimers.remove(id)
                     val intent = Intent(this, CookingTimerReceiver::class.java).setAction("com.example.testapp_3.COOKING_TIMER").putExtra("title", "Cooking timer").putExtra("body", "A timer has finished.")
                     val pending = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                     (getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(pending)
@@ -70,8 +70,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
     private fun scheduleTimer(id: Int, title: String, body: String, fireAt: Long): Boolean {
         if (fireAt <= System.currentTimeMillis()) return false
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            pendingTimer = Triple(id, title, body)
-            pendingFireAt = fireAt
+            pendingTimers[id] = PendingTimer(title, body, fireAt)
             if (!permissionRequestInFlight) {
                 permissionRequestInFlight = true
                 requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 8402)
@@ -90,11 +89,15 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 8402) {
             permissionRequestInFlight = false
-            val pending = pendingTimer
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && pending != null) {
-                scheduleTimer(pending.first, pending.second, pending.third, pendingFireAt)
+            val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            val pending = pendingTimers.toMap()
+            pendingTimers.clear()
+            if (granted) {
+                val now = System.currentTimeMillis()
+                pending.forEach { (id, timer) ->
+                    if (timer.fireAt > now) scheduleTimer(id, timer.title, timer.body, timer.fireAt)
+                }
             }
-            pendingTimer = null
         }
     }
 
