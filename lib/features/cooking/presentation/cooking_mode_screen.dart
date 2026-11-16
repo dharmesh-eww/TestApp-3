@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../app/planner_scope.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../recipes/domain/recipe.dart';
+import '../../../localization/app_localizations.dart';
 import '../domain/cooking_session.dart';
 import '../domain/cooking_assist_service.dart';
 
@@ -33,6 +34,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
     return AnimatedBuilder(
       animation: session,
       builder: (context, _) {
+        final strings = appStrings(context);
         final servings = session.servingsFor(widget.recipe.id, widget.recipe.servings);
         final currentStep = session.stepFor(widget.recipe.id).clamp(
           0, total == 0 ? 0 : total - 1,
@@ -44,11 +46,11 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
             return await showDialog<bool>(
               context: context,
               builder: (dialogContext) => AlertDialog(
-                title: Text('Leave cooking mode?'),
-                content: Text('A kitchen timer is still running. It will continue counting down; supported Android devices can show a notification when it finishes.'),
+                title: Text(strings.label('Leave cooking mode?', 'مغادرة وضع الطهي؟')),
+                content: Text(strings.label('A kitchen timer is still running. It will continue counting down; supported Android devices can show a notification when it finishes.', 'لا يزال مؤقت المطبخ يعمل وسيواصل العد التنازلي. قد تعرض أجهزة أندرويد المدعومة إشعارًا عند انتهائه.')),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text('Stay here')),
-                  FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text('Leave')),
+                  TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(strings.label('Stay here', 'البقاء هنا'))),
+                  FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(strings.label('Leave', 'مغادرة'))),
                 ],
               ),
             ) ?? false;
@@ -59,12 +61,12 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
             title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(widget.recipe.title, maxLines: 1, overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-              Text(total == 0 ? 'No instructions' : 'STEP ${currentStep + 1} OF $total',
+              Text(total == 0 ? strings.label('No instructions', 'لا توجد تعليمات') : strings.stepOf(currentStep + 1, total),
                 style: TextStyle(fontSize: 10, color: AppTheme.muted, letterSpacing: 1.2)),
             ]),
             actions: [
               IconButton(
-                tooltip: 'Read this step aloud',
+                tooltip: strings.label('Read this step aloud', 'اقرأ هذه الخطوة بصوت عالٍ'),
                 onPressed: () {
                   final steps = widget.recipe.steps;
                   if (steps.isEmpty) return;
@@ -74,12 +76,12 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                 icon: Icon(Icons.record_voice_over_outlined),
               ),
               IconButton(
-                tooltip: _keepAwake ? 'Allow screen to sleep' : 'Keep screen awake',
+                tooltip: _keepAwake ? strings.label('Allow screen to sleep', 'السماح بإيقاف الشاشة') : strings.label('Keep screen awake', 'إبقاء الشاشة قيد التشغيل'),
                 onPressed: () async {
                   final enabled = !_keepAwake;
                   final applied = await CookingAssistService.setKeepScreenOn(enabled);
                   if (mounted) setState(() => _keepAwake = applied);
-                  if (!applied && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Keep-screen-awake is unavailable on this platform.')));
+                  if (!applied && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(strings.label('Keep-screen-awake is unavailable on this platform.', 'ميزة إبقاء الشاشة قيد التشغيل غير متاحة على هذا الجهاز.'))));
                 },
                 icon: Icon(_keepAwake ? Icons.screen_lock_portrait : Icons.screen_lock_landscape),
               ),
@@ -106,7 +108,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                     ),
                   ),
                   const SizedBox(height: 28),
-                  Text('A MOMENT IN THE MAKING',
+                  Text(strings.label('A MOMENT IN THE MAKING', 'لحظة من التحضير'),
                     style: TextStyle(color: AppTheme.terracotta, fontSize: 10,
                       fontWeight: FontWeight.w800, letterSpacing: 1.5)),
                   const SizedBox(height: 14),
@@ -146,7 +148,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                             ? null
                             : () => session.setStep(widget.recipe.id, currentStep - 1, total),
                         icon: Icon(Icons.arrow_back),
-                        label: Text('Previous'),
+                        label: Text(strings.label('Previous', 'السابق')),
                         style: OutlinedButton.styleFrom(minimumSize: const Size(0, 54)),
                       ),
                     ),
@@ -158,16 +160,16 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                             showDialog<void>(
                               context: context,
                               builder: (dialogContext) => AlertDialog(
-                                title: Text('Ready to serve?'),
-                                content: Text('You have reached the final step. Finish this cooking session?'),
+                                title: Text(strings.label('Ready to serve?', 'هل أنت مستعد للتقديم؟')),
+                                content: Text(strings.label('You have reached the final step. Finish this cooking session?', 'وصلت إلى الخطوة الأخيرة. هل تريد إنهاء جلسة الطهي؟')),
                                 actions: [
-                                  TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Keep cooking')),
+                                  TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(strings.label('Keep cooking', 'متابعة الطهي'))),
                                   FilledButton(onPressed: () {
                                     PlannerScope.of(context).recordCooked(widget.recipe);
                                     PlannerScope.refresh(context);
                                     Navigator.pop(dialogContext);
                                     Navigator.pop(context);
-                                  }, child: Text('Finish')),
+                                  }, child: Text(strings.label('Finish', 'إنهاء'))),
                                 ],
                               ),
                             );
@@ -183,7 +185,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                     ),
                   ]),
                 ] else ...[
-                  const Expanded(child: Center(child: Text('This recipe has no instructions yet.'))),
+                  const Expanded(child: Center(child: Text(strings.label('This recipe has no instructions yet.', 'لا توجد تعليمات لهذه الوصفة بعد.')))),
                 ],
               ]),
             ),
@@ -202,7 +204,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
         border: Border.all(color: AppTheme.line)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: Text('INGREDIENTS AT A GLANCE',
+          Expanded(child: Text(appStrings(context).label('INGREDIENTS AT A GLANCE', 'المكونات باختصار'),
             style: TextStyle(fontSize: 10, letterSpacing: 1.1, color: AppTheme.olive, fontWeight: FontWeight.w800))),
           IconButton(
             visualDensity: VisualDensity.compact,
@@ -234,16 +236,16 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
     final timers = session.timers;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        Expanded(child: Text('Kitchen timers', style: TextStyle(
+        Expanded(child: Text(appStrings(context).label('Kitchen timers', 'مؤقتات المطبخ'), style: TextStyle(
           color: AppTheme.ink, fontWeight: FontWeight.w800, fontSize: 16))),
         TextButton.icon(
           onPressed: () => _addTimer(initialLabel: 'Step ${currentStep + 1}'),
           icon: Icon(Icons.add_alarm, size: 18),
-          label: Text('Add timer'),
+          label: Text(appStrings(context).label('Add timer', 'إضافة مؤقت')),
         ),
       ]),
       if (timers.isEmpty)
-        Text('Set a timer for simmering, resting or baking.',
+        Text(appStrings(context).label('Set a timer for simmering, resting or baking.', 'اضبط مؤقتًا للطهي على نار هادئة أو الراحة أو الخَبز.'),
           style: TextStyle(color: AppTheme.muted, fontSize: 12))
       else
         SizedBox(
@@ -316,22 +318,22 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
     final result = await showDialog<(String, int)>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Add a kitchen timer'),
+        title: Text(appStrings(context).label('Add a kitchen timer', 'إضافة مؤقت للمطبخ')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: labelController, decoration: const InputDecoration(labelText: 'Timer label')),
+          TextField(controller: labelController, decoration: const InputDecoration(labelText: appStrings(context).label('Timer label', 'اسم المؤقت'))),
           const SizedBox(height: 10),
           TextField(controller: minutesController, keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Minutes')),
+            decoration: const InputDecoration(labelText: appStrings(context).label('Minutes', 'الدقائق'))),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
           FilledButton(
             onPressed: () {
               final minutes = int.tryParse(minutesController.text.trim());
               if (minutes == null || minutes < 1 || minutes > 1440) return;
               Navigator.pop(dialogContext, (labelController.text, minutes));
             },
-            child: Text('Create'),
+            child: Text(appStrings(context).label('Create', 'إنشاء')),
           ),
         ],
       ),
