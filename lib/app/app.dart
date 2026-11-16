@@ -453,7 +453,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
-        Text(strings.recipeShelf, style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+        Row(
+          children: [
+            Expanded(
+              child: Text(strings.recipeShelf, style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+            ),
+            IconButton(
+              key: const Key('open-favourites-button'),
+              tooltip: strings.favorites,
+              onPressed: () => Navigator.push(
+                context,
+                AnimatedPageRoute(builder: (_) => const FavoritesScreen()),
+              ),
+              icon: const Icon(Icons.favorite_border),
+              color: AppTheme.terracotta,
+            ),
+          ],
+        ),
         const SizedBox(height: 8),
         Text(strings.findFavourite, style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
@@ -576,6 +592,78 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 ),
         ),
       ],
+    );
+  }
+}
+
+class FavoritesScreen extends StatelessWidget {
+  const FavoritesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final state = PlannerScope.of(context);
+    final favourites = RecipeCatalogScope.of(context)
+        .where((recipe) => state.isFavorite(recipe.id))
+        .toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(appStrings(context).favorites),
+        backgroundColor: AppTheme.paper,
+      ),
+      body: favourites.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.favorite_border, size: 52, color: AppTheme.olive),
+                    const SizedBox(height: 16),
+                    Text(
+                      appStrings(context).label('No favourite recipes yet', 'لا توجد وصفات مفضلة بعد'),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      appStrings(context).label(
+                        'Save recipes you love and they’ll appear here.',
+                        'احفظ الوصفات التي تحبها وستظهر هنا.',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppTheme.muted),
+                    ),
+                    const SizedBox(height: 18),
+                    FilledButton.icon(
+                      key: const Key('explore-recipes-from-favourites'),
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.search),
+                      label: Text(appStrings(context).label('Explore recipes', 'استكشف الوصفات')),
+                      style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+              children: [
+                Text(
+                  appStrings(context).label(
+                    '${favourites.length} saved ${favourites.length == 1 ? 'recipe' : 'recipes'}',
+                    '${favourites.length} وصفة محفوظة',
+                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 14),
+                for (final recipe in favourites)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _RecipeListTile(recipe: recipe),
+                  ),
+              ],
+            ),
     );
   }
 }
@@ -1014,11 +1102,14 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           expandedHeight: 280, pinned: true, backgroundColor: AppTheme.paper,
           actions: [
             IconButton(
+              tooltip: favorite
+                  ? appStrings(context).label('Remove from favourites', 'إزالة من المفضلة')
+                  : appStrings(context).label('Add to favourites', 'إضافة إلى المفضلة'),
               onPressed: () {
                 state.toggleFavorite(recipe.id);
                 PlannerScope.refresh(context);
               },
-              icon: Icon(favorite ? Icons.bookmark : Icons.bookmark_border, color: favorite ? AppTheme.terracotta : AppTheme.ink),
+              icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: favorite ? AppTheme.terracotta : AppTheme.ink),
               style: IconButton.styleFrom(backgroundColor: AppTheme.card),
             ),
             IconButton(
@@ -1206,7 +1297,24 @@ class _RecipeListTile extends StatelessWidget {
             const SizedBox(height: 5),
             Text(appStrings(context).label('${recipe.minutes} min · ${recipe.difficulty}', '${recipe.minutes} دقيقة · ${recipe.difficulty}'), style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
           ])),
-          Icon(Icons.chevron_right, color: AppTheme.muted),
+          Builder(builder: (context) {
+            final state = PlannerScope.of(context);
+            final favorite = state.isFavorite(recipe.id);
+            return IconButton(
+              key: Key('toggle-favourite-${recipe.id}'),
+              tooltip: favorite
+                  ? appStrings(context).label('Remove from favourites', 'إزالة من المفضلة')
+                  : appStrings(context).label('Add to favourites', 'إضافة إلى المفضلة'),
+              onPressed: () {
+                state.toggleFavorite(recipe.id);
+                PlannerScope.refresh(context);
+              },
+              icon: Icon(
+                favorite ? Icons.favorite : Icons.favorite_border,
+                color: favorite ? AppTheme.terracotta : AppTheme.muted,
+              ),
+            );
+          }),
         ]),
       ),
     );
