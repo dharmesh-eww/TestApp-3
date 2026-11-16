@@ -376,8 +376,7 @@ class PlannerState {
   }
 
   void removeCustomGroceryItem(String key) {
-    if (customGroceryItems.remove(key) != null) return;
-    String? match;
+    final matches = <String>[];
     for (final entry in customGroceryItems.entries) {
       final parts = entry.key.split('|');
       if (parts.length < 2) continue;
@@ -387,11 +386,12 @@ class PlannerState {
       if (normalizedUnit == 'kg') normalizedUnit = 'g';
       if (normalizedUnit == 'l') normalizedUnit = 'ml';
       if (_key(entry.value.name, normalizedUnit) == key) {
-        match = entry.key;
-        break;
+        matches.add(entry.key);
       }
     }
-    if (match != null) customGroceryItems.remove(match);
+    for (final match in matches) {
+      customGroceryItems.remove(match);
+    }
   }
 
   String createGroceryList(String name) {
