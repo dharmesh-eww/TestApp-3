@@ -612,7 +612,7 @@ class _PlanScreenState extends State<PlanScreen> {
               child:Column(children:[Text(name.substring(0,1),style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.muted,fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:5),Text('$count',style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.ink,fontWeight:FontWeight.w800))]))));
         }))),
       const SizedBox(height:18),
-      Row(children: [Expanded(child: Text(day, style: Theme.of(context).textTheme.titleLarge)), Text(appStrings(context).label('${meals.length}/4 planned', 'تم التخطيط لـ ${meals.length}/4'), style: TextStyle(color: AppTheme.muted, fontSize: 12))]),
+      Row(children: [Expanded(child: Text(appStrings(context).weekday(day), style: Theme.of(context).textTheme.titleLarge)), Text(appStrings(context).label('${meals.length}/4 planned', 'تم التخطيط لـ ${meals.length}/4'), style: TextStyle(color: AppTheme.muted, fontSize: 12))]),
       const SizedBox(height:10),
       for(final slot in MealSlot.values)
         _MealSlotCard(key: ValueKey('meal-slot-$day-${slot.name}'), day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
@@ -633,11 +633,11 @@ class _PlanScreenState extends State<PlanScreen> {
         title: Text(appStrings(context).label('Move planned meal', 'نقل الوجبة المخططة')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           DropdownButtonFormField<String>(value: targetDay, decoration: InputDecoration(labelText: appStrings(context).label('Day', 'اليوم')),
-            items: days.map((day) => DropdownMenuItem(value: day, child: Text(day))).toList(),
+            items: days.map((day) => DropdownMenuItem(value: day, child: Text(appStrings(context).weekday(day)))).toList(),
             onChanged: (value) => setDialogState(() => targetDay = value ?? fromDay)),
           const SizedBox(height: 12),
           DropdownButtonFormField<MealSlot>(value: targetSlot, decoration: InputDecoration(labelText: appStrings(context).label('Meal', 'الوجبة')),
-            items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(slot.label))).toList(),
+            items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(appStrings(context).mealSlot(slot.name)))).toList(),
             onChanged: (value) => setDialogState(() => targetSlot = value ?? fromSlot)),
         ]),
         actions: [
@@ -668,11 +668,11 @@ class _PlanScreenState extends State<PlanScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Plan ${slot.label.toLowerCase()}',
+                appStrings(sheetContext).label('Plan ${slot.label.toLowerCase()}', 'خطط ${appStrings(sheetContext).mealSlot(slot.name)}'),
                 style: Theme.of(sheetContext).textTheme.headlineMedium,
               ),
               Text(
-                '$day · Choose a recipe',
+                '${appStrings(sheetContext).weekday(day)} · ${appStrings(sheetContext).label('Choose a recipe', 'اختر وصفة')}',
                 style: TextStyle(color: AppTheme.muted),
               ),
               const SizedBox(height: 12),
@@ -720,14 +720,14 @@ class _MealSlotCard extends StatelessWidget {
       child:Row(children:[
         Container(width:40,height:40,decoration:BoxDecoration(color:AppTheme.olive.withOpacity(.12),borderRadius:BorderRadius.circular(12)),child:Icon(switch(slot){MealSlot.breakfast=>Icons.wb_twilight,MealSlot.lunch=>Icons.wb_sunny_outlined,MealSlot.dinner=>Icons.nightlight_outlined,MealSlot.snack=>Icons.cookie_outlined},color:AppTheme.olive)),
         const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-          Text(slot.label.toUpperCase(),style:TextStyle(color:AppTheme.terracotta,fontSize:9,letterSpacing:1.1,fontWeight:FontWeight.w800)),const SizedBox(height:4),
-          Text(recipe?.title??'Nothing planned yet',style:TextStyle(color:recipe==null?AppTheme.muted:AppTheme.ink,fontWeight:FontWeight.w700)),
+          Text(appStrings(context).mealSlot(slot.name).toUpperCase(),style:TextStyle(color:AppTheme.terracotta,fontSize:9,letterSpacing:1.1,fontWeight:FontWeight.w800)),const SizedBox(height:4),
+          Text(recipe?.title??appStrings(context).label('Nothing planned yet', 'لا توجد وجبة مخططة بعد'),style:TextStyle(color:recipe==null?AppTheme.muted:AppTheme.ink,fontWeight:FontWeight.w700)),
           if(meal!=null)Text(appStrings(context).label('${meal!.servings} servings · ${recipe?.minutes??0} min', '${meal!.servings} حصص · ${recipe?.minutes??0} دقيقة'),style:TextStyle(color:AppTheme.muted,fontSize:11)),
         ])),
-        if(meal==null)IconButton(key:Key('add-${day}-${slot.name}'),tooltip:'Add ${slot.label}',onPressed:onAdd,icon:Icon(Icons.add_circle_outline,color:AppTheme.terracotta))
+        if(meal==null)IconButton(key:Key('add-${day}-${slot.name}'),tooltip:appStrings(context).label('Add ${slot.label}', 'إضافة ${appStrings(context).mealSlot(slot.name)}'),onPressed:onAdd,icon:Icon(Icons.add_circle_outline,color:AppTheme.terracotta))
         else Row(mainAxisSize:MainAxisSize.min,children:[
-          IconButton(tooltip:'Move meal',onPressed:onMove,icon:Icon(Icons.drive_file_move_outline,color:AppTheme.olive)),
-          IconButton(key:Key('remove-${day}-${slot.name}'),tooltip:'Remove ${slot.label}',onPressed:onRemove,icon:Icon(Icons.close,color:AppTheme.muted)),
+          IconButton(tooltip:appStrings(context).label('Move meal', 'نقل الوجبة'),onPressed:onMove,icon:Icon(Icons.drive_file_move_outline,color:AppTheme.olive)),
+          IconButton(key:Key('remove-${day}-${slot.name}'),tooltip:appStrings(context).label('Remove ${slot.label}', 'إزالة ${appStrings(context).mealSlot(slot.name)}'),onPressed:onRemove,icon:Icon(Icons.close,color:AppTheme.muted)),
         ]),
       ]));
   }
@@ -1235,14 +1235,13 @@ class _WeekStrip extends StatelessWidget {
     final names = state.weekStartsOn == 7
         ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
         : PlanScreen.days;
-    final days = state.weekStartsOn == 7 ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: AppTheme.line)),
       child: Row(children: List.generate(7, (index) {
         final count = state.mealsFor(names[index]).length;
         return Expanded(child: Column(children: [
-          Text(days[index], style: TextStyle(color: AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700)),
+          Text(appStrings(context).weekdayShort(names[index]), style: TextStyle(color: AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           CircleAvatar(radius: 15, backgroundColor: count > 0 ? AppTheme.olive.withOpacity(.15) : AppTheme.paper,
             child: Text('$count', style: TextStyle(color: count > 0 ? AppTheme.olive : AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700))),
