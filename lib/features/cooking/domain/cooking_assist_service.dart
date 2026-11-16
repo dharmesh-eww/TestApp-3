@@ -50,7 +50,7 @@ class CookingAssistService {
   }
 
   static Future<void> cancelTimerNotification(String id) async {
-    try { await _channel.invokeMethod<void>('cancelTimerNotification', {'id': _notificationId(id)}); }
+    try { await _channel.invokeMethod<void>('cancelTimerNotification', {'id': notificationIdFor(id)}); }
     on PlatformException { } on MissingPluginException { }
   }
 }
