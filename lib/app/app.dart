@@ -532,7 +532,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               value: _sort,
               borderRadius: BorderRadius.circular(14),
               style: TextStyle(color: AppTheme.ink, fontSize: 12, fontWeight: FontWeight.w600),
-              items: const [
+              items: [
                 DropdownMenuItem(value: RecipeSort.recommended, child: Text(appStrings(context).label('Recommended', 'موصى به'))),
                 DropdownMenuItem(value: RecipeSort.quickest, child: Text(appStrings(context).label('Quickest', 'الأسرع'))),
                 DropdownMenuItem(value: RecipeSort.title, child: Text(appStrings(context).label('A–Z', 'أ–ي'))),
@@ -612,7 +612,7 @@ class _PlanScreenState extends State<PlanScreen> {
               child:Column(children:[Text(name.substring(0,1),style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.muted,fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:5),Text('$count',style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.ink,fontWeight:FontWeight.w800))]))));
         }))),
       const SizedBox(height:18),
-      Row(children:[Expanded(child:Text(day,style:Theme.of(context).textTheme.titleLarge)),Text(appStrings(context).label('${meals.length}/4 planned', 'تم التخطيط لـ ${meals.length}/4')),style:TextStyle(color:AppTheme.muted,fontSize:12))]),
+      Row(children: [Expanded(child: Text(day, style: Theme.of(context).textTheme.titleLarge)), Text(appStrings(context).label('${meals.length}/4 planned', 'تم التخطيط لـ ${meals.length}/4'), style: TextStyle(color: AppTheme.muted, fontSize: 12))]),
       const SizedBox(height:10),
       for(final slot in MealSlot.values)
         _MealSlotCard(key: ValueKey('meal-slot-$day-${slot.name}'), day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
