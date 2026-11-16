@@ -323,7 +323,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
           TextField(controller: labelController, decoration: InputDecoration(labelText: appStrings(context).label('Timer label', 'اسم المؤقت'))),
           const SizedBox(height: 10),
           TextField(controller: minutesController, keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: appStrings(context).label('Minutes', 'الدقائق'))),
+            decoration: InputDecoration(labelText: appStrings(context).label('Minutes', 'الدقائق'))),
         ]),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
