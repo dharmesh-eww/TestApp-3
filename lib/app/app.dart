@@ -292,47 +292,47 @@ class _DiscoveryFilterBar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Refine recipes', style: Theme.of(sheetContext).textTheme.headlineMedium),
+                      Text(appStrings(sheetContext).label('Refine recipes', 'تصفية الوصفات'), style: Theme.of(sheetContext).textTheme.headlineMedium),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
                         value: cuisine,
-                        decoration: const InputDecoration(labelText: 'Cuisine'),
-                        items: [const DropdownMenuItem(value: 'all', child: Text('All cuisines')),
+                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Cuisine', 'المطبخ')),
+                        items: [const DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All cuisines', 'كل المطابخ'))),
                           ...cuisines.map((value) => DropdownMenuItem(value: value, child: Text(value)))],
                         onChanged: (value) => setSheetState(() => cuisine = value ?? 'all'),
                       ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: foodType,
-                        decoration: const InputDecoration(labelText: 'Food type'),
+                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Food type', 'نوع الطعام')),
                         items: const [
-                          DropdownMenuItem(value: 'all', child: Text('All food types')),
-                          DropdownMenuItem(value: 'vegetarian', child: Text('Vegetarian')),
-                          DropdownMenuItem(value: 'vegan', child: Text('Vegan')),
-                          DropdownMenuItem(value: 'eggetarian', child: Text('Eggetarian')),
-                          DropdownMenuItem(value: 'nonVegetarian', child: Text('Non-vegetarian')),
-                          DropdownMenuItem(value: 'pescatarian', child: Text('Pescatarian')),
+                          DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All food types', 'كل أنواع الطعام'))),
+                          DropdownMenuItem(value: 'vegetarian', child: Text(appStrings(sheetContext).label('Vegetarian', 'نباتي'))),
+                          DropdownMenuItem(value: 'vegan', child: Text(appStrings(sheetContext).label('Vegan', 'نباتي صرف'))),
+                          DropdownMenuItem(value: 'eggetarian', child: Text(appStrings(sheetContext).label('Eggetarian', 'نباتي مع البيض'))),
+                          DropdownMenuItem(value: 'nonVegetarian', child: Text(appStrings(sheetContext).label('Non-vegetarian', 'غير نباتي'))),
+                          DropdownMenuItem(value: 'pescatarian', child: Text(appStrings(sheetContext).label('Pescatarian', 'نباتي مع الأسماك'))),
                         ],
                         onChanged: (value) => setSheetState(() => foodType = value ?? 'all'),
                       ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: level,
-                        decoration: const InputDecoration(labelText: 'Difficulty'),
+                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Difficulty', 'مستوى الصعوبة')),
                         items: const [
-                          DropdownMenuItem(value: 'all', child: Text('Any difficulty')),
-                          DropdownMenuItem(value: 'easy', child: Text('Easy')),
-                          DropdownMenuItem(value: 'medium', child: Text('Medium')),
-                          DropdownMenuItem(value: 'hard', child: Text('Hard')),
+                          DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('Any difficulty', 'أي مستوى'))),
+                          DropdownMenuItem(value: 'easy', child: Text(appStrings(sheetContext).label('Easy', 'سهل'))),
+                          DropdownMenuItem(value: 'medium', child: Text(appStrings(sheetContext).label('Medium', 'متوسط'))),
+                          DropdownMenuItem(value: 'hard', child: Text(appStrings(sheetContext).label('Hard', 'صعب'))),
                         ],
                         onChanged: (value) => setSheetState(() => level = value ?? 'all'),
                       ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<int?>(
                         value: minutes,
-                        decoration: const InputDecoration(labelText: 'Maximum time'),
+                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Maximum time', 'الوقت الأقصى')),
                         items: const [
-                          DropdownMenuItem<int?>(value: null, child: Text('Any time')),
+                          DropdownMenuItem<int?>(value: null, child: Text(appStrings(sheetContext).label('Any time', 'أي وقت'))),
                           DropdownMenuItem<int?>(value: 20, child: Text('20 minutes')),
                           DropdownMenuItem<int?>(value: 30, child: Text('30 minutes')),
                           DropdownMenuItem<int?>(value: 45, child: Text('45 minutes')),
@@ -344,12 +344,12 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       Row(children: [
                         TextButton(onPressed: () => setSheetState(() {
                           cuisine = 'all'; foodType = 'all'; level = 'all'; minutes = null;
-                        }), child: Text('Reset')),
+                        }), child: Text(appStrings(sheetContext).label('Reset', 'إعادة ضبط'))),
                         const Spacer(),
                         FilledButton(onPressed: () {
                           onChanged(cuisine, foodType, level, minutes);
                           Navigator.pop(sheetContext);
-                        }, child: Text('Apply filters')),
+                        }, child: Text(appStrings(sheetContext).label('Apply filters', 'تطبيق التصفية'))),
                       ]),
                     ],
                   ),
@@ -466,7 +466,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             hintText: strings.searchHint,
             prefixIcon: Icon(Icons.search),
             suffixIcon: _query.isEmpty ? null : IconButton(
-              tooltip: 'Clear search',
+              tooltip: appStrings(context).label('Clear search', 'مسح البحث'),
               onPressed: () {
                 _searchController.clear();
                 setState(() => _query = '');
@@ -487,7 +487,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             }
           },
           icon: Icon(Icons.kitchen_outlined),
-          label: Text('Cook with what you have'),
+          label: Text(appStrings(context).label('Cook with what you have', 'اطبخ بالمكونات المتوفرة لديك')),
         ),
         const SizedBox(height: 14),
         SingleChildScrollView(
@@ -533,8 +533,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               borderRadius: BorderRadius.circular(14),
               style: TextStyle(color: AppTheme.ink, fontSize: 12, fontWeight: FontWeight.w600),
               items: const [
-                DropdownMenuItem(value: RecipeSort.recommended, child: Text('Recommended')),
-                DropdownMenuItem(value: RecipeSort.quickest, child: Text('Quickest')),
+                DropdownMenuItem(value: RecipeSort.recommended, child: Text(appStrings(context).label('Recommended', 'موصى به'))),
+                DropdownMenuItem(value: RecipeSort.quickest, child: Text(appStrings(context).label('Quickest', 'الأسرع'))),
                 DropdownMenuItem(value: RecipeSort.title, child: Text('A–Z')),
               ],
               onChanged: (value) {
@@ -618,7 +618,7 @@ class _PlanScreenState extends State<PlanScreen> {
         _MealSlotCard(key: ValueKey('meal-slot-$day-${slot.name}'), day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
           onAdd:()=>_showPlanPicker(context,day,slot),onRemove:(){state.removeMeal(day,slot);PlannerScope.refresh(context);},onMove:()=>_showMoveMeal(context,day,slot)),
       const SizedBox(height:14),
-      OutlinedButton.icon(onPressed:()=>_goTab(context,3),icon:Icon(Icons.shopping_basket_outlined),label:Text('Build your grocery list'),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
+      OutlinedButton.icon(onPressed:()=>_goTab(context,3),icon:Icon(Icons.shopping_basket_outlined),label:Text(appStrings(context).label('Build your grocery list', 'أنشئ قائمة مشترياتك')),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
     ]);
   }
   Future<void> _showMoveMeal(BuildContext context, String fromDay, MealSlot fromSlot) async {
@@ -630,26 +630,26 @@ class _PlanScreenState extends State<PlanScreen> {
         : PlanScreen.days;
     final result = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
       builder: (dialogContext, setDialogState) => AlertDialog(
-        title: Text('Move planned meal'),
+        title: Text(appStrings(context).label('Move planned meal', 'نقل الوجبة المخططة')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          DropdownButtonFormField<String>(value: targetDay, decoration: const InputDecoration(labelText: 'Day'),
+          DropdownButtonFormField<String>(value: targetDay, decoration: const InputDecoration(labelText: appStrings(context).label('Day', 'اليوم')),
             items: days.map((day) => DropdownMenuItem(value: day, child: Text(day))).toList(),
             onChanged: (value) => setDialogState(() => targetDay = value ?? fromDay)),
           const SizedBox(height: 12),
-          DropdownButtonFormField<MealSlot>(value: targetSlot, decoration: const InputDecoration(labelText: 'Meal'),
+          DropdownButtonFormField<MealSlot>(value: targetSlot, decoration: const InputDecoration(labelText: appStrings(context).label('Meal', 'الوجبة')),
             items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(slot.label))).toList(),
             onChanged: (value) => setDialogState(() => targetSlot = value ?? fromSlot)),
         ]),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text('Move')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Move', 'نقل'))),
         ],
       ),
     ));
     if (result != true || !context.mounted) return;
     final moved = state.moveMeal(fromDay: fromDay, fromSlot: fromSlot, toDay: targetDay, toSlot: targetSlot);
     if (moved) PlannerScope.refresh(context);
-    else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('That destination is occupied. Choose an empty meal slot.')));
+    else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(appStrings(context).label('That destination is occupied. Choose an empty meal slot.', 'هذا الموعد مشغول. اختر خانة وجبة فارغة.'))));
   }
 
   void _showPlanPicker(BuildContext context, String day, MealSlot slot) {
@@ -742,14 +742,14 @@ class GroceryScreen extends StatelessWidget {
     final grouped = <String, List<GroceryItem>>{};
     for (final item in entries) { grouped.putIfAbsent(_groceryAisle(item.name), () => []).add(item); }
     return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
-      Text('THE MARKET LIST',style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
-      Text('Good things\\nto pick up.',style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
+      Text(appStrings(context).label('THE MARKET LIST', 'قائمة المشتريات'),style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
+      Text(appStrings(context).label('Good things\\nto pick up.', 'أشياء جيدة\\nلشرائها.'),style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
       Text(entries.isEmpty?'Your planned meals will gather ingredients here.':'$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy',style:TextStyle(color:AppTheme.muted)),
       const SizedBox(height:12),
       Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
-        OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:Icon(Icons.add),label:Text('Add item')),
-        OutlinedButton.icon(onPressed:()=>Navigator.push(context, MaterialPageRoute(builder: (_) => const GroceryListsScreen())),icon:Icon(Icons.list_alt),label:Text('Shopping lists')),
-        if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ state.clearCheckedCustomGroceryItems(); PlannerScope.refresh(context); },child:Text('Clear checked custom items')),
+        OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:Icon(Icons.add),label:Text(appStrings(context).label('Add item', 'إضافة عنصر'))),
+        OutlinedButton.icon(onPressed:()=>Navigator.push(context, MaterialPageRoute(builder: (_) => const GroceryListsScreen())),icon:Icon(Icons.list_alt),label:Text(appStrings(context).label('Shopping lists', 'قوائم التسوق'))),
+        if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ state.clearCheckedCustomGroceryItems(); PlannerScope.refresh(context); },child:Text(appStrings(context).label('Clear checked custom items', 'مسح العناصر المخصصة المحددة'))),
       ])),
       const SizedBox(height:12),
       if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text('Your list is waiting',style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text('Add meals to your weekly plan or add ingredients from a recipe.',textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
@@ -789,9 +789,9 @@ class GroceryScreen extends StatelessWidget {
                   ),
                 ],
               )),
-              if (item.isCustom) IconButton(tooltip: 'Remove custom grocery item', onPressed: () { state.removeCustomGroceryItem(item.key); PlannerScope.refresh(context); }, icon: Icon(Icons.close, size: 18)),
+              if (item.isCustom) IconButton(tooltip: appStrings(context).label('Remove custom grocery item', 'إزالة عنصر مخصص'), onPressed: () { state.removeCustomGroceryItem(item.key); PlannerScope.refresh(context); }, icon: Icon(Icons.close, size: 18)),
               IconButton(
-                tooltip: 'Edit grocery item',
+                tooltip: appStrings(context).label('Edit grocery item', 'تعديل عنصر المشتريات'),
                 onPressed: () => _showGroceryEditor(context, item),
                 icon: Icon(Icons.edit_outlined, size: 18, color: AppTheme.muted),
               ),
@@ -800,7 +800,7 @@ class GroceryScreen extends StatelessWidget {
         ),
       ],
       const SizedBox(height:22),
-      Row(children:[Expanded(child:Text('Your pantry',style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:Icon(Icons.add,size:17),label:Text('Add item'))]),
+      Row(children:[Expanded(child:Text(appStrings(context).label('Your pantry', 'مخزنك'),style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:Icon(Icons.add,size:17),label:Text(appStrings(context).label('Add item', 'إضافة عنصر')))]),
       Text('Items here are deducted from what you need to buy.',style:TextStyle(color:AppTheme.muted,fontSize:12)),
       if(state.expiringPantryItems.isNotEmpty) Padding(padding:const EdgeInsets.only(top:8),child:Text('${state.expiringPantryItems.length} pantry item(s) expire within seven days.',style:TextStyle(color:AppTheme.terracotta,fontWeight:FontWeight.w700))),
       const SizedBox(height:10),
@@ -821,11 +821,11 @@ class GroceryScreen extends StatelessWidget {
     final amount = TextEditingController(text: '1');
     final unit = TextEditingController(text: 'item');
     showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text('Add a grocery item'),
+      title: Text(appStrings(context).label('Add a grocery item', 'إضافة عنصر للمشتريات')),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: name, autofocus: true, decoration: const InputDecoration(labelText: 'Item')),
-        TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Quantity')),
-        TextField(controller: unit, decoration: const InputDecoration(labelText: 'Unit')),
+        TextField(controller: name, autofocus: true, decoration: const InputDecoration(labelText: appStrings(context).label('Item', 'العنصر'))),
+        TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: appStrings(context).label('Quantity', 'الكمية'))),
+        TextField(controller: unit, decoration: const InputDecoration(labelText: appStrings(context).label('Unit', 'الوحدة'))),
       ]),
       actions: [
         TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
@@ -844,7 +844,7 @@ class GroceryScreen extends StatelessWidget {
     final name = TextEditingController(text: item.name);
     final amount = TextEditingController(text: item.isQuantified ? _formatAmount(item.amount) : '');
     showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text('Edit grocery item'),
+      title: Text(appStrings(context).label('Edit grocery item', 'تعديل عنصر المشتريات')),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         TextField(controller: name, decoration: const InputDecoration(labelText: 'Ingredient')),
         if (item.isQuantified) TextField(controller: amount, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Amount (${item.unit})')),
@@ -857,19 +857,19 @@ class GroceryScreen extends StatelessWidget {
           PlannerScope.of(context).updateGroceryItem(item.key, name: name.text, amount: parsed);
           PlannerScope.refresh(context);
           Navigator.pop(dialogContext);
-        }, child: Text('Save')),
+        }, child: Text(appStrings(context).label('Save', 'حفظ'))),
       ],
     )).then((_) { name.dispose(); amount.dispose(); });
   }
 
   void _showPantryEditor(BuildContext context){
     final name=TextEditingController(),amount=TextEditingController(text:'1'),unit=TextEditingController(text:'g');
-    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:Text('Add to your pantry'),content:Column(mainAxisSize:MainAxisSize.min,children:[
+    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:Text(appStrings(context).label('Add to your pantry', 'إضافة إلى المخزن')),content:Column(mainAxisSize:MainAxisSize.min,children:[
       TextField(controller:name,decoration:const InputDecoration(labelText:'Ingredient')),TextField(controller:amount,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'Quantity')),TextField(controller:unit,decoration:const InputDecoration(labelText:'Unit (g, ml, whole…)')),
     ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:Text('Cancel')),FilledButton(onPressed:(){
       final value=double.tryParse(amount.text.trim());if(value==null||value<0||name.text.trim().isEmpty||unit.text.trim().isEmpty)return;
       PlannerScope.of(context).upsertPantryItem(name:name.text,amount:value,unit:unit.text);PlannerScope.refresh(context);Navigator.pop(dialogContext);
-    },child:Text('Save'))])).then((_){name.dispose();amount.dispose();unit.dispose();});
+    },child:Text(appStrings(context).label('Save', 'حفظ')))])).then((_){name.dispose();amount.dispose();unit.dispose();});
   }
 }
 String _groceryAisle(String name) {
@@ -1078,7 +1078,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 PlannerScope.refresh(context);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ingredients added to your grocery list')));
               },
-              icon: Icon(Icons.add_shopping_cart), label: Text('Add ingredients to grocery list'),
+              icon: Icon(Icons.add_shopping_cart), label: Text(appStrings(context).label('Add ingredients to grocery list', 'إضافة المكونات إلى قائمة المشتريات')),
             )),
             const SizedBox(height: 28),
             SizedBox(
@@ -1093,7 +1093,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   );
                 },
                 icon: Icon(Icons.restaurant_menu),
-                label: Text('Start cooking'),
+                label: Text(appStrings(context).label('Start cooking', 'ابدأ الطهي')),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppTheme.terracotta,
                   minimumSize: const Size(0, 54),
