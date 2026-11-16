@@ -6,6 +6,17 @@ class CookingAssistService {
   CookingAssistService._();
   static const MethodChannel _channel = MethodChannel('gather/cooking_assist');
 
+  /// Stable across app launches and platforms; Android uses this as the
+  /// AlarmManager/PendingIntent request code.
+  static int _notificationId(String value) {
+    var hash = 0x811c9dc5;
+    for (final unit in value.codeUnits) {
+      hash ^= unit;
+      hash = (hash * 0x01000193) & 0x7fffffff;
+    }
+    return hash == 0 ? 1 : hash;
+  }
+
   static Future<bool> speak(String text) async {
     if (text.trim().isEmpty) return false;
     try { return await _channel.invokeMethod<bool>('speak', {'text': text}) ?? false; }
@@ -32,14 +43,14 @@ class CookingAssistService {
   static Future<bool> scheduleTimerNotification({required String id, required String title, required String body, required DateTime fireAt}) async {
     try {
       return await _channel.invokeMethod<bool>('scheduleTimerNotification', {
-        'id': id.hashCode, 'title': title, 'body': body, 'fireAt': fireAt.millisecondsSinceEpoch,
+        'id': _notificationId(id), 'title': title, 'body': body, 'fireAt': fireAt.millisecondsSinceEpoch,
       }) ?? false;
     } on PlatformException { return false; }
       on MissingPluginException { return false; }
   }
 
   static Future<void> cancelTimerNotification(String id) async {
-    try { await _channel.invokeMethod<void>('cancelTimerNotification', {'id': id.hashCode}); }
+    try { await _channel.invokeMethod<void>('cancelTimerNotification', {'id': _notificationId(id)}); }
     on PlatformException { } on MissingPluginException { }
   }
 }
