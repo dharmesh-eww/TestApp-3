@@ -5,6 +5,7 @@ import '../../../app/recipe_catalog_scope.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../recipes/domain/ingredient_matcher.dart';
 import '../../recipes/domain/recipe.dart';
+import '../../../localization/app_localizations.dart';
 
 class IngredientFinderScreen extends StatefulWidget {
   const IngredientFinderScreen({super.key});
@@ -30,22 +31,22 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
     }
     final results = IngredientMatcher.rank(recipes, available: _available, excluded: _excluded);
     return Scaffold(
-      appBar: AppBar(title: Text('Cook with what you have')),
+      appBar: AppBar(title: Text(appStrings(context).label('Cook with what you have', 'اطبخ بالمكونات المتوفرة لديك'))),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text('YOUR INGREDIENT SHELF', style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          Text(appStrings(context).label('YOUR INGREDIENT SHELF', 'رف مكوناتك'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: AppTheme.terracotta, letterSpacing: 1.4, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
-          Text('What’s in your kitchen?', style: Theme.of(context).textTheme.headlineMedium),
+          Text(appStrings(context).label('What’s in your kitchen?', 'ماذا يوجد في مطبخك؟'), style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
-          Text('Choose ingredients you have, or switch to ingredients you want to avoid. Matches show what is still missing.',
+          Text(appStrings(context).label('Choose ingredients you have, or switch to ingredients you want to avoid. Matches show what is still missing.', 'اختر المكونات المتوفرة لديك أو المكونات التي تريد تجنبها. تعرض النتائج المكونات الناقصة.')),
               style: TextStyle(color: AppTheme.muted)),
           const SizedBox(height: 16),
           SegmentedButton<bool>(
-            segments: const [
-              ButtonSegment(value: false, label: Text('I have'), icon: Icon(Icons.check_circle_outline)),
-              ButtonSegment(value: true, label: Text('Exclude'), icon: Icon(Icons.block_outlined)),
+            segments: [
+              ButtonSegment(value: false, label: Text(appStrings(context).label('I have', 'متوفر لدي')), icon: Icon(Icons.check_circle_outline)),
+              ButtonSegment(value: true, label: Text(appStrings(context).label('Exclude', 'استبعاد')), icon: Icon(Icons.block_outlined)),
             ],
             selected: {_excludeMode},
             onSelectionChanged: (value) => setState(() => _excludeMode = value.first),
@@ -66,12 +67,12 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
           }).toList()),
           const SizedBox(height: 20),
           Row(children: [
-            Expanded(child: Text('Recipe matches', style: Theme.of(context).textTheme.titleLarge)),
-            Text('${results.length} found', style: TextStyle(color: AppTheme.muted)),
+            Expanded(child: Text(appStrings(context).label('Recipe matches', 'الوصفات المطابقة'), style: Theme.of(context).textTheme.titleLarge)),
+            Text(appStrings(context).label('${results.length} found', 'تم العثور على ${results.length}'), style: TextStyle(color: AppTheme.muted)),
           ]),
           const SizedBox(height: 10),
           if (_available.isEmpty)
-            Text('Select at least one ingredient to see match percentages.',
+            Text(appStrings(context).label('Select at least one ingredient to see match percentages.', 'اختر مكونًا واحدًا على الأقل لعرض نسبة التطابق.'),
                 style: TextStyle(color: AppTheme.muted)),
           for (final match in results)
             Card(
@@ -85,14 +86,14 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
                   ]),
                   const SizedBox(height: 5),
                   Text(match.isExactMatch
-                      ? 'You have every listed ingredient'
-                      : 'Missing: ${match.missingIngredients.map((item) => item.name).join(', ')}',
+                      ? appStrings(context).label('You have every listed ingredient', 'لديك جميع المكونات المذكورة')
+                      : appStrings(context).label('Missing: ${match.missingIngredients.map((item) => item.name).join(', ')}', 'المكونات الناقصة: ${match.missingIngredients.map((item) => item.name).join('، ')}'),
                     style: TextStyle(color: AppTheme.muted, fontSize: 12)),
                   Align(
                     alignment: AlignmentDirectional.centerEnd,
                     child: TextButton(
                       onPressed: () => Navigator.pop(context, match.recipe),
-                      child: Text('View recipe'),
+                      child: Text(appStrings(context).label('View recipe', 'عرض الوصفة')),
                     ),
                   ),
                 ]),
@@ -111,21 +112,21 @@ class CollectionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('My collections')),
+      appBar: AppBar(title: Text(appStrings(context).label('My collections', 'مجموعاتي'))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _createCollection(context),
         icon: Icon(Icons.create_new_folder_outlined),
-        label: Text('New collection'),
+        label: Text(appStrings(context).label('New collection', 'مجموعة جديدة')),
       ),
       body: state.collections.isEmpty
-          ? const Center(child: Text('Create a collection for recipes you love.'))
+          ? Center(child: Text(appStrings(context).label('Create a collection for recipes you love.', 'أنشئ مجموعة للوصفات التي تحبها.')))
           : ListView(
               padding: const EdgeInsets.all(16),
               children: state.collections.entries.map((entry) => Card(
                 child: ListTile(
                   leading: Icon(Icons.folder_open, color: AppTheme.terracotta),
-                  title: Text(state.collectionNames[entry.key] ?? 'Collection'),
-                  subtitle: Text('${entry.value.length} recipes'),
+                  title: Text(state.collectionNames[entry.key] ?? appStrings(context).label('Collection', 'مجموعة')),
+                  subtitle: Text(appStrings(context).label('${entry.value.length} recipes', '${entry.value.length} وصفات')),
                   trailing: PopupMenuButton<String>(
                     onSelected: (value) {
                       if (value == 'rename') _renameCollection(context, entry.key);
@@ -134,9 +135,9 @@ class CollectionsScreen extends StatelessWidget {
                         PlannerScope.refresh(context);
                       }
                     },
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(value: 'rename', child: Text('Rename')),
-                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    itemBuilder: (_) => [
+                      PopupMenuItem(value: 'rename', child: Text(appStrings(context).label('Rename', 'إعادة تسمية'))),
+                      PopupMenuItem(value: 'delete', child: Text(appStrings(context).label('Delete', 'حذف'))),
                     ],
                   ),
                   onTap: () => Navigator.push(context, MaterialPageRoute(
@@ -150,12 +151,12 @@ class CollectionsScreen extends StatelessWidget {
   Future<void> _createCollection(BuildContext context) async {
     final controller = TextEditingController();
     final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text('New collection'),
+      title: Text(appStrings(context).label('New collection', 'مجموعة جديدة')),
       content: TextField(controller: controller, autofocus: true,
-          decoration: const InputDecoration(labelText: 'Collection name')),
+          decoration: InputDecoration(labelText: appStrings(context).label('Collection name', 'اسم المجموعة'))),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text('Create')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text(appStrings(context).label('Create', 'إنشاء'))),
       ],
     ));
     controller.dispose();
@@ -168,11 +169,11 @@ class CollectionsScreen extends StatelessWidget {
     final state = PlannerScope.of(context);
     final controller = TextEditingController(text: state.collectionNames[id]);
     final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text('Rename collection'),
-      content: TextField(controller: controller, decoration: const InputDecoration(labelText: 'Collection name')),
+      title: Text(appStrings(context).label('Rename collection', 'إعادة تسمية المجموعة')),
+      content: TextField(controller: controller, decoration: InputDecoration(labelText: appStrings(context).label('Collection name', 'اسم المجموعة'))),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text('Save')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text(appStrings(context).label('Save', 'حفظ'))),
       ],
     ));
     controller.dispose();
@@ -193,19 +194,19 @@ class CollectionDetailScreen extends StatelessWidget {
     final ids = state.collections[collectionId] ?? <String>{};
     final recipes = catalog.where((recipe) => ids.contains(recipe.id)).toList();
     return Scaffold(
-      appBar: AppBar(title: Text(state.collectionNames[collectionId] ?? 'Collection')),
+      appBar: AppBar(title: Text(state.collectionNames[collectionId] ?? appStrings(context).label('Collection', 'مجموعة'))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addRecipes(context, catalog),
         icon: Icon(Icons.add),
-        label: Text('Add recipes'),
+        label: Text(appStrings(context).label('Add recipes', 'إضافة وصفات')),
       ),
       body: recipes.isEmpty
-          ? const Center(child: Text('This collection is ready for your recipes.'))
+          ? Center(child: Text(appStrings(context).label('This collection is ready for your recipes.', 'هذه المجموعة جاهزة لوصفاتك.')))
           : ListView(padding: const EdgeInsets.all(16), children: recipes.map((recipe) => ListTile(
               title: Text(recipe.title),
               subtitle: Text('${recipe.totalMinutes} min · ${recipe.category}'),
               trailing: IconButton(
-                tooltip: 'Remove from collection',
+                tooltip: appStrings(context).label('Remove from collection', 'إزالة من المجموعة'),
                 onPressed: () {
                   state.toggleRecipeInCollection(collectionId, recipe.id);
                   PlannerScope.refresh(context);
@@ -251,9 +252,9 @@ class CookingHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final history = PlannerScope.of(context).cookingHistory;
     return Scaffold(
-      appBar: AppBar(title: Text('Cooking history')),
+      appBar: AppBar(title: Text(appStrings(context).label('Cooking history', 'سجل الطهي'))),
       body: history.isEmpty
-          ? const Center(child: Text('Recipes you finish cooking will appear here.'))
+          ? Center(child: Text(appStrings(context).label('Recipes you finish cooking will appear here.', 'ستظهر هنا الوصفات التي تنتهي من طهيها.')))
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: history.length,
@@ -278,17 +279,17 @@ class PlannerSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('Kitchen settings')),
+      appBar: AppBar(title: Text(appStrings(context).label('Kitchen settings', 'إعدادات المطبخ'))),
       body: ListView(padding: const EdgeInsets.all(20), children: [
-        Text('MEASUREMENTS', style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        Text(appStrings(context).label('MEASUREMENTS', 'وحدات القياس'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: state.measurementSystem,
-          decoration: const InputDecoration(labelText: 'Measurement system'),
-          items: const [
-            DropdownMenuItem(value: 'metric', child: Text('Metric (g, kg, ml, L)')),
-            DropdownMenuItem(value: 'us', child: Text('US customary (oz, lb, cups)')),
+          decoration: InputDecoration(labelText: appStrings(context).label('Measurement system', 'نظام القياس')),
+          items: [
+            DropdownMenuItem(value: 'metric', child: Text(appStrings(context).label('Metric (g, kg, ml, L)', 'النظام المتري (g، kg، ml، L)'))),
+            DropdownMenuItem(value: 'us', child: Text(appStrings(context).label('US customary (oz, lb, cups)', 'النظام الأمريكي (oz، lb، cups)'))),
           ],
           onChanged: (value) {
             if (value == null) return;
@@ -297,15 +298,15 @@ class PlannerSettingsScreen extends StatelessWidget {
           },
         ),
         const SizedBox(height: 24),
-        Text('WEEKLY PLANNER', style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        Text(appStrings(context).label('WEEKLY PLANNER', 'مخطط الأسبوع'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
         DropdownButtonFormField<int>(
           value: state.weekStartsOn,
-          decoration: const InputDecoration(labelText: 'First day of week'),
+          decoration: const InputDecoration(labelText: appStrings(context).label('First day of week', 'أول يوم في الأسبوع')),
           items: const [
-            DropdownMenuItem(value: 1, child: Text('Monday')),
-            DropdownMenuItem(value: 7, child: Text('Sunday')),
+            DropdownMenuItem(value: 1, child: Text(appStrings(context).label('Monday', 'الإثنين'))),
+            DropdownMenuItem(value: 7, child: Text(appStrings(context).label('Sunday', 'الأحد'))),
           ],
           onChanged: (value) {
             if (value == null) return;
@@ -314,53 +315,53 @@ class PlannerSettingsScreen extends StatelessWidget {
           },
         ),
         const SizedBox(height: 24),
-        Text('APPEARANCE', style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        Text(appStrings(context).label('APPEARANCE', 'المظهر'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: state.themePreference,
-          decoration: const InputDecoration(labelText: 'Theme'),
+          decoration: const InputDecoration(labelText: appStrings(context).label('Theme', 'السمة')),
           items: const [
-            DropdownMenuItem(value: 'system', child: Text('Use device setting')),
-            DropdownMenuItem(value: 'light', child: Text('Light')),
-            DropdownMenuItem(value: 'dark', child: Text('Dark')),
+            DropdownMenuItem(value: 'system', child: Text(appStrings(context).label('Use device setting', 'استخدام إعداد الجهاز'))),
+            DropdownMenuItem(value: 'light', child: Text(appStrings(context).label('Light', 'فاتح'))),
+            DropdownMenuItem(value: 'dark', child: Text(appStrings(context).label('Dark', 'داكن'))),
           ],
           onChanged: (value) { if (value == null) return; state.themePreference = value; PlannerScope.refresh(context); },
         ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text('Reduce motion'),
-          subtitle: Text('Use simpler transitions throughout the app.'),
+          title: Text(appStrings(context).label('Reduce motion', 'تقليل الحركة')),
+          subtitle: Text(appStrings(context).label('Use simpler transitions throughout the app.', 'استخدام انتقالات أبسط في التطبيق.')),
           value: state.reduceMotion,
           onChanged: (value) { state.reduceMotion = value; PlannerScope.refresh(context); },
         ),
         const SizedBox(height: 24),
-        Text('PERSONAL DISCOVERY', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        Text(appStrings(context).label('PERSONAL DISCOVERY', 'اكتشاف مخصص'), style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
         const SizedBox(height: 8),
-        Text('Prefer recipes with these dietary tags. Discover will apply every selected tag.', style: TextStyle(color: AppTheme.muted)),
+        Text(appStrings(context).label('Prefer recipes with these dietary tags. Discover will apply every selected tag.', 'فضّل الوصفات التي تحمل هذه التصنيفات الغذائية. سيطبق قسم الاكتشاف جميع التصنيفات المحددة.')), style: TextStyle(color: AppTheme.muted)),
         for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
           CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(option.value), value: state.preferredDietaryTags.contains(option.key),
             onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
         const SizedBox(height: 16),
-        Text('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.',
+        Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.')),
             style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 28),
-        Text('LOCAL DATA', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.terracotta, letterSpacing: 1.2)),
+        Text(appStrings(context).label('LOCAL DATA', 'البيانات المحلية'), style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.terracotta, letterSpacing: 1.2)),
         const SizedBox(height: 8),
-        Text('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', style: TextStyle(color: AppTheme.muted)),
+        Text(appStrings(context).label('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', 'تُخزّن المفضلة وخطط الوجبات والمشتريات والمخزن والمجموعات والسجل والتفضيلات على هذا الجهاز. يؤدي إعادة الضبط إلى مسح بياناتك الشخصية مع الاحتفاظ بمكتبة الوصفات التي تم تنزيلها.')), style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 10),
-        OutlinedButton.icon(key: const Key('reset-local-data'), style: OutlinedButton.styleFrom(foregroundColor: Colors.red), icon: Icon(Icons.delete_outline), label: Text('Reset personal data'),
+        OutlinedButton.icon(key: const Key('reset-local-data'), style: OutlinedButton.styleFrom(foregroundColor: Colors.red), icon: Icon(Icons.delete_outline), label: Text(appStrings(context).label('Reset personal data', 'إعادة ضبط البيانات الشخصية')),
           onPressed: () async {
             final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
-              title: Text('Reset personal data?'),
+              title: Text(appStrings(context).label('Reset personal data?', 'هل تريد إعادة ضبط البيانات الشخصية؟')),
               content: Text('Favorites, meal plans, groceries, pantry, collections, history and preferences will be cleared from this device. Your recipe catalog stays available.'),
-              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text('Reset data'))],
+              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Reset data', 'إعادة ضبط البيانات')))],
             ));
             if (confirmed != true || !context.mounted) return;
             state.clearPersonalData();
             PlannerScope.cookingOf(context).clearSession();
             PlannerScope.refresh(context);
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Personal data cleared from this device.')));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Personal data cleared from this device.', 'تم مسح البيانات الشخصية من هذا الجهاز.'))));
           }),
       ]),
     );
