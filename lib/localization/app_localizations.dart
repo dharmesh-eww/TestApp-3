@@ -9,6 +9,11 @@ class AppLocalizations {
       Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   static const LocalizationsDelegate<AppLocalizations> delegate = _Delegate();
 
+  String label(String english, String arabic) => isArabic ? arabic : english;
+
+  String stepOf(int current, int total) =>
+      isArabic ? 'الخطوة $current من $total' : 'STEP $current OF $total';
+
   String get today => isArabic ? 'اليوم' : 'Today';
   String get recipes => isArabic ? 'الوصفات' : 'Recipes';
   String get plan => isArabic ? 'الخطة' : 'Plan';
