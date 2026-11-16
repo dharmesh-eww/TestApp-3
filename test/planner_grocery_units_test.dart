@@ -51,7 +51,7 @@ void main() {
 
   test('owned and to-buy quantities use the same displayed unit', () {
     final state = PlannerState()..measurementSystem = 'us';
-    final recipe = _recipe('mass', 500, 'g');
+    final recipe = _recipe('mass', 400, 'g');
     state.assignMeal(day: '2026-11-16', slot: MealSlot.breakfast,
         recipeId: recipe.id, servings: 1);
     state.upsertPantryItem(name: 'Flour', amount: 200, unit: 'g');
@@ -60,7 +60,7 @@ void main() {
 
     expect(item.unit, 'oz');
     expect(item.ownedAmount, closeTo(200 / 28.349523125, .001));
-    expect(item.toBuyAmount, closeTo(300 / 28.349523125, .001));
+    expect(item.toBuyAmount, closeTo(200 / 28.349523125, .001));
   });
 
   test('checked custom groceries clear after their units are normalized', () {
