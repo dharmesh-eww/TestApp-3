@@ -86,7 +86,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                 icon: Icon(_keepAwake ? Icons.screen_lock_portrait : Icons.screen_lock_landscape),
               ),
               IconButton(
-                tooltip: 'Text size',
+                tooltip: strings.label('Text size', 'حجم النص'),
                 onPressed: () => setState(() => textScale = (textScale + 1) % 3),
                 icon: Icon(Icons.text_fields),
               ),
@@ -124,7 +124,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                           const SizedBox(height: 20),
                           Semantics(
                             liveRegion: true,
-                            label: 'Step ${currentStep + 1} of $total. ${widget.recipe.steps[currentStep]}',
+                            label: strings.label('Step ${currentStep + 1} of $total. ${widget.recipe.steps[currentStep]}', 'الخطوة ${currentStep + 1} من $total. ${widget.recipe.steps[currentStep]}'),
                             child: Text(widget.recipe.steps[currentStep],
                             style: TextStyle(
                               color: AppTheme.ink,
@@ -178,7 +178,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                           }
                         },
                         icon: Icon(currentStep == total - 1 ? Icons.check : Icons.arrow_forward),
-                        label: Text(currentStep == total - 1 ? 'Finish' : 'Next step'),
+                        label: Text(currentStep == total - 1 ? strings.label('Finish', 'إنهاء') : strings.label('Next step', 'الخطوة التالية')),
                         style: FilledButton.styleFrom(minimumSize: const Size(0, 54),
                           backgroundColor: AppTheme.terracotta),
                       ),
@@ -239,7 +239,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
         Expanded(child: Text(appStrings(context).label('Kitchen timers', 'مؤقتات المطبخ'), style: TextStyle(
           color: AppTheme.ink, fontWeight: FontWeight.w800, fontSize: 16))),
         TextButton.icon(
-          onPressed: () => _addTimer(initialLabel: 'Step ${currentStep + 1}'),
+          onPressed: () => _addTimer(initialLabel: '${appStrings(context).label('Step', 'الخطوة')} ${currentStep + 1}'),
           icon: Icon(Icons.add_alarm, size: 18),
           label: Text(appStrings(context).label('Add timer', 'إضافة مؤقت')),
         ),
