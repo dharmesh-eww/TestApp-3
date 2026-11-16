@@ -296,7 +296,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
                         value: cuisine,
-                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Cuisine', 'المطبخ')),
+                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Cuisine', 'المطبخ')),
                         items: [const DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All cuisines', 'كل المطابخ'))),
                           ...cuisines.map((value) => DropdownMenuItem(value: value, child: Text(value)))],
                         onChanged: (value) => setSheetState(() => cuisine = value ?? 'all'),
@@ -304,7 +304,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: foodType,
-                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Food type', 'نوع الطعام')),
+                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Food type', 'نوع الطعام')),
                         items: const [
                           DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All food types', 'كل أنواع الطعام'))),
                           DropdownMenuItem(value: 'vegetarian', child: Text(appStrings(sheetContext).label('Vegetarian', 'نباتي'))),
@@ -318,7 +318,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: level,
-                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Difficulty', 'مستوى الصعوبة')),
+                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Difficulty', 'مستوى الصعوبة')),
                         items: const [
                           DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('Any difficulty', 'أي مستوى'))),
                           DropdownMenuItem(value: 'easy', child: Text(appStrings(sheetContext).label('Easy', 'سهل'))),
@@ -330,7 +330,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       const SizedBox(height: 10),
                       DropdownButtonFormField<int?>(
                         value: minutes,
-                        decoration: const InputDecoration(labelText: appStrings(sheetContext).label('Maximum time', 'الوقت الأقصى')),
+                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Maximum time', 'الوقت الأقصى')),
                         items: const [
                           DropdownMenuItem<int?>(value: null, child: Text(appStrings(sheetContext).label('Any time', 'أي وقت'))),
                           DropdownMenuItem<int?>(value: 20, child: Text('20 minutes')),
@@ -632,11 +632,11 @@ class _PlanScreenState extends State<PlanScreen> {
       builder: (dialogContext, setDialogState) => AlertDialog(
         title: Text(appStrings(context).label('Move planned meal', 'نقل الوجبة المخططة')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          DropdownButtonFormField<String>(value: targetDay, decoration: const InputDecoration(labelText: appStrings(context).label('Day', 'اليوم')),
+          DropdownButtonFormField<String>(value: targetDay, decoration: InputDecoration(labelText: appStrings(context).label('Day', 'اليوم')),
             items: days.map((day) => DropdownMenuItem(value: day, child: Text(day))).toList(),
             onChanged: (value) => setDialogState(() => targetDay = value ?? fromDay)),
           const SizedBox(height: 12),
-          DropdownButtonFormField<MealSlot>(value: targetSlot, decoration: const InputDecoration(labelText: appStrings(context).label('Meal', 'الوجبة')),
+          DropdownButtonFormField<MealSlot>(value: targetSlot, decoration: InputDecoration(labelText: appStrings(context).label('Meal', 'الوجبة')),
             items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(slot.label))).toList(),
             onChanged: (value) => setDialogState(() => targetSlot = value ?? fromSlot)),
         ]),
@@ -649,7 +649,7 @@ class _PlanScreenState extends State<PlanScreen> {
     if (result != true || !context.mounted) return;
     final moved = state.moveMeal(fromDay: fromDay, fromSlot: fromSlot, toDay: targetDay, toSlot: targetSlot);
     if (moved) PlannerScope.refresh(context);
-    else ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(appStrings(context).label('That destination is occupied. Choose an empty meal slot.', 'هذا الموعد مشغول. اختر خانة وجبة فارغة.'))));
+    else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('That destination is occupied. Choose an empty meal slot.', 'هذا الموعد مشغول. اختر خانة وجبة فارغة.'))));
   }
 
   void _showPlanPicker(BuildContext context, String day, MealSlot slot) {
@@ -823,9 +823,9 @@ class GroceryScreen extends StatelessWidget {
     showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
       title: Text(appStrings(context).label('Add a grocery item', 'إضافة عنصر للمشتريات')),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: name, autofocus: true, decoration: const InputDecoration(labelText: appStrings(context).label('Item', 'العنصر'))),
-        TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: appStrings(context).label('Quantity', 'الكمية'))),
-        TextField(controller: unit, decoration: const InputDecoration(labelText: appStrings(context).label('Unit', 'الوحدة'))),
+        TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: appStrings(context).label('Item', 'العنصر'))),
+        TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(context).label('Quantity', 'الكمية'))),
+        TextField(controller: unit, decoration: InputDecoration(labelText: appStrings(context).label('Unit', 'الوحدة'))),
       ]),
       actions: [
         TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
