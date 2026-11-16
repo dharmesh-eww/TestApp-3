@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/services.dart';
 
@@ -1033,7 +1034,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             const SizedBox(width: 12),
           ],
           flexibleSpace: FlexibleSpaceBar(
-            background: Image.network(recipe.image, fit: BoxFit.cover,
+            background: Image(image: CachedNetworkImageProvider(recipe.image), fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(color: const Color(0xFFE6DED1), child: Icon(Icons.restaurant, size: 48))),
           ),
         ),
@@ -1131,7 +1132,7 @@ class _FeaturedRecipe extends StatelessWidget {
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(22), color: const Color(0xFFE8DFD1)),
         clipBehavior: Clip.antiAlias,
         child: Stack(fit: StackFit.expand, children: [
-          Image.network(recipe.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE8DFD1))),
+          Image(image: CachedNetworkImageProvider(recipe.image), fit: BoxFit.cover, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE8DFD1))),
           const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xCC211A16)], stops: [0.35, 1]))),
           Positioned(left: 18, right: 18, bottom: 18, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('EDITOR’S PICK', style: TextStyle(color: Color(0xFFFFD5B9), fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w800)),
@@ -1167,7 +1168,7 @@ class _RecipeTile extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(recipe.image, width: double.infinity, fit: BoxFit.cover,
+          child: Image(image: CachedNetworkImageProvider(recipe.image), width: double.infinity, fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE8DFD1), child: Icon(Icons.restaurant))),
         )),
         const SizedBox(height: 8),
@@ -1191,8 +1192,8 @@ class _RecipeListTile extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(color: AppTheme.card, border: Border.all(color: AppTheme.line), borderRadius: BorderRadius.circular(18)),
         child: Row(children: [
-          ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.network(
-            recipe.image, width: 92, height: 88, fit: BoxFit.cover,
+          ClipRRect(borderRadius: BorderRadius.circular(12), child: Image(
+            image: CachedNetworkImageProvider(recipe.image), width: 92, height: 88, fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const SizedBox(width: 92, height: 88, child: ColoredBox(color: Color(0xFFE8DFD1), child: Icon(Icons.restaurant))),
           )),
           const SizedBox(width: 13),
