@@ -424,6 +424,7 @@ class PlannerState {
     final baseUnits = <String, String>{};
     final qualifiers = <String>{};
     final ownedTotals = <String, double>{};
+    final customKeys = <String>{};
 
     ({double amount, String unit}) canonical(double amount, String unit) {
       final converted = MeasurementUnits.convert(amount, unit, 'metric');
@@ -485,8 +486,11 @@ class PlannerState {
     for (final entry in customGroceryItems.entries) {
       final parts = entry.key.split('|');
       if (parts.length < 2) continue;
-      add(entry.value.name, entry.value.amount,
-          parts.sublist(1).join('|'), IngredientAmountType.quantity);
+      final unit = parts.sublist(1).join('|');
+      final normalized = canonical(entry.value.amount, unit);
+      customKeys.add(_key(entry.value.name, normalized.unit));
+      add(entry.value.name, entry.value.amount, unit,
+          IngredientAmountType.quantity);
     }
 
     // Pantry quantities are normalized through the same mass/volume base so
@@ -524,7 +528,7 @@ class PlannerState {
         toBuyAmount: quantified ? shownToBuy.amount : 0,
         isQuantified: quantified,
         isChecked: groceryChecks[key] ?? false,
-        isCustom: customGroceryItems.containsKey(key),
+        isCustom: customKeys.contains(key),
       );
     }).toList();
   }
