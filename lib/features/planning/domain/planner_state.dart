@@ -425,6 +425,7 @@ class PlannerState {
     final qualifiers = <String>{};
     final ownedTotals = <String, double>{};
     final customKeys = <String>{};
+    final sourceKeys = <String, Set<String>>{};
 
     ({double amount, String unit}) canonical(double amount, String unit) {
       final converted = MeasurementUnits.convert(amount, unit, 'metric');
@@ -451,6 +452,7 @@ class PlannerState {
       if (cleanName.isEmpty) return;
       if (amount == null || type != IngredientAmountType.quantity) {
         final key = _key(cleanName, unit);
+        sourceKeys.putIfAbsent(key, () => <String>{}).add(key);
         names.putIfAbsent(key, () => cleanName);
         baseUnits.putIfAbsent(key, () => unit.trim());
         qualifiers.add(key);
@@ -458,6 +460,7 @@ class PlannerState {
       }
       final normalized = canonical(amount, unit);
       final key = _key(cleanName, normalized.unit);
+      sourceKeys.putIfAbsent(key, () => <String>{}).add(_key(cleanName, unit));
       names.putIfAbsent(key, () => cleanName);
       baseUnits.putIfAbsent(key, () => normalized.unit);
       totals.update(key, (old) => old + normalized.amount,
@@ -498,6 +501,7 @@ class PlannerState {
     for (final item in pantry.values) {
       final normalized = canonical(item.amount, item.unit);
       final key = _key(item.name, normalized.unit);
+      sourceKeys.putIfAbsent(key, () => <String>{}).add(_key(item.name, item.unit));
       ownedTotals.update(key, (old) => old + normalized.amount,
           ifAbsent: () => normalized.amount);
     }
@@ -506,10 +510,23 @@ class PlannerState {
     return keys.map((key) {
       final baseUnit = baseUnits[key] ?? key.split('|').last;
       final originalAmount = totals[key] ?? 0;
-      final edit = groceryEdits[key];
+      final aliases = sourceKeys[key] ?? const <String>{};
+      GroceryEdit? edit = groceryEdits[key];
+      String? editUnit;
+      if (edit != null) {
+        editUnit = display(originalAmount, baseUnit).unit;
+      } else {
+        for (final alias in aliases) {
+          if (groceryEdits[alias] != null) {
+            edit = groceryEdits[alias];
+            editUnit = alias.split('|').last;
+            break;
+          }
+        }
+      }
       final edited = edit == null
           ? null
-          : canonical(edit.amount, display(originalAmount, baseUnit).unit);
+          : canonical(edit.amount, editUnit ?? display(originalAmount, baseUnit).unit);
       final neededBase = edited?.amount ?? originalAmount;
       final ownedBase = ownedTotals[key] ?? 0;
       final shownNeeded = display(neededBase, baseUnit);
@@ -527,7 +544,7 @@ class PlannerState {
         ownedAmount: shownOwned.amount,
         toBuyAmount: quantified ? shownToBuy.amount : 0,
         isQuantified: quantified,
-        isChecked: groceryChecks[key] ?? false,
+        isChecked: groceryChecks[key] ?? aliases.any((alias) => groceryChecks[alias] == true),
         isCustom: customKeys.contains(key),
       );
     }).toList();
