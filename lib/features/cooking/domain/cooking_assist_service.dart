@@ -8,7 +8,7 @@ class CookingAssistService {
 
   /// Stable across app launches and platforms; Android uses this as the
   /// AlarmManager/PendingIntent request code.
-  static int _notificationId(String value) {
+  static int notificationIdFor(String value) {
     var hash = 0x811c9dc5;
     for (final unit in value.codeUnits) {
       hash ^= unit;
@@ -43,7 +43,7 @@ class CookingAssistService {
   static Future<bool> scheduleTimerNotification({required String id, required String title, required String body, required DateTime fireAt}) async {
     try {
       return await _channel.invokeMethod<bool>('scheduleTimerNotification', {
-        'id': _notificationId(id), 'title': title, 'body': body, 'fireAt': fireAt.millisecondsSinceEpoch,
+        'id': notificationIdFor(id), 'title': title, 'body': body, 'fireAt': fireAt.millisecondsSinceEpoch,
       }) ?? false;
     } on PlatformException { return false; }
       on MissingPluginException { return false; }
