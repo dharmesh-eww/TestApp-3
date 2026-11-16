@@ -62,8 +62,10 @@ class IngredientMatcher {
         return values.any((value) {
           final aliases = _names(value);
           if (aliases.any((alias) => names.contains(alias)) || value == id) return true;
-          return aliases.any((alias) => names.any((name) =>
-              alias.length > 2 && (name.contains(alias) || alias.contains(name))));
+          // Ingredient names must match exactly after normalization/alias
+          // expansion. Substring matching makes "ham" match "chamomile",
+          // and "rice" match "rice vinegar", which overstates pantry coverage.
+          return false;
         });
       }
 
