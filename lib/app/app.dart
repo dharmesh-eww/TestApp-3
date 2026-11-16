@@ -297,7 +297,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       DropdownButtonFormField<String>(
                         value: cuisine,
                         decoration: InputDecoration(labelText: appStrings(sheetContext).label('Cuisine', 'المطبخ')),
-                        items: [const DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All cuisines', 'كل المطابخ'))),
+                        items: [DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All cuisines', 'كل المطابخ'))),
                           ...cuisines.map((value) => DropdownMenuItem(value: value, child: Text(value)))],
                         onChanged: (value) => setSheetState(() => cuisine = value ?? 'all'),
                       ),
