@@ -11,6 +11,72 @@ class AppLocalizations {
 
   String label(String english, String arabic) => isArabic ? arabic : english;
 
+  String weekday(String day) {
+    if (!isArabic) return day;
+    return switch (day) {
+      'Monday' => 'الإثنين',
+      'Tuesday' => 'الثلاثاء',
+      'Wednesday' => 'الأربعاء',
+      'Thursday' => 'الخميس',
+      'Friday' => 'الجمعة',
+      'Saturday' => 'السبت',
+      'Sunday' => 'الأحد',
+      _ => day,
+    };
+  }
+
+  String weekdayShort(String day) {
+    if (!isArabic) return day.substring(0, 1);
+    return switch (day) {
+      'Monday' => 'ن',
+      'Tuesday' => 'ث',
+      'Wednesday' => 'ر',
+      'Thursday' => 'خ',
+      'Friday' => 'ج',
+      'Saturday' => 'س',
+      'Sunday' => 'ح',
+      _ => day,
+    };
+  }
+
+  String mealSlot(String slot) {
+    if (!isArabic) {
+      return switch (slot) {
+        'breakfast' => 'Breakfast',
+        'lunch' => 'Lunch',
+        'dinner' => 'Dinner',
+        'snack' => 'Snack',
+        _ => slot,
+      };
+    }
+    return switch (slot) {
+      'breakfast' => 'الإفطار',
+      'lunch' => 'الغداء',
+      'dinner' => 'العشاء',
+      'snack' => 'وجبة خفيفة',
+      _ => slot,
+    };
+  }
+
+  String dietaryTag(String tag) {
+    if (!isArabic) {
+      return switch (tag) {
+        'plant_based' => 'Plant based',
+        'gluten_free' => 'Gluten free',
+        'dairy_free' => 'Dairy free',
+        'high_protein' => 'High protein',
+        _ => tag,
+      };
+    }
+    return switch (tag) {
+      'plant_based' => 'نباتي بالكامل',
+      'gluten_free' => 'خالٍ من الغلوتين',
+      'dairy_free' => 'خالٍ من الألبان',
+      'high_protein' => 'غني بالبروتين',
+      _ => tag,
+    };
+  }
+
   String stepOf(int current, int total) =>
       isArabic ? 'الخطوة $current من $total' : 'STEP $current OF $total';
 
