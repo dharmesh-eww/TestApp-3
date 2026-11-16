@@ -846,7 +846,7 @@ class GroceryScreen extends StatelessWidget {
     showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
       title: Text(appStrings(context).label('Edit grocery item', 'تعديل عنصر المشتريات')),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: name, decoration: const InputDecoration(labelText: appStrings(context).label('Ingredient', 'المكوّن'))),
+        TextField(controller: name, decoration: InputDecoration(labelText: appStrings(context).label('Ingredient', 'المكوّن'))),
         if (item.isQuantified) TextField(controller: amount, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: appStrings(context).label('Amount (${item.unit})', 'الكمية (${item.unit})'))),
       ]),
       actions: [
