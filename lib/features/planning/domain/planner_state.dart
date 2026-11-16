@@ -375,7 +375,20 @@ class PlannerState {
     customGroceryItems[key] = GroceryEdit(name: cleanName, amount: previous + amount);
   }
 
-  void removeCustomGroceryItem(String key) => customGroceryItems.remove(key);
+  void removeCustomGroceryItem(String key) {
+    if (customGroceryItems.remove(key) != null) return;
+    final match = customGroceryItems.entries.where((entry) {
+      final parts = entry.key.split('|');
+      if (parts.length < 2) return false;
+      final unit = parts.sublist(1).join('|');
+      final converted = MeasurementUnits.convert(entry.value.amount, unit, 'metric');
+      var normalizedUnit = converted?.unit.toLowerCase() ?? unit.toLowerCase();
+      if (normalizedUnit == 'kg') normalizedUnit = 'g';
+      if (normalizedUnit == 'l') normalizedUnit = 'ml';
+      return _key(entry.value.name, normalizedUnit) == key;
+    }).map((entry) => entry.key).firstOrNull;
+    if (match != null) customGroceryItems.remove(match);
+  }
 
   String createGroceryList(String name) {
     final clean = name.trim();
@@ -397,11 +410,26 @@ class PlannerState {
   }
 
   void clearCheckedCustomGroceryItems() {
-    final keys = customGroceryItems.keys.where((key) => groceryChecks[key] == true).toList();
-    for (final key in keys) {
+    final keysToRemove = <String>[];
+    for (final entry in customGroceryItems.entries) {
+      final parts = entry.key.split('|');
+      if (parts.length < 2) continue;
+      final unit = parts.sublist(1).join('|');
+      final converted = MeasurementUnits.convert(entry.value.amount, unit, 'metric');
+      var normalizedUnit = converted?.unit.toLowerCase() ?? unit.toLowerCase();
+      if (normalizedUnit == 'kg') normalizedUnit = 'g';
+      if (normalizedUnit == 'l') normalizedUnit = 'ml';
+      final normalizedKey = _key(entry.value.name, normalizedUnit);
+      if (groceryChecks[entry.key] == true || groceryChecks[normalizedKey] == true) {
+        keysToRemove.add(entry.key);
+        groceryChecks.remove(entry.key);
+        groceryChecks.remove(normalizedKey);
+        groceryEdits.remove(entry.key);
+        groceryEdits.remove(normalizedKey);
+      }
+    }
+    for (final key in keysToRemove) {
       customGroceryItems.remove(key);
-      groceryChecks.remove(key);
-      groceryEdits.remove(key);
     }
   }
 
@@ -504,6 +532,20 @@ class PlannerState {
       sourceKeys.putIfAbsent(key, () => <String>{}).add(_key(item.name, item.unit));
       ownedTotals.update(key, (old) => old + normalized.amount,
           ifAbsent: () => normalized.amount);
+    }
+
+    // Migrate references created by older snapshots (for example flour|kg)
+    // to the canonical key (flour|g), preserving checked state and list membership.
+    for (final entry in sourceKeys.entries) {
+      for (final alias in entry.value) {
+        if (alias == entry.key) continue;
+        if (groceryChecks.remove(alias) == true) groceryChecks[entry.key] = true;
+        final oldEdit = groceryEdits.remove(alias);
+        if (oldEdit != null) groceryEdits.putIfAbsent(entry.key, () => oldEdit);
+        for (final list in groceryLists.values) {
+          if (list.remove(alias)) list.add(entry.key);
+        }
+      }
     }
 
     final keys = {...totals.keys, ...qualifiers}.toList()..sort();
