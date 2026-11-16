@@ -575,11 +575,34 @@ class PlannerState {
           : canonical(edit.amount, editUnit ?? display(originalAmount, baseUnit).unit);
       final neededBase = edited?.amount ?? originalAmount;
       final ownedBase = ownedTotals[key] ?? 0;
-      final shownNeeded = display(neededBase, baseUnit);
-      final shownOwned = display(ownedBase, baseUnit);
-      final shownToBuy = display(
-        (neededBase - ownedBase).clamp(0, double.infinity).toDouble(),
-        baseUnit,
+      final targetUnit = display(neededBase, baseUnit).unit;
+      double inTargetUnit(double amount) {
+        if (baseUnit == 'g') {
+          return switch (targetUnit) {
+            'kg' => amount / 1000,
+            'lb' => amount / 453.59237,
+            'oz' => amount / 28.349523125,
+            _ => amount,
+          };
+        }
+        if (baseUnit == 'ml') {
+          return switch (targetUnit) {
+            'L' => amount / 1000,
+            'cup' => amount / 236.5882365,
+            'tsp' => amount / 4.92892159375,
+            _ => amount,
+          };
+        }
+        return amount;
+      }
+
+      final shownNeeded = (amount: inTargetUnit(neededBase), unit: targetUnit);
+      final shownOwned = (amount: inTargetUnit(ownedBase), unit: targetUnit);
+      final shownToBuy = (
+        amount: inTargetUnit(
+          (neededBase - ownedBase).clamp(0, double.infinity).toDouble(),
+        ),
+        unit: targetUnit,
       );
       final quantified = totals.containsKey(key);
       return GroceryItem(
