@@ -40,8 +40,7 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
           const SizedBox(height: 8),
           Text(appStrings(context).label('What’s in your kitchen?', 'ماذا يوجد في مطبخك؟'), style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
-          Text(appStrings(context).label('Choose ingredients you have, or switch to ingredients you want to avoid. Matches show what is still missing.', 'اختر المكونات المتوفرة لديك أو المكونات التي تريد تجنبها. تعرض النتائج المكونات الناقصة.')),
-              style: TextStyle(color: AppTheme.muted)),
+          Text(appStrings(context).label('Choose ingredients you have, or switch to ingredients you want to avoid. Matches show what is still missing.', 'اختر المكونات المتوفرة لديك أو المكونات التي تريد تجنبها. تعرض النتائج المكونات الناقصة.'), style: TextStyle(color: AppTheme.muted)),
           const SizedBox(height: 16),
           SegmentedButton<bool>(
             segments: [
@@ -304,7 +303,7 @@ class PlannerSettingsScreen extends StatelessWidget {
         DropdownButtonFormField<int>(
           value: state.weekStartsOn,
           decoration: InputDecoration(labelText: appStrings(context).label('First day of week', 'أول يوم في الأسبوع')),
-          items: const [
+          items: [
             DropdownMenuItem(value: 1, child: Text(appStrings(context).label('Monday', 'الإثنين'))),
             DropdownMenuItem(value: 7, child: Text(appStrings(context).label('Sunday', 'الأحد'))),
           ],
@@ -321,7 +320,7 @@ class PlannerSettingsScreen extends StatelessWidget {
         DropdownButtonFormField<String>(
           value: state.themePreference,
           decoration: InputDecoration(labelText: appStrings(context).label('Theme', 'السمة')),
-          items: const [
+          items: [
             DropdownMenuItem(value: 'system', child: Text(appStrings(context).label('Use device setting', 'استخدام إعداد الجهاز'))),
             DropdownMenuItem(value: 'light', child: Text(appStrings(context).label('Light', 'فاتح'))),
             DropdownMenuItem(value: 'dark', child: Text(appStrings(context).label('Dark', 'داكن'))),
@@ -338,17 +337,16 @@ class PlannerSettingsScreen extends StatelessWidget {
         const SizedBox(height: 24),
         Text(appStrings(context).label('PERSONAL DISCOVERY', 'اكتشاف مخصص'), style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
         const SizedBox(height: 8),
-        Text(appStrings(context).label('Prefer recipes with these dietary tags. Discover will apply every selected tag.', 'فضّل الوصفات التي تحمل هذه التصنيفات الغذائية. سيطبق قسم الاكتشاف جميع التصنيفات المحددة.')), style: TextStyle(color: AppTheme.muted)),
+        Text(appStrings(context).label('Prefer recipes with these dietary tags. Discover will apply every selected tag.', 'فضّل الوصفات التي تحمل هذه التصنيفات الغذائية. سيطبق قسم الاكتشاف جميع التصنيفات المحددة.'), style: TextStyle(color: AppTheme.muted)),
         for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
           CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(option.value), value: state.preferredDietaryTags.contains(option.key),
             onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
         const SizedBox(height: 16),
-        Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.')),
-            style: TextStyle(color: AppTheme.muted)),
+        Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.'), style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 28),
         Text(appStrings(context).label('LOCAL DATA', 'البيانات المحلية'), style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.terracotta, letterSpacing: 1.2)),
         const SizedBox(height: 8),
-        Text(appStrings(context).label('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', 'تُخزّن المفضلة وخطط الوجبات والمشتريات والمخزن والمجموعات والسجل والتفضيلات على هذا الجهاز. يؤدي إعادة الضبط إلى مسح بياناتك الشخصية مع الاحتفاظ بمكتبة الوصفات التي تم تنزيلها.')), style: TextStyle(color: AppTheme.muted)),
+        Text(appStrings(context).label('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', 'تُخزّن المفضلة وخطط الوجبات والمشتريات والمخزن والمجموعات والسجل والتفضيلات على هذا الجهاز. يؤدي إعادة الضبط إلى مسح بياناتك الشخصية مع الاحتفاظ بمكتبة الوصفات التي تم تنزيلها.'), style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 10),
         OutlinedButton.icon(key: const Key('reset-local-data'), style: OutlinedButton.styleFrom(foregroundColor: Colors.red), icon: Icon(Icons.delete_outline), label: Text(appStrings(context).label('Reset personal data', 'إعادة ضبط البيانات الشخصية')),
           onPressed: () async {
