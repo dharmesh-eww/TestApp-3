@@ -6,7 +6,7 @@ void main() {
     final first = CookingAssistService.notificationIdFor('timer-123');
     final second = CookingAssistService.notificationIdFor('timer-123');
 
-    expect(first, isNonZero);
+    expect(first, isNot(0));
     expect(second, first);
     expect(CookingAssistService.notificationIdFor('timer-456'), isNot(first));
   });
