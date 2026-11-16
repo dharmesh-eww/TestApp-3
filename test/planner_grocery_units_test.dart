@@ -49,6 +49,18 @@ void main() {
     expect(item.toBuyAmount, closeTo(.5, .0001));
   });
 
+  test('checked custom groceries clear after their units are normalized', () {
+    final state = PlannerState();
+    state.addCustomGroceryItem(name: 'Sugar', amount: .5, unit: 'kg');
+    final item = state.buildGroceryList(const []).single;
+
+    expect(item.isCustom, isTrue);
+    state.setGroceryChecked(item.key, true);
+    state.clearCheckedCustomGroceryItems();
+
+    expect(state.buildGroceryList(const []), isEmpty);
+  });
+
   test('does not combine mass and volume quantities', () {
     final state = PlannerState();
     final mass = _recipe('mass', 200, 'g');
