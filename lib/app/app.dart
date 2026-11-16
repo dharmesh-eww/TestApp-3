@@ -375,22 +375,22 @@ class TodayScreen extends StatelessWidget {
       children: [
         Row(children: [
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('MONDAY, AT YOUR PACE', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+            Text(appStrings(context).label('MONDAY, AT YOUR PACE', 'أسبوعك على إيقاعك'), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
             SizedBox(height: 7),
             Text('A little more joy\nin the kitchen.', style: TextStyle(fontFamily: 'Georgia', fontSize: 31, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
           ])),
           CircleAvatar(radius: 24, backgroundColor: const Color(0xFFE9E4D8), child: Icon(Icons.spa_outlined, color: AppTheme.olive)),
         ]),
         const SizedBox(height: 24),
-        _SectionHeading(title: 'Today’s inspiration', action: 'See all', onTap: () => _goTab(context, 1)),
+        _SectionHeading(title: appStrings(context).label('Today’s inspiration', 'إلهام اليوم'), action: appStrings(context).label('See all', 'عرض الكل'), onTap: () => _goTab(context, 1)),
         const SizedBox(height: 12),
         _FeaturedRecipe(recipe: featured),
         const SizedBox(height: 26),
-        _SectionHeading(title: 'Made for your week', action: 'Open plan', onTap: () => _goTab(context, 2)),
+        _SectionHeading(title: appStrings(context).label('Made for your week', 'اختيارات لأسبوعك'), action: appStrings(context).label('Open plan', 'افتح الخطة'), onTap: () => _goTab(context, 2)),
         const SizedBox(height: 12),
         const _WeekStrip(),
         const SizedBox(height: 26),
-        _SectionHeading(title: 'A few good ideas', action: 'Explore', onTap: () => _goTab(context, 1)),
+        _SectionHeading(title: appStrings(context).label('A few good ideas', 'بعض الأفكار الجميلة'), action: appStrings(context).label('Explore', 'استكشف'), onTap: () => _goTab(context, 1)),
         const SizedBox(height: 12),
         SizedBox(
           height: 218,
@@ -535,7 +535,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               items: const [
                 DropdownMenuItem(value: RecipeSort.recommended, child: Text(appStrings(context).label('Recommended', 'موصى به'))),
                 DropdownMenuItem(value: RecipeSort.quickest, child: Text(appStrings(context).label('Quickest', 'الأسرع'))),
-                DropdownMenuItem(value: RecipeSort.title, child: Text('A–Z')),
+                DropdownMenuItem(value: RecipeSort.title, child: Text(appStrings(context).label('A–Z', 'أ–ي'))),
               ],
               onChanged: (value) {
                 if (value != null) setState(() => _sort = value);
@@ -612,7 +612,7 @@ class _PlanScreenState extends State<PlanScreen> {
               child:Column(children:[Text(name.substring(0,1),style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.muted,fontSize:11,fontWeight:FontWeight.w800)),const SizedBox(height:5),Text('$count',style:TextStyle(color:selectedDay==index?AppTheme.terracotta:AppTheme.ink,fontWeight:FontWeight.w800))]))));
         }))),
       const SizedBox(height:18),
-      Row(children:[Expanded(child:Text(day,style:Theme.of(context).textTheme.titleLarge)),Text('${meals.length}/4 planned',style:TextStyle(color:AppTheme.muted,fontSize:12))]),
+      Row(children:[Expanded(child:Text(day,style:Theme.of(context).textTheme.titleLarge)),Text(appStrings(context).label('${meals.length}/4 planned', 'تم التخطيط لـ ${meals.length}/4')),style:TextStyle(color:AppTheme.muted,fontSize:12))]),
       const SizedBox(height:10),
       for(final slot in MealSlot.values)
         _MealSlotCard(key: ValueKey('meal-slot-$day-${slot.name}'), day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
@@ -641,7 +641,7 @@ class _PlanScreenState extends State<PlanScreen> {
             onChanged: (value) => setDialogState(() => targetSlot = value ?? fromSlot)),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
           FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Move', 'نقل'))),
         ],
       ),
@@ -722,7 +722,7 @@ class _MealSlotCard extends StatelessWidget {
         const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Text(slot.label.toUpperCase(),style:TextStyle(color:AppTheme.terracotta,fontSize:9,letterSpacing:1.1,fontWeight:FontWeight.w800)),const SizedBox(height:4),
           Text(recipe?.title??'Nothing planned yet',style:TextStyle(color:recipe==null?AppTheme.muted:AppTheme.ink,fontWeight:FontWeight.w700)),
-          if(meal!=null)Text('${meal!.servings} servings · ${recipe?.minutes??0} min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
+          if(meal!=null)Text(appStrings(context).label('${meal!.servings} servings · ${recipe?.minutes??0} min', '${meal!.servings} حصص · ${recipe?.minutes??0} دقيقة'),style:TextStyle(color:AppTheme.muted,fontSize:11)),
         ])),
         if(meal==null)IconButton(key:Key('add-${day}-${slot.name}'),tooltip:'Add ${slot.label}',onPressed:onAdd,icon:Icon(Icons.add_circle_outline,color:AppTheme.terracotta))
         else Row(mainAxisSize:MainAxisSize.min,children:[
@@ -801,11 +801,11 @@ class GroceryScreen extends StatelessWidget {
       ],
       const SizedBox(height:22),
       Row(children:[Expanded(child:Text(appStrings(context).label('Your pantry', 'مخزنك'),style:Theme.of(context).textTheme.titleLarge)),TextButton.icon(onPressed:()=>_showPantryEditor(context),icon:Icon(Icons.add,size:17),label:Text(appStrings(context).label('Add item', 'إضافة عنصر')))]),
-      Text('Items here are deducted from what you need to buy.',style:TextStyle(color:AppTheme.muted,fontSize:12)),
-      if(state.expiringPantryItems.isNotEmpty) Padding(padding:const EdgeInsets.only(top:8),child:Text('${state.expiringPantryItems.length} pantry item(s) expire within seven days.',style:TextStyle(color:AppTheme.terracotta,fontWeight:FontWeight.w700))),
+      Text(appStrings(context).label('Items here are deducted from what you need to buy.', 'تُخصم العناصر الموجودة هنا من الكميات التي تحتاج إلى شرائها.'),style:TextStyle(color:AppTheme.muted,fontSize:12)),
+      if(state.expiringPantryItems.isNotEmpty) Padding(padding:const EdgeInsets.only(top:8),child:Text(appStrings(context).label('${state.expiringPantryItems.length} pantry item(s) expire within seven days.', 'ستنتهي صلاحية ${state.expiringPantryItems.length} من عناصر المخزن خلال سبعة أيام.'),style:TextStyle(color:AppTheme.terracotta,fontWeight:FontWeight.w700))),
       const SizedBox(height:10),
-      if(state.pantry.isEmpty)Text('Your pantry is empty for now.',style:TextStyle(color:AppTheme.muted))
-      else for(final item in state.pantry.values)ListTile(contentPadding:const EdgeInsets.symmetric(horizontal:4),leading:Icon(Icons.inventory_2_outlined,color:AppTheme.olive),title:Text(item.name),subtitle:Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · Expires ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
+      if(state.pantry.isEmpty)Text(appStrings(context).label('Your pantry is empty for now.', 'مخزنك فارغ حاليًا.'),style:TextStyle(color:AppTheme.muted))
+      else for(final item in state.pantry.values)ListTile(contentPadding:const EdgeInsets.symmetric(horizontal:4),leading:Icon(Icons.inventory_2_outlined,color:AppTheme.olive),title:Text(item.name),subtitle:Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · ${appStrings(context).label('Expires', 'تنتهي الصلاحية')} ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
         trailing:Wrap(children:[
           IconButton(tooltip:'Set expiry date',onPressed:() async {
             final current = state.pantryExpiryDates[item.id];
@@ -828,14 +828,14 @@ class GroceryScreen extends StatelessWidget {
         TextField(controller: unit, decoration: InputDecoration(labelText: appStrings(context).label('Unit', 'الوحدة'))),
       ]),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
         FilledButton(onPressed: () {
           final quantity = double.tryParse(amount.text.trim());
           if (name.text.trim().isEmpty || unit.text.trim().isEmpty || quantity == null || quantity < 0) return;
           PlannerScope.of(context).addCustomGroceryItem(name: name.text, amount: quantity, unit: unit.text);
           PlannerScope.refresh(context);
           Navigator.pop(dialogContext);
-        }, child: Text('Add')),
+        }, child: Text(appStrings(context).label('Add', 'إضافة'))),
       ],
     )).then((_) { name.dispose(); amount.dispose(); unit.dispose(); });
   }
@@ -846,11 +846,11 @@ class GroceryScreen extends StatelessWidget {
     showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
       title: Text(appStrings(context).label('Edit grocery item', 'تعديل عنصر المشتريات')),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: name, decoration: const InputDecoration(labelText: 'Ingredient')),
-        if (item.isQuantified) TextField(controller: amount, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: 'Amount (${item.unit})')),
+        TextField(controller: name, decoration: const InputDecoration(labelText: appStrings(context).label('Ingredient', 'المكوّن'))),
+        if (item.isQuantified) TextField(controller: amount, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: appStrings(context).label('Amount (${item.unit})', 'الكمية (${item.unit})'))),
       ]),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
         FilledButton(onPressed: () {
           final parsed = item.isQuantified ? double.tryParse(amount.text.trim()) : item.amount;
           if (parsed == null || parsed < 0 || name.text.trim().isEmpty) return;
@@ -893,7 +893,7 @@ class KitchenScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
-        Text('YOUR LITTLE COOKBOOK', style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+        Text(appStrings(context).label('YOUR LITTLE COOKBOOK', 'كتاب وصفاتك الصغير'), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
         const SizedBox(height: 8),
         Text('Your kitchen,\nyour rhythm.', style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
@@ -906,22 +906,22 @@ class KitchenScreen extends StatelessWidget {
         Wrap(spacing: 8, runSpacing: 8, children: [
           OutlinedButton.icon(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CollectionsScreen())),
-            icon: Icon(Icons.folder_open), label: Text('Collections'),
+            icon: Icon(Icons.folder_open), label: Text(appStrings(context).label('Collections', 'المجموعات')),
           ),
           OutlinedButton.icon(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CookingHistoryScreen())),
-            icon: Icon(Icons.history), label: Text('Cooking history'),
+            icon: Icon(Icons.history), label: Text(appStrings(context).label('Cooking history', 'سجل الطهي')),
           ),
           OutlinedButton.icon(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PlannerSettingsScreen())),
-            icon: Icon(Icons.tune), label: Text('Settings'),
+            icon: Icon(Icons.tune), label: Text(appStrings(context).label('Settings', 'الإعدادات')),
           ),
         ]),
         const SizedBox(height: 20),
-        Text('Recently viewed', style: Theme.of(context).textTheme.titleLarge),
+        Text(appStrings(context).label('Recently viewed', 'شوهدت مؤخرًا'), style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 10),
         if (state.recentlyViewed.isEmpty)
-          Text('Recipes you open will appear here.', style: TextStyle(color: AppTheme.muted))
+          Text(appStrings(context).label('Recipes you open will appear here.', 'ستظهر هنا الوصفات التي تفتحها.'), style: TextStyle(color: AppTheme.muted))
         else
           ...state.recentlyViewed.take(5).map((entry) {
             final recipe = RecipeCatalogScope.of(context).where((item) => item.id == entry['recipe_id']).firstOrNull;
@@ -929,17 +929,17 @@ class KitchenScreen extends StatelessWidget {
             return Padding(padding: const EdgeInsets.only(bottom: 8), child: _RecipeListTile(recipe: recipe));
           }),
         const SizedBox(height: 22),
-        Text('Your saved recipes', style: Theme.of(context).textTheme.titleLarge),
+        Text(appStrings(context).label('Your saved recipes', 'وصفاتك المحفوظة'), style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 22),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Recipe library', style: Theme.of(context).textTheme.titleMedium),
+              Text(appStrings(context).label('Recipe library', 'مكتبة الوصفات'), style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 4),
-              Text('Content version: ${RecipeCatalogScope.versionOf(context)}', style: TextStyle(color: AppTheme.muted)),
+              Text(appStrings(context).label('Content version: ${RecipeCatalogScope.versionOf(context)}', 'إصدار المحتوى: ${RecipeCatalogScope.versionOf(context)}'), style: TextStyle(color: AppTheme.muted)),
               const SizedBox(height: 8),
-              Text('Check for curated recipe updates. Your meal plans, pantry and saved recipes stay on this device.', style: TextStyle(color: AppTheme.muted)),
+              Text(appStrings(context).label('Check for curated recipe updates. Your meal plans, pantry and saved recipes stay on this device.', 'تحقق من تحديثات الوصفات المختارة. تظل خطط وجباتك ومخزنك ووصفاتك المحفوظة على هذا الجهاز.'), style: TextStyle(color: AppTheme.muted)),
               const SizedBox(height: 8),
               Align(
                 alignment: AlignmentDirectional.centerEnd,
@@ -953,7 +953,7 @@ class KitchenScreen extends StatelessWidget {
                     ));
                   } : null,
                   icon: Icon(Icons.sync),
-                  label: Text('Check for updates'),
+                  label: Text(appStrings(context).label('Check for updates', 'التحقق من التحديثات')),
                 ),
               ),
             ]),
@@ -962,7 +962,7 @@ class KitchenScreen extends StatelessWidget {
         const SizedBox(height: 20),
         const SizedBox(height: 12),
         if (saved.isEmpty)
-          Text('Recipes you save will live here. Tap the bookmark on any recipe you love.', style: TextStyle(color: AppTheme.muted))
+          Text(appStrings(context).label('Recipes you save will live here. Tap the bookmark on any recipe you love.', 'ستظهر هنا الوصفات التي تحفظها. اضغط علامة الحفظ على أي وصفة تعجبك.'), style: TextStyle(color: AppTheme.muted))
         else
           ...saved.map((recipe) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -1022,11 +1022,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               style: IconButton.styleFrom(backgroundColor: AppTheme.card),
             ),
             IconButton(
-              tooltip: 'Copy recipe',
+              tooltip: appStrings(context).label('Copy recipe', 'نسخ الوصفة'),
               onPressed: () async {
                 final text = '${recipe.title}\n\n${recipe.subtitle}\n\nIngredients:\n${recipe.ingredients.map((item) => '• ${item.name}: ${item.amount ?? item.amountType.name} ${item.unit}').join('\n')}\n\nInstructions:\n${recipe.steps.asMap().entries.map((entry) => '${entry.key + 1}. ${entry.value}').join('\n')}';
                 await Clipboard.setData(ClipboardData(text: text));
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Recipe copied to clipboard.')));
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Recipe copied to clipboard.', 'تم نسخ الوصفة.'))));
               },
               icon: const Icon(Icons.copy_outlined),
               style: IconButton.styleFrom(backgroundColor: AppTheme.card),
@@ -1056,9 +1056,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             ]),
             const SizedBox(height: 26),
             Row(children: [
-              Expanded(child: Text('Ingredients', style: Theme.of(context).textTheme.headlineMedium)),
+              Expanded(child: Text(appStrings(context).label('Ingredients', 'المكونات'), style: Theme.of(context).textTheme.headlineMedium)),
               IconButton(onPressed: servings > 1 ? () => setState(() => servings--) : null, icon: Icon(Icons.remove_circle_outline)),
-              Text('$servings servings', style: TextStyle(fontWeight: FontWeight.w700)),
+              Text(appStrings(context).label('$servings servings', '$servings حصص'), style: TextStyle(fontWeight: FontWeight.w700)),
               IconButton(onPressed: () => setState(() => servings++), icon: Icon(Icons.add_circle_outline)),
             ]),
             const SizedBox(height: 8),
@@ -1076,7 +1076,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               onPressed: () {
                 state.addIngredients(recipe, servings);
                 PlannerScope.refresh(context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ingredients added to your grocery list')));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Ingredients added to your grocery list', 'تمت إضافة المكونات إلى قائمة المشتريات'))));
               },
               icon: Icon(Icons.add_shopping_cart), label: Text(appStrings(context).label('Add ingredients to grocery list', 'إضافة المكونات إلى قائمة المشتريات')),
             )),
@@ -1101,7 +1101,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               ),
             ),
             const SizedBox(height: 26),
-            Text('Let’s make it', style: Theme.of(context).textTheme.headlineMedium),
+            Text(appStrings(context).label('Let’s make it', 'هيا نبدأ التحضير'), style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 14),
             ...List.generate(recipe.steps.length, (index) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -1135,14 +1135,14 @@ class _FeaturedRecipe extends StatelessWidget {
           Image(image: CachedNetworkImageProvider(recipe.image), fit: BoxFit.cover, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFFE8DFD1))),
           const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xCC211A16)], stops: [0.35, 1]))),
           Positioned(left: 18, right: 18, bottom: 18, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('EDITOR’S PICK', style: TextStyle(color: Color(0xFFFFD5B9), fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w800)),
+            Text(appStrings(context).label('EDITOR’S PICK', 'اختيار المحرر'), style: TextStyle(color: Color(0xFFFFD5B9), fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
             Text(recipe.title, style: TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'Georgia', fontWeight: FontWeight.bold)),
             const SizedBox(height: 7),
             Row(children: [
               Icon(Icons.schedule, color: Colors.white70, size: 15),
               const SizedBox(width: 5),
-              Text('${recipe.minutes} min', style: TextStyle(color: Colors.white70, fontSize: 12)),
+              Text(appStrings(context).label('${recipe.minutes} min', '${recipe.minutes} دقيقة'), style: TextStyle(color: Colors.white70, fontSize: 12)),
               const SizedBox(width: 12),
               Icon(Icons.circle, color: Color(0xFFB8C18F), size: 7),
               const SizedBox(width: 5),
@@ -1173,7 +1173,7 @@ class _RecipeTile extends StatelessWidget {
         )),
         const SizedBox(height: 8),
         Text(recipe.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
-        Text('${recipe.minutes} min · ${recipe.category}', style: TextStyle(color: AppTheme.muted, fontSize: 11)),
+        Text(appStrings(context).label('${recipe.minutes} min · ${recipe.category}', '${recipe.minutes} دقيقة · ${recipe.category}'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
       ]),
     );
   }
@@ -1204,7 +1204,7 @@ class _RecipeListTile extends StatelessWidget {
             const SizedBox(height: 4),
             Text(recipe.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
             const SizedBox(height: 5),
-            Text('${recipe.minutes} min · ${recipe.difficulty}', style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
+            Text(appStrings(context).label('${recipe.minutes} min · ${recipe.difficulty}', '${recipe.minutes} دقيقة · ${recipe.difficulty}'), style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
           ])),
           Icon(Icons.chevron_right, color: AppTheme.muted),
         ]),
