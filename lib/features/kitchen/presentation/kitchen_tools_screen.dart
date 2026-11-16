@@ -204,7 +204,7 @@ class CollectionDetailScreen extends StatelessWidget {
           ? Center(child: Text(appStrings(context).label('This collection is ready for your recipes.', 'هذه المجموعة جاهزة لوصفاتك.')))
           : ListView(padding: const EdgeInsets.all(16), children: recipes.map((recipe) => ListTile(
               title: Text(recipe.title),
-              subtitle: Text('${recipe.totalMinutes} min · ${recipe.category}'),
+              subtitle: Text(appStrings(context).label('${recipe.totalMinutes} min · ${recipe.category}', '${recipe.totalMinutes} دقيقة · ${recipe.category}')),
               trailing: IconButton(
                 tooltip: appStrings(context).label('Remove from collection', 'إزالة من المجموعة'),
                 onPressed: () {
@@ -303,7 +303,7 @@ class PlannerSettingsScreen extends StatelessWidget {
         const SizedBox(height: 8),
         DropdownButtonFormField<int>(
           value: state.weekStartsOn,
-          decoration: const InputDecoration(labelText: appStrings(context).label('First day of week', 'أول يوم في الأسبوع')),
+          decoration: InputDecoration(labelText: appStrings(context).label('First day of week', 'أول يوم في الأسبوع')),
           items: const [
             DropdownMenuItem(value: 1, child: Text(appStrings(context).label('Monday', 'الإثنين'))),
             DropdownMenuItem(value: 7, child: Text(appStrings(context).label('Sunday', 'الأحد'))),
@@ -320,7 +320,7 @@ class PlannerSettingsScreen extends StatelessWidget {
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: state.themePreference,
-          decoration: const InputDecoration(labelText: appStrings(context).label('Theme', 'السمة')),
+          decoration: InputDecoration(labelText: appStrings(context).label('Theme', 'السمة')),
           items: const [
             DropdownMenuItem(value: 'system', child: Text(appStrings(context).label('Use device setting', 'استخدام إعداد الجهاز'))),
             DropdownMenuItem(value: 'light', child: Text(appStrings(context).label('Light', 'فاتح'))),
@@ -354,7 +354,7 @@ class PlannerSettingsScreen extends StatelessWidget {
           onPressed: () async {
             final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
               title: Text(appStrings(context).label('Reset personal data?', 'هل تريد إعادة ضبط البيانات الشخصية؟')),
-              content: Text('Favorites, meal plans, groceries, pantry, collections, history and preferences will be cleared from this device. Your recipe catalog stays available.'),
+              content: Text(appStrings(context).label('Favorites, meal plans, groceries, pantry, collections, history and preferences will be cleared from this device. Your recipe catalog stays available.', 'سيتم مسح المفضلة وخطط الوجبات والمشتريات والمخزن والمجموعات والسجل والتفضيلات من هذا الجهاز. ستظل مكتبة الوصفات متاحة.')),
               actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Reset data', 'إعادة ضبط البيانات')))],
             ));
             if (confirmed != true || !context.mounted) return;
