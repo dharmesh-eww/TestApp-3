@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../localization/app_localizations.dart';
 
 /// A short first-run introduction. It stores no account or personal data.
 class OnboardingScreen extends StatelessWidget {
@@ -17,17 +18,17 @@ class OnboardingScreen extends StatelessWidget {
         children: [
           const Icon(Icons.spa_outlined, size: 42, color: AppTheme.terracotta),
           const SizedBox(height: 28),
-          Text('A gentler way to gather.', style: Theme.of(context).textTheme.headlineLarge),
+          Text(appStrings(context).label('A gentler way to gather.', 'طريقة ألطف لتنظيم وصفاتك.'), style: Theme.of(context).textTheme.headlineLarge),
           const SizedBox(height: 16),
-          const Text('Keep recipes you love, plan a week of meals, and turn ingredients into a thoughtful shopping list.'),
+          Text(appStrings(context).label('Keep recipes you love, plan a week of meals, and turn ingredients into a thoughtful shopping list.', 'احتفظ بوصفاتك المفضلة، وخطط وجبات أسبوع كامل، وحوّل المكونات إلى قائمة تسوق منظمة.')),
           const SizedBox(height: 28),
           const _Feature(Icons.menu_book_outlined, 'Discover recipes', 'Find something lovely to cook.'),
           const _Feature(Icons.calendar_month_outlined, 'Plan your week', 'Move meals around as plans change.'),
           const _Feature(Icons.shopping_basket_outlined, 'Shop with a list', 'Keep your pantry and groceries together.'),
           const SizedBox(height: 32),
-          SizedBox(width: double.infinity, child: FilledButton(key: const Key('onboarding-get-started'), onPressed: onComplete, child: const Text('Get started'))),
+          SizedBox(width: double.infinity, child: FilledButton(key: const Key('onboarding-get-started'), onPressed: onComplete, child: Text(appStrings(context).label('Get started', 'ابدأ الآن')))),
           const SizedBox(height: 12),
-          Center(child: Text('Your planner stays on this device.', style: TextStyle(color: AppTheme.muted))),
+          Center(child: Text(appStrings(context).label('Your planner stays on this device.', 'يبقى مخططك على هذا الجهاز.'), style: TextStyle(color: AppTheme.muted))),
         ],
       )),
     ))),
