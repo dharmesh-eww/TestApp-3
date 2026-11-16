@@ -82,6 +82,7 @@ class AppLocalizations {
 
   String get today => isArabic ? 'اليوم' : 'Today';
   String get recipes => isArabic ? 'الوصفات' : 'Recipes';
+  String get favorites => isArabic ? 'المفضلة' : 'Favourites';
   String get plan => isArabic ? 'الخطة' : 'Plan';
   String get groceries => isArabic ? 'المشتريات' : 'Groceries';
   String get kitchen => isArabic ? 'المطبخ' : 'Kitchen';
