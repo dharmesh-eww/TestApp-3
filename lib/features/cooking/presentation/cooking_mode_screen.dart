@@ -286,7 +286,10 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                     ),
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      onPressed: () => session.resetTimer(timer.id),
+                      onPressed: () {
+                        CookingAssistService.cancelTimerNotification(timer.id);
+                        session.resetTimer(timer.id);
+                      },
                       icon: Icon(Icons.refresh, size: 19),
                     ),
                   ]),
