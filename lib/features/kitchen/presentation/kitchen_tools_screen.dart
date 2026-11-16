@@ -339,7 +339,7 @@ class PlannerSettingsScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(appStrings(context).label('Prefer recipes with these dietary tags. Discover will apply every selected tag.', 'فضّل الوصفات التي تحمل هذه التصنيفات الغذائية. سيطبق قسم الاكتشاف جميع التصنيفات المحددة.'), style: TextStyle(color: AppTheme.muted)),
         for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
-          CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(option.value), value: state.preferredDietaryTags.contains(option.key),
+          CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(appStrings(context).dietaryTag(option.key)), value: state.preferredDietaryTags.contains(option.key),
             onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
         const SizedBox(height: 16),
         Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.'), style: TextStyle(color: AppTheme.muted)),
