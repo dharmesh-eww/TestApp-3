@@ -1,4 +1,5 @@
 import '../../recipes/domain/recipe.dart';
+import '../../recipes/domain/measurement_units.dart';
 import 'meal_plan.dart';
 
 class PlannerState {
@@ -414,20 +415,52 @@ class PlannerState {
     }
   }
 
+  /// Aggregates recipe, manually-added and custom grocery quantities by
+  /// ingredient and compatible physical unit. Mass and volume are kept apart.
   List<GroceryItem> buildGroceryList(Iterable<Recipe> catalog) {
     final byId = {for (final recipe in catalog) recipe.id: recipe};
-    final totals = <String, double>{}, names = <String, String>{}, units = <String, String>{};
+    final totals = <String, double>{};
+    final names = <String, String>{};
+    final baseUnits = <String, String>{};
     final qualifiers = <String>{};
-    void add(Ingredient item, int servings, int baseServings) {
-      final key = _key(item.name, item.unit);
-      names.putIfAbsent(key, () => item.name);
-      units.putIfAbsent(key, () => item.unit);
-      if (item.amount == null || item.amountType != IngredientAmountType.quantity) {
+    final ownedTotals = <String, double>{};
+
+    ({double amount, String unit}) canonical(double amount, String unit) {
+      final converted = MeasurementUnits.convert(amount, unit, 'metric');
+      if (converted == null) {
+        return (amount: amount, unit: unit.trim().toLowerCase());
+      }
+      final normalizedUnit = converted.unit.toLowerCase();
+      if (normalizedUnit == 'kg') {
+        return (amount: converted.amount * 1000, unit: 'g');
+      }
+      if (normalizedUnit == 'l') {
+        return (amount: converted.amount * 1000, unit: 'ml');
+      }
+      return (amount: converted.amount, unit: normalizedUnit);
+    }
+
+    ({double amount, String unit}) display(double amount, String unit) {
+      final converted = MeasurementUnits.convert(amount, unit, measurementSystem);
+      return converted ?? (amount: amount, unit: unit);
+    }
+
+    void add(String name, double? amount, String unit, IngredientAmountType type) {
+      final cleanName = name.trim();
+      if (cleanName.isEmpty) return;
+      if (amount == null || type != IngredientAmountType.quantity) {
+        final key = _key(cleanName, unit);
+        names.putIfAbsent(key, () => cleanName);
+        baseUnits.putIfAbsent(key, () => unit.trim());
         qualifiers.add(key);
         return;
       }
-      final value = item.amount! * servings / (baseServings < 1 ? 1 : baseServings);
-      totals.update(key, (old) => old + value, ifAbsent: () => value);
+      final normalized = canonical(amount, unit);
+      final key = _key(cleanName, normalized.unit);
+      names.putIfAbsent(key, () => cleanName);
+      baseUnits.putIfAbsent(key, () => normalized.unit);
+      totals.update(key, (old) => old + normalized.amount,
+          ifAbsent: () => normalized.amount);
     }
 
     for (final slots in mealPlan.values) {
@@ -435,35 +468,60 @@ class PlannerState {
         final recipe = byId[meal.recipeId];
         if (recipe == null) continue;
         for (final item in recipe.ingredients) {
-          add(item, meal.servings, recipe.servings);
+          final amount = item.amount == null
+              ? null
+              : item.amount! * meal.servings / _safeServings(recipe);
+          add(item.name, amount, item.unit, item.amountType);
         }
       }
     }
+
     for (final entry in _manualAmounts.entries) {
-      totals.update(entry.key, (old) => old + entry.value, ifAbsent: () => entry.value);
-      names.putIfAbsent(entry.key, () => _manualNames[entry.key] ?? entry.key);
-      units.putIfAbsent(entry.key, () => entry.key.split('|').last);
+      final parts = entry.key.split('|');
+      if (parts.length < 2) continue;
+      add(_manualNames[entry.key] ?? parts.first, entry.value,
+          parts.sublist(1).join('|'), IngredientAmountType.quantity);
     }
     for (final entry in customGroceryItems.entries) {
-      final key = entry.key;
-      names[key] = entry.value.name;
-      units[key] = key.split('|').last;
-      totals.update(key, (old) => old + entry.value.amount, ifAbsent: () => entry.value.amount);
+      final parts = entry.key.split('|');
+      if (parts.length < 2) continue;
+      add(entry.value.name, entry.value.amount,
+          parts.sublist(1).join('|'), IngredientAmountType.quantity);
     }
+
+    // Pantry quantities are normalized through the same mass/volume base so
+    // 0.5 kg can offset 500 g, while 200 g never offsets 200 ml.
+    for (final item in pantry.values) {
+      final normalized = canonical(item.amount, item.unit);
+      final key = _key(item.name, normalized.unit);
+      ownedTotals.update(key, (old) => old + normalized.amount,
+          ifAbsent: () => normalized.amount);
+    }
+
     final keys = {...totals.keys, ...qualifiers}.toList()..sort();
     return keys.map((key) {
+      final baseUnit = baseUnits[key] ?? key.split('|').last;
       final originalAmount = totals[key] ?? 0;
-      final owned = pantry[key]?.amount ?? 0;
       final edit = groceryEdits[key];
-      final needed = edit?.amount ?? originalAmount;
+      final edited = edit == null
+          ? null
+          : canonical(edit.amount, display(originalAmount, baseUnit).unit);
+      final neededBase = edited?.amount ?? originalAmount;
+      final ownedBase = ownedTotals[key] ?? 0;
+      final shownNeeded = display(neededBase, baseUnit);
+      final shownOwned = display(ownedBase, baseUnit);
+      final shownToBuy = display(
+        (neededBase - ownedBase).clamp(0, double.infinity).toDouble(),
+        baseUnit,
+      );
       final quantified = totals.containsKey(key);
       return GroceryItem(
         key: key,
         name: edit?.name ?? names[key] ?? key,
-        unit: units[key] ?? '',
-        amount: needed,
-        ownedAmount: owned,
-        toBuyAmount: quantified ? (needed - owned).clamp(0, double.infinity).toDouble() : 0,
+        unit: shownNeeded.unit,
+        amount: shownNeeded.amount,
+        ownedAmount: shownOwned.amount,
+        toBuyAmount: quantified ? shownToBuy.amount : 0,
         isQuantified: quantified,
         isChecked: groceryChecks[key] ?? false,
         isCustom: customGroceryItems.containsKey(key),
