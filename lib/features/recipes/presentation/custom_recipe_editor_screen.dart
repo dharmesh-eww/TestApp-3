@@ -213,6 +213,6 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
     );
     PlannerScope.of(context).saveCustomRecipe(recipe);
     PlannerScope.refresh(context);
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 }
