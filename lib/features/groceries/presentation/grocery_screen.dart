@@ -83,16 +83,21 @@ class _GroceryScreenState extends State<GroceryScreen> {
                     Text('${state.groceryPrices[item.key]?.toStringAsFixed(2) ?? '—'} · ${state.groceryStores[item.key] ?? 'No store'}', style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
                 ],
               )),
-              IconButton(
-                tooltip: appStrings(context).label('Set price and store', 'تحديد السعر والمتجر'),
-                onPressed: () => _editItemPrice(context, item),
-                icon: const Icon(Icons.price_change_outlined, size: 18, color: AppTheme.olive),
-              ),
-              if (item.isCustom) IconButton(tooltip: appStrings(context).label('Remove custom grocery item', 'إزالة عنصر مخصص'), onPressed: () { state.removeCustomGroceryItem(item.key); PlannerScope.refresh(context); }, icon: Icon(Icons.close, size: 18)),
-              IconButton(
-                tooltip: appStrings(context).label('Edit grocery item', 'تعديل عنصر المشتريات'),
-                onPressed: () => _showGroceryEditor(context, item),
-                icon: Icon(Icons.edit_outlined, size: 18, color: AppTheme.muted),
+              PopupMenuButton<String>(
+                tooltip: appStrings(context).label('Item actions', 'إجراءات العنصر'),
+                onSelected: (action) {
+                  if (action == 'price') _editItemPrice(context, item);
+                  if (action == 'edit') _showGroceryEditor(context, item);
+                  if (action == 'remove' && item.isCustom) {
+                    state.removeCustomGroceryItem(item.key);
+                    PlannerScope.refresh(context);
+                  }
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(value: 'price', child: Text(appStrings(context).label('Price and store', 'السعر والمتجر'))),
+                  PopupMenuItem(value: 'edit', child: Text(appStrings(context).label('Edit item', 'تعديل العنصر'))),
+                  if (item.isCustom) PopupMenuItem(value: 'remove', child: Text(appStrings(context).label('Remove item', 'إزالة العنصر'))),
+                ],
               ),
             ]),
           ),
