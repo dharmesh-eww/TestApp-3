@@ -54,6 +54,7 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(appStrings(context).label('Meal calendar', 'تقويم الوجبات'))),
       body: ListView(
+        key: const Key('meal-calendar-scroll'),
         padding: const EdgeInsets.all(18),
         children: [
           Row(children: [
@@ -142,7 +143,7 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
               ),
             ),
           const SizedBox(height: 18),
-          Text(appStrings(context).label('Prep ahead', 'التحضير المسبق'), style: Theme.of(context).textTheme.titleLarge),
+          Text(appStrings(context).label('Prep ahead', 'التحضير المسبق'), key: const Key('meal-prep-heading'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 4),
           Text(appStrings(context).label('Tick ingredients you have washed, chopped or portioned for this day.', 'حدد المكونات التي غسلتها أو قطعتها أو جهزتها لهذا اليوم.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
           const SizedBox(height: 8),
