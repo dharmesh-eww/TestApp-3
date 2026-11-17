@@ -77,7 +77,13 @@ class RecipeCatalogLoader {
         final ingredient = ingredients[j];
         if (ingredient is! Map) throw CatalogLoadException('invalid_ingredient', 'Ingredient $j in recipe "$id" must be an object.');
         final name = ingredient['display_name'] ?? ingredient['name'];
-        if (name is! String || name.trim().isEmpty) {
+        final hasName = name is String
+            ? name.trim().isNotEmpty
+            : name is Map &&
+                ((name[localeCode] is String && (name[localeCode] as String).trim().isNotEmpty) ||
+                 (name['en'] is String && (name['en'] as String).trim().isNotEmpty) ||
+                 (name[localeCode] is Map && (name[localeCode] as Map)['name'] is String));
+        if (!hasName) {
           throw CatalogLoadException('invalid_ingredient', 'Ingredient $j in recipe "$id" needs a name.');
         }
       }
