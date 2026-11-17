@@ -18,7 +18,8 @@ class SmartReminderService {
     await CookingAssistService.requestNotificationPermission();
 
     final now = DateTime.now();
-    final end = now.add(const Duration(days: 45));
+    final mealEnd = now.add(const Duration(days: 92));
+    final pantryEnd = now.add(const Duration(days: 365));
     final recipesById = {for (final recipe in catalog) recipe.id: recipe};
 
     if (state.mealRemindersEnabled) {
@@ -41,7 +42,7 @@ class SmartReminderService {
             date = date.add(const Duration(days: 1));
           }
           occurrences.add(date);
-          while (occurrences.last.add(const Duration(days: 7)).isBefore(end)) {
+          while (occurrences.last.add(const Duration(days: 7)).isBefore(mealEnd)) {
             occurrences.add(occurrences.last.add(const Duration(days: 7)));
           }
         }
@@ -58,7 +59,7 @@ class SmartReminderService {
             };
             final plannedAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
             final fireAt = plannedAt.subtract(Duration(minutes: state.mealReminderMinutes));
-            if (!fireAt.isAfter(now) || fireAt.isAfter(end)) continue;
+            if (!fireAt.isAfter(now) || fireAt.isAfter(mealEnd)) continue;
             final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
             final key = 'meal:$dateKey:${meal.slot.name}:${meal.recipeId}';
             await CookingAssistService.scheduleTimerNotification(
@@ -78,7 +79,7 @@ class SmartReminderService {
         final expiry = state.pantryExpiryDates[item.id];
         if (expiry == null) continue;
         final fireAt = DateTime(expiry.year, expiry.month, expiry.day, 9);
-        if (!fireAt.isAfter(now) || fireAt.isAfter(end)) continue;
+        if (!fireAt.isAfter(now) || fireAt.isAfter(pantryEnd)) continue;
         final key = 'pantry:${item.id}:${expiry.year}-${expiry.month}-${expiry.day}';
         await CookingAssistService.scheduleTimerNotification(
           id: key,
