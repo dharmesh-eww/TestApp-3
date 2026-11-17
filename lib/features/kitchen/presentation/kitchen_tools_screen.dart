@@ -473,6 +473,76 @@ class LanguageSelectionScreen extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-japanese'),
+              value: 'ja',
+              groupValue: locale.languageCode,
+              title: const Text('日本語'),
+              secondary: const Text('JA'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('ja'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-portuguese'),
+              value: 'pt',
+              groupValue: locale.languageCode,
+              title: const Text('Português'),
+              secondary: const Text('PT'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('pt'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-indonesian'),
+              value: 'id',
+              groupValue: locale.languageCode,
+              title: const Text('Bahasa Indonesia'),
+              secondary: const Text('ID'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('id'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-spanish'),
+              value: 'es',
+              groupValue: locale.languageCode,
+              title: const Text('Español'),
+              secondary: const Text('ES'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('es'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-chinese'),
+              value: 'zh',
+              groupValue: locale.languageCode,
+              title: const Text('简体中文'),
+              secondary: const Text('ZH'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('zh'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
         ],
       ),
     );
