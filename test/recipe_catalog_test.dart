@@ -33,7 +33,7 @@ void main() {
         'korean', 'mexican', 'american', 'thai', 'greek', 'middle_eastern',
         'french', 'vietnamese', 'italian',
       ]));
-      expect(recipes.length, 21);
+      expect(recipes.length, 23);
     });
 
     test('includes recipes for breakfast, lunch, dinner and snacks', () {
