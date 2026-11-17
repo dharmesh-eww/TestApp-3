@@ -19,7 +19,7 @@ void main() {
       scrollable: find.descendant(
         of: find.byKey(const Key('plan-recipe-picker-list')),
         matching: find.byType(Scrollable),
-      ),
+      ).last,
     );
     await tester.tap(find.text('Overnight berry oats').last);
     await tester.pumpAndSettle();
