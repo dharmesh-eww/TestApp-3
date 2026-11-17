@@ -162,6 +162,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       maxMinutes: _maxMinutes == 180 ? null : _maxMinutes,
       dietaryTags: PlannerScope.of(context).preferredDietaryTags,
       preferredCuisines: PlannerScope.of(context).preferredCuisines,
+      allergies: PlannerScope.of(context).allergies,
       sort: _sort,
     );
 
