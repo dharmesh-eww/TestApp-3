@@ -149,8 +149,13 @@ class _GroceryScreenState extends State<GroceryScreen> {
       ],
     ));
     if (saved == true && context.mounted) {
-      final parsed = price.text.trim().isEmpty ? null : double.tryParse(price.text.trim());
-      if (parsed == null || parsed >= 0) state.setGroceryPrice(item.key, parsed);
+      final rawPrice = price.text.trim();
+      final parsed = rawPrice.isEmpty ? null : double.tryParse(rawPrice);
+      if (rawPrice.isEmpty) {
+        state.setGroceryPrice(item.key, null);
+      } else if (parsed != null && parsed >= 0) {
+        state.setGroceryPrice(item.key, parsed);
+      }
       state.setGroceryStore(item.key, store.text);
       PlannerScope.refresh(context);
     }
