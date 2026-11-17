@@ -25,6 +25,18 @@ void main() {
       expect(result.map((recipe) => recipe.id), ['gujarati-dhokla']);
     });
 
+    test('supports selecting multiple cuisines at once', () {
+      final result = RecipeCatalog.search(recipes, cuisineIds: {'italian', 'gujarati'});
+      expect(result.map((recipe) => recipe.id), containsAll(['lemon-pasta', 'gujarati-dhokla']));
+      expect(result, hasLength(2));
+    });
+
+    test('filters recipes within an inclusive cooking-time range', () {
+      final result = RecipeCatalog.search(recipes, minMinutes: 20, maxMinutes: 35);
+      expect(result.map((recipe) => recipe.id), containsAll(['lemon-pasta', 'roasted-bowl', 'gujarati-dhokla']));
+      expect(result, hasLength(3));
+    });
+
     test('dietary tags are applied as an all-selected filter', () {
       expect(RecipeCatalog.search(recipes, dietaryTags: {'plant_based'}).map((recipe) => recipe.id), ['roasted-bowl']);
       expect(RecipeCatalog.search(recipes, dietaryTags: {'plant_based', 'gluten_free'}), isEmpty);
