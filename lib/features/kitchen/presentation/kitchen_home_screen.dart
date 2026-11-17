@@ -7,6 +7,7 @@ import 'package:testapp_3/features/kitchen/presentation/collections_screen.dart'
 import 'package:testapp_3/features/kitchen/presentation/cooking_history_screen.dart';
 import 'package:testapp_3/features/kitchen/presentation/settings_screen.dart';
 import 'package:testapp_3/features/recipes/presentation/custom_recipe_editor_screen.dart';
+import 'package:testapp_3/features/recipes/presentation/custom_recipes_screen.dart';
 import 'package:testapp_3/app/app_widgets.dart';
 
 class KitchenScreen extends StatelessWidget {
@@ -32,6 +33,11 @@ class KitchenScreen extends StatelessWidget {
         ]),
         const SizedBox(height: 20),
         Wrap(spacing: 8, runSpacing: 8, children: [
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomRecipesScreen())),
+            icon: const Icon(Icons.menu_book_outlined),
+            label: Text(appStrings(context).label('My recipes', 'وصفاتي')),
+          ),
           OutlinedButton.icon(
             key: const Key('create-custom-recipe'),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomRecipeEditorScreen())),
