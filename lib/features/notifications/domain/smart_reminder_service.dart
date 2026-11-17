@@ -11,11 +11,11 @@ class SmartReminderService {
 
   static void invalidate() => _lastFingerprint = null;
 
-  static Future<void> sync(PlannerState state, Iterable<Recipe> catalog, {DateTime? now}) async {
+  static Future<void> sync(PlannerState state, Iterable<Recipe> catalog, {DateTime? now, bool force = false}) async {
     final recipesById = {for (final recipe in catalog) recipe.id: recipe};
     final currentTime = now ?? DateTime.now();
     final fingerprint = _fingerprint(state, recipesById, currentTime);
-    if (fingerprint == _lastFingerprint) return;
+    if (!force && fingerprint == _lastFingerprint) return;
 
     final previous = state.activeReminderKeys.toList(growable: false);
     for (final key in previous) {
