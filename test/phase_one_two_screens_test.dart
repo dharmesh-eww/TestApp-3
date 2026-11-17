@@ -13,8 +13,8 @@ void main() {
 
     expect(find.text('Meal calendar'), findsOneWidget);
     expect(find.text('Nothing planned'), findsWidgets);
-    await tester.scrollUntilVisible(find.text('Prep ahead'), 250);
-    expect(find.text('Prep ahead'), findsOneWidget);
+    await tester.scrollUntilVisible(find.byKey(const Key('meal-prep-heading')), 250, scrollable: find.byKey(const Key('meal-calendar-scroll')));
+    expect(find.byKey(const Key('meal-prep-heading')), findsOneWidget);
   });
 
   testWidgets('meal planner opens nutrition dashboard and daily goals', (tester) async {
