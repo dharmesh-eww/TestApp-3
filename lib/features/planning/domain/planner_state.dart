@@ -22,6 +22,7 @@ class PlannerState {
   final Map<String, String> recipeNotes = {};
   final Map<String, double> groceryPrices = {};
   final Map<String, String> groceryStores = {};
+  final Map<String, bool> mealPrepChecks = {};
   int dailyCalorieTarget = 2000;
   double dailyProteinTargetGrams = 100;
   double? groceryBudget;
@@ -75,6 +76,7 @@ class PlannerState {
     'recipe_notes': recipeNotes,
     'grocery_prices': groceryPrices,
     'grocery_stores': groceryStores,
+    'meal_prep_checks': mealPrepChecks,
     'grocery_budget': groceryBudget,
     'nutrition_goals': {
       'daily_calories': dailyCalorieTarget,
@@ -138,6 +140,7 @@ class PlannerState {
     recipeNotes.clear();
     groceryPrices.clear();
     groceryStores.clear();
+    mealPrepChecks.clear();
     dailyCalorieTarget = 2000;
     dailyProteinTargetGrams = 100;
     groceryBudget = null;
@@ -302,6 +305,12 @@ class PlannerState {
     _restoreStringStringMap(json['recipe_notes'], recipeNotes);
     _restoreStringDoubleMap(json['grocery_prices'], groceryPrices);
     _restoreStringStringMap(json['grocery_stores'], groceryStores);
+    final rawPrepChecks = json['meal_prep_checks'];
+    if (rawPrepChecks is Map) {
+      for (final entry in rawPrepChecks.entries) {
+        if (entry.key is String && entry.value is bool) mealPrepChecks[entry.key as String] = entry.value as bool;
+      }
+    }
     final rawBudget = json['grocery_budget'];
     if (rawBudget is num && rawBudget >= 0) groceryBudget = rawBudget.toDouble();
     final nutritionGoals = json['nutrition_goals'];
@@ -759,6 +768,17 @@ class PlannerState {
         isCustom: customKeys.contains(key),
       );
     }).toList();
+  }
+
+  bool isMealPrepDone(String day, String ingredient) => mealPrepChecks['$day|$ingredient'] == true;
+
+  void setMealPrepDone(String day, String ingredient, bool done) {
+    final key = '$day|$ingredient';
+    if (done) {
+      mealPrepChecks[key] = true;
+    } else {
+      mealPrepChecks.remove(key);
+    }
   }
 
   void setGroceryPrice(String key, double? price) {
