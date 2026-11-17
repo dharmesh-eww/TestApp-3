@@ -83,6 +83,8 @@ void main() {
     final indonesianOption = find.byKey(const Key('language-option-indonesian'));
     final spanishOption = find.byKey(const Key('language-option-spanish'));
     final chineseOption = find.byKey(const Key('language-option-chinese'));
+    await tester.drag(find.byType(ListView).last, const Offset(0, -900));
+    await tester.pumpAndSettle();
     final orderedOptions = [englishOption, hindiOption, gujaratiOption, arabicOption, japaneseOption, portugueseOption, indonesianOption, spanishOption, chineseOption];
     for (final option in orderedOptions) {
       expect(option, findsOneWidget);
