@@ -9,6 +9,7 @@ import 'package:testapp_3/features/recipes/domain/recipe.dart';
 import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 import 'package:testapp_3/features/recipes/domain/ingredient_substitution_service.dart';
 import 'package:testapp_3/features/recipes/presentation/custom_recipe_editor_screen.dart';
+import 'package:testapp_3/features/recipes/presentation/recipe_video_screen.dart';
 import 'package:testapp_3/features/cooking/presentation/cooking_mode_screen.dart';
 import 'package:testapp_3/features/planning/presentation/plan_screen.dart';
 
@@ -157,6 +158,26 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 if (recipe.carbsGrams > 0) _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
                 if (recipe.fatGrams > 0) _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
               ]),
+            ],
+            if (recipe.youtubeVideoUrl != null) ...[
+              const SizedBox(height: 22),
+              Text(appStrings(context).recipeLabel('Recipe video'), style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(appStrings(context).recipeLabel('Watch the step-by-step video for this recipe.'), style: TextStyle(color: AppTheme.muted)),
+              const SizedBox(height: 12),
+              RecipeYoutubeEmbed(videoUrl: recipe.youtubeVideoUrl!, title: recipe.title),
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton.icon(
+                  key: const Key('open-recipe-youtube-video'),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => RecipeVideoScreen(recipeTitle: recipe.title, videoUrl: recipe.youtubeVideoUrl!),
+                  )),
+                  icon: const Icon(Icons.fullscreen),
+                  label: Text(appStrings(context).recipeLabel('Watch full video')),
+                ),
+              ),
             ],
             if (recipe.fiberGrams != null || recipe.vitamins.isNotEmpty || recipe.healthBenefits.isNotEmpty || recipe.seasons.isNotEmpty) ...[
               const SizedBox(height: 20),

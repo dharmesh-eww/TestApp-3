@@ -32,7 +32,7 @@ class Recipe {
     this.allergensVerified = false, this.verifiedAllergens = const [],
     this.proteinGrams = 0, this.carbsGrams = 0, this.fatGrams = 0,
     this.fiberGrams, this.vitamins = const {}, this.healthBenefits = const [],
-    this.seasons = const [], this.stepDetails = const [],
+    this.seasons = const [], this.youtubeVideoUrl, this.stepDetails = const [],
   });
 
   final String id;
@@ -66,6 +66,7 @@ class Recipe {
   final Map<String, double> vitamins;
   final List<String> healthBenefits;
   final List<String> seasons;
+  final String? youtubeVideoUrl;
   final List<RecipeStep> stepDetails;
 
   bool get hasNutritionData => calories > 0 || proteinGrams > 0 || carbsGrams > 0 || fatGrams > 0 || (fiberGrams ?? 0) > 0 || vitamins.isNotEmpty;
@@ -142,6 +143,7 @@ class Recipe {
       vitamins: _numericMap(nutritionMap['vitamins'] ?? json['vitamins']),
       healthBenefits: _localizedStringList(json['health_benefits'] ?? json['benefits'], localeCode),
       seasons: _stringList(json['seasons'] ?? json['seasonal_suitability'] ?? json['season_tags']).map(_normalizeSeason).toList(),
+      youtubeVideoUrl: _optionalYouTubeUrl(json['youtube_video_url'] ?? json['youtube_url'] ?? json['video_url']),
       stepDetails: stepDetails,
     );
   }
@@ -195,6 +197,7 @@ class Recipe {
         },
         if (healthBenefits.isNotEmpty) 'health_benefits': healthBenefits,
         if (seasons.isNotEmpty) 'seasons': seasons,
+        if (youtubeVideoUrl != null) 'youtube_video_url': youtubeVideoUrl,
         'allergens': {'verified': allergensVerified, 'items': verifiedAllergens},
         'is_published': isPublished,
       };
@@ -298,6 +301,14 @@ int _asInt(dynamic value, [int fallback = 0]) =>
 
 double _asDouble(dynamic value) => value is num ? value.toDouble() : double.tryParse('$value') ?? 0;
 double? _optionalDouble(dynamic value) => value == null ? null : (value is num ? value.toDouble() : double.tryParse('$value'));
+
+String? _optionalYouTubeUrl(dynamic value) {
+  if (value is! String || value.trim().isEmpty) return null;
+  final url = value.trim();
+  final uri = Uri.tryParse(url);
+  if (uri == null || !['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be', 'www.youtu.be'].contains(uri.host.toLowerCase())) return null;
+  return url;
+}
 Map<String, double> _numericMap(dynamic value) {
   if (value is! Map) return const {};
   return value.map((key, amount) => MapEntry(key.toString(), _asDouble(amount)))..removeWhere((key, amount) => amount <= 0);
