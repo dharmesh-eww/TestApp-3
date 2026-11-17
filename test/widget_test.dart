@@ -105,4 +105,19 @@ void main() {
     expect(find.textContaining('Dinner · Lemon ricotta pasta'), findsOneWidget);
     expect(find.textContaining('Added 1 date(s)'), findsOneWidget);
   });
+
+  testWidgets('recipe details can schedule the opened recipe', (tester) async {
+    await tester.pumpWidget(const RecipePlannerApp());
+
+    await tester.tap(find.text('Recipes'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Lemon ricotta pasta').first);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('schedule-recipe-button')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('schedule-recipe-button')));
+    await tester.pumpAndSettle();
+    expect(find.text('Plan Lemon ricotta pasta'), findsOneWidget);
+    expect(find.byKey(const Key('confirm-recipe-schedule')), findsOneWidget);
+  });
 }
