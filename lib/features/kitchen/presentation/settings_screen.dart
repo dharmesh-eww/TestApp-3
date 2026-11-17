@@ -120,6 +120,50 @@ class SettingsScreen extends StatelessWidget {
               PlannerScope.refresh(context);
             },
           ),
+        const SizedBox(height: 24),
+        Text(appStrings(context).label('ALLERGY SAFETY', 'سلامة الحساسية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        const SizedBox(height: 6),
+        Text(appStrings(context).label('Select allergens to exclude. When an allergy is active, recipes without verified allergen data are hidden. Always check packaging and confirm ingredients yourself.', 'حدد مسببات الحساسية لاستبعادها. عند تفعيل حساسية، تُخفى الوصفات التي لا تحتوي على بيانات حساسية موثقة. تحقق دائمًا من العبوات والمكونات بنفسك.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+        for (final allergen in const {
+          'peanuts': 'Peanuts', 'tree nuts': 'Tree nuts', 'milk': 'Milk', 'eggs': 'Eggs',
+          'wheat': 'Wheat', 'gluten': 'Gluten', 'soy': 'Soy', 'fish': 'Fish',
+          'shellfish': 'Crustaceans / shellfish', 'sesame': 'Sesame', 'mustard': 'Mustard',
+          'celery': 'Celery', 'lupin': 'Lupin', 'sulphites': 'Sulphites',
+        }.entries)
+          CheckboxListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            title: Text(appStrings(context).label(allergen.value, allergen.value)),
+            value: state.allergies.contains(allergen.key),
+            onChanged: (value) {
+              if (value == true) { state.allergies.add(allergen.key); }
+              else { state.allergies.remove(allergen.key); }
+              PlannerScope.refresh(context);
+            },
+          ),
+        const SizedBox(height: 24),
+        Text(appStrings(context).label('SMART REMINDERS', 'التذكيرات الذكية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(appStrings(context).label('Meal reminders', 'تذكيرات الوجبات')),
+          subtitle: Text(appStrings(context).label('Get a reminder before each planned meal.', 'احصل على تذكير قبل كل وجبة مخططة.')),
+          value: state.mealRemindersEnabled,
+          onChanged: (value) { state.mealRemindersEnabled = value; PlannerScope.refresh(context); },
+        ),
+        if (state.mealRemindersEnabled)
+          DropdownButtonFormField<int>(
+            value: state.mealReminderMinutes,
+            decoration: InputDecoration(labelText: appStrings(context).label('Remind me before', 'ذكرني قبل')),
+            items: const [15, 30, 60, 120].map((value) => DropdownMenuItem(value: value, child: Text('${value} min'))).toList(),
+            onChanged: (value) { if (value == null) return; state.mealReminderMinutes = value; PlannerScope.refresh(context); },
+          ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(appStrings(context).label('Pantry expiry reminders', 'تذكيرات انتهاء صلاحية المخزن')),
+          subtitle: Text(appStrings(context).label('Remind me on the day an item is due to expire.', 'ذكرني في يوم انتهاء صلاحية العنصر.')),
+          value: state.pantryExpiryRemindersEnabled,
+          onChanged: (value) { state.pantryExpiryRemindersEnabled = value; PlannerScope.refresh(context); },
+        ),
         const SizedBox(height: 16),
         Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.'), style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 28),
