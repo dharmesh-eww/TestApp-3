@@ -5,6 +5,7 @@ import 'package:testapp_3/features/kitchen/presentation/language_selection_scree
 import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:testapp_3/features/cooking/domain/cooking_assist_service.dart';
 import 'package:testapp_3/features/widgets/data/gather_home_widget_service.dart';
+import 'package:testapp_3/features/notifications/domain/smart_reminder_service.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -163,6 +164,10 @@ class SettingsScreen extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () async {
             final granted = await CookingAssistService.requestNotificationPermission();
+            if (granted && context.mounted) {
+              SmartReminderService.invalidate();
+              await SmartReminderService.sync(state, RecipeCatalogScope.of(context));
+            }
             if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(granted
               ? appStrings(context).label('Notification permission is available.', 'إذن الإشعارات متاح.')
