@@ -193,7 +193,7 @@ const recipes = <Recipe>[
   Recipe(
     id: 'mexican-bean-tacos', slug: 'mexican-black-bean-tacos',
     title: 'Mexican black bean tacos', subtitle: 'Smoky beans, avocado and fresh lime in warm tortillas',
-    image: 'https://images.unsplash.com/photo-155150永0000-000000000000?w=1000',
+    image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=1000',
     minutes: 25, prepMinutes: 10, cookMinutes: 15, difficulty: 'Easy',
     category: 'Dinner', categoryIds: ['dinner','lunch'], cuisineIds: ['mexican'],
     foodType: FoodType.vegan, calories: 440, servings: 2, tags: ['tacos','black beans','avocado'],
