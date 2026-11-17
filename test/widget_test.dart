@@ -115,6 +115,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('schedule-recipe-button')), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('schedule-recipe-button')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('schedule-recipe-button')));
     await tester.pumpAndSettle();
     expect(find.text('Plan Lemon ricotta pasta'), findsOneWidget);
