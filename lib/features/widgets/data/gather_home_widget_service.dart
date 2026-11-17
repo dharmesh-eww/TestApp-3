@@ -45,7 +45,7 @@ class GatherHomeWidgetService {
       }
       mealsByDate[key] = lines.isEmpty
           ? 'No meals planned. Open Gather to plan your day.'
-          : lines.join('\\n');
+          : lines.join('\n');
     }
 
     try {
