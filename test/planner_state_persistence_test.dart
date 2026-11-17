@@ -85,12 +85,19 @@ test('reset personal data clears local user state without changing catalog', () 
       ..toggleFavorite('lemon-pasta')
       ..recordViewed(recipes.first)
       ..addCustomGroceryItem(name: 'Tea', amount: 1, unit: 'box')
-      ..preferredDietaryTags.add('plant_based');
+      ..preferredDietaryTags.add('plant_based')
+      ..allergies.add('peanuts')
+      ..groceryBudget = 100
+      ..mealPrepChecks['2026-11-18|Onions'] = true;
     state.clearPersonalData();
     expect(state.favorites, isEmpty);
     expect(state.recentlyViewed, isEmpty);
     expect(state.customGroceryItems, isEmpty);
     expect(state.preferredDietaryTags, isEmpty);
+    expect(state.allergies, isEmpty);
+    expect(state.groceryBudget, isNull);
+    expect(state.mealPrepChecks, isEmpty);
+    expect(state.customRecipes, isEmpty);
     expect(state.localeCode, 'en');
     expect(recipes, isNotEmpty);
   });
