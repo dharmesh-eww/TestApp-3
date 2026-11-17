@@ -41,7 +41,7 @@ void main() {
     await repository.activateCatalog(contentVersion: 'test-v1', payload: '{"recipes":[]}');
     expect((await repository.loadCatalog())?.contentVersion, 'test-v1');
 
-    await repository.close();
+    await local.close();
     await directory.delete(recursive: true);
   });
 }
