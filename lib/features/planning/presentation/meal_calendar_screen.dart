@@ -4,6 +4,7 @@ import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
+import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 
 class MealCalendarScreen extends StatefulWidget {
@@ -151,7 +152,8 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
   };
 
   Future<void> _chooseRecipe(BuildContext context, String day, MealSlot slot) async {
-    final recipes = RecipeCatalogScope.of(context);
+    final planner = PlannerScope.of(context);
+    final recipes = RecipeCatalog.search(RecipeCatalogScope.of(context), allergies: planner.allergies);
     final selected = await showModalBottomSheet<Recipe>(
       context: context,
       isScrollControlled: true,
