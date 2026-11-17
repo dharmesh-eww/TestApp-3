@@ -7,6 +7,8 @@ import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/planning/domain/planner_state.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/app/app_tab_navigation.dart';
+import 'package:testapp_3/features/planning/presentation/meal_calendar_screen.dart';
+import 'package:testapp_3/features/planning/presentation/nutrition_dashboard_screen.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
@@ -39,6 +41,22 @@ class _PlanScreenState extends State<PlanScreen> {
           style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta, minimumSize: const Size(0, 50)),
         ),
       ),
+      const SizedBox(height:12),
+      Row(children: [
+        Expanded(child: OutlinedButton.icon(
+          key: const Key('open-meal-calendar'),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MealCalendarScreen())),
+          icon: const Icon(Icons.calendar_month_outlined),
+          label: Text(appStrings(context).label('Calendar', 'التقويم')),
+        )),
+        const SizedBox(width: 8),
+        Expanded(child: OutlinedButton.icon(
+          key: const Key('open-nutrition-dashboard'),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NutritionDashboardScreen())),
+          icon: const Icon(Icons.monitor_heart_outlined),
+          label: Text(appStrings(context).label('Nutrition', 'التغذية')),
+        )),
+      ]),
       const SizedBox(height:20),
       Container(padding:const EdgeInsets.symmetric(vertical:12,horizontal:8),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),
         child:Row(children:List.generate(7,(index){
