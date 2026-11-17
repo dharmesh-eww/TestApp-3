@@ -11,18 +11,34 @@ void main() {
 
     test('filters by category ID, including multi-category recipes', () {
       final result = RecipeCatalog.search(recipes, categoryId: 'snacks');
-      expect(result.map((recipe) => recipe.id), ['gujarati-dhokla']);
+      expect(result.map((recipe) => recipe.id), containsAll(['gujarati-dhokla', 'vietnamese-summer-rolls', 'korean-veg-pancakes', 'mexican-guacamole', 'italian-bruschetta']));
+      expect(result, hasLength(5));
     });
 
     test('sorts by total prep and cook time', () {
       final result = RecipeCatalog.search(recipes, sort: RecipeSort.quickest);
       expect(result.first.id, 'berry-oats');
-      expect(result.last.id, 'tomato-soup');
+      expect(result.last.id, 'chicken-biryani');
     });
 
     test('combines cuisine, food type, difficulty and maximum time filters', () {
       final result = RecipeCatalog.search(recipes, cuisineId: 'gujarati', foodType: FoodType.vegetarian, difficulty: 'easy', maxMinutes: 40);
       expect(result.map((recipe) => recipe.id), ['gujarati-dhokla']);
+    });
+
+    test('catalog includes recipes across the new cuisine filters', () {
+      final cuisineIds = recipes.expand((recipe) => recipe.cuisineIds).toSet();
+      expect(cuisineIds, containsAll([
+        'indian', 'north_indian', 'south_indian', 'chinese', 'japanese',
+        'korean', 'mexican', 'american', 'thai', 'greek', 'middle_eastern',
+        'french', 'vietnamese', 'italian',
+      ]));
+      expect(recipes.length, 21);
+    });
+
+    test('includes recipes for breakfast, lunch, dinner and snacks', () {
+      final categoryIds = recipes.expand((recipe) => recipe.categoryIds).toSet();
+      expect(categoryIds, containsAll(['breakfast', 'lunch', 'dinner', 'snacks']));
     });
 
     test('supports selecting multiple cuisines at once', () {
@@ -33,8 +49,13 @@ void main() {
 
     test('filters recipes within an inclusive cooking-time range', () {
       final result = RecipeCatalog.search(recipes, minMinutes: 20, maxMinutes: 35);
-      expect(result.map((recipe) => recipe.id), containsAll(['lemon-pasta', 'roasted-bowl', 'gujarati-dhokla']));
-      expect(result, hasLength(3));
+      expect(result.map((recipe) => recipe.id), containsAll([
+        'lemon-pasta', 'roasted-bowl', 'gujarati-dhokla', 'chinese-veg-fried-rice',
+        'japanese-teriyaki-salmon', 'korean-bibimbap', 'mexican-bean-tacos',
+        'american-pancakes', 'thai-green-curry', 'vietnamese-summer-rolls',
+        'korean-veg-pancakes', 'south-indian-idli',
+      ]));
+      expect(result, hasLength(12));
     });
 
     test('dietary tags are applied as an all-selected filter', () {
