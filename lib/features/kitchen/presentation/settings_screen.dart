@@ -149,7 +149,7 @@ class SettingsScreen extends StatelessWidget {
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(appStrings(context).label('Meal reminders', 'تذكيرات الوجبات')),
-          subtitle: Text(appStrings(context).label('Get a reminder before each planned meal.', 'احصل على تذكير قبل كل وجبة مخططة.')),
+          subtitle: Text(appStrings(context).label('Get a reminder before each planned meal (default times: breakfast 8:00, lunch 12:00, snack 15:00, dinner 18:00).', 'احصل على تذكير قبل كل وجبة مخططة (الأوقات الافتراضية: الإفطار 8:00، الغداء 12:00، الوجبة الخفيفة 15:00، العشاء 18:00).')),
           value: state.mealRemindersEnabled,
           onChanged: (value) { state.mealRemindersEnabled = value; PlannerScope.refresh(context); },
         ),
