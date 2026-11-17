@@ -11,9 +11,10 @@ class SmartReminderService {
 
   static void invalidate() => _lastFingerprint = null;
 
-  static Future<void> sync(PlannerState state, Iterable<Recipe> catalog) async {
+  static Future<void> sync(PlannerState state, Iterable<Recipe> catalog, {DateTime? now}) async {
     final recipesById = {for (final recipe in catalog) recipe.id: recipe};
-    final fingerprint = _fingerprint(state, recipesById);
+    final currentTime = now ?? DateTime.now();
+    final fingerprint = _fingerprint(state, recipesById, currentTime);
     if (fingerprint == _lastFingerprint) return;
 
     final previous = state.activeReminderKeys.toList(growable: false);
@@ -28,8 +29,8 @@ class SmartReminderService {
     }
     await CookingAssistService.requestNotificationPermission();
 
-    final now = DateTime.now();
-    final mealEnd = now.add(const Duration(days: 92));
+    final today = DateTime(currentTime.year, currentTime.month, currentTime.day);
+    final mealEnd = today.add(const Duration(days: 92));
     final pantryEnd = now.add(const Duration(days: 365));
 
     if (state.mealRemindersEnabled) {
@@ -48,9 +49,13 @@ class SmartReminderService {
         } else {
           final weekday = weekdayNumbers[entry.key];
           if (weekday == null) continue;
-          final today = DateTime(now.year, now.month, now.day);
-          final weekStart = today.subtract(Duration(days: today.weekday - 1));
-          occurrences.add(weekStart.add(Duration(days: weekday - 1)));
+
+          // Weekday templates represent recurring meals, not a one-time meal
+          // in the current week. Schedule every upcoming occurrence in the
+          // same three-month planning horizon as the planner.
+          for (var date = today; !date.isAfter(mealEnd); date = date.add(const Duration(days: 1))) {
+            if (date.weekday == weekday) occurrences.add(date);
+          }
         }
 
         for (final date in occurrences) {
@@ -72,7 +77,7 @@ class SmartReminderService {
             if (isWeekdayTemplate && state.mealsFor(dateKey).any((dated) => dated.slot == meal.slot)) continue;
             final plannedAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
             final fireAt = plannedAt.subtract(Duration(minutes: state.mealReminderMinutes));
-            if (!fireAt.isAfter(now) || fireAt.isAfter(mealEnd)) continue;
+            if (!fireAt.isAfter(currentTime) || fireAt.isAfter(mealEnd)) continue;
             final key = 'meal:$dateKey:${meal.slot.name}:${meal.recipeId}';
             await CookingAssistService.scheduleTimerNotification(
               id: key,
@@ -91,7 +96,7 @@ class SmartReminderService {
         final expiry = state.pantryExpiryDates[item.id];
         if (expiry == null) continue;
         final fireAt = DateTime(expiry.year, expiry.month, expiry.day, 9);
-        if (!fireAt.isAfter(now) || fireAt.isAfter(pantryEnd)) continue;
+        if (!fireAt.isAfter(currentTime) || fireAt.isAfter(pantryEnd)) continue;
         final key = 'pantry:${item.id}:${expiry.year}-${expiry.month}-${expiry.day}';
         await CookingAssistService.scheduleTimerNotification(
           id: key,
@@ -105,13 +110,15 @@ class SmartReminderService {
     _lastFingerprint = fingerprint;
   }
 
-  static String _fingerprint(PlannerState state, Map<String, Recipe> recipesById) {
+  static String _fingerprint(PlannerState state, Map<String, Recipe> recipesById, DateTime now) {
     final buffer = StringBuffer()
       ..write(state.mealRemindersEnabled)
       ..write('|')
       ..write(state.pantryExpiryRemindersEnabled)
       ..write('|')
       ..write(state.mealReminderMinutes)
+      ..write('|')
+      ..write('${now.year}-${now.month}-${now.day}')
       ..write('|')
       ..write(state.allergies.toList()..sort());
     final days = state.mealPlan.keys.toList()..sort();
