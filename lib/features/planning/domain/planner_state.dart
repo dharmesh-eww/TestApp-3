@@ -470,6 +470,14 @@ class PlannerState {
     recipeRatings.remove(id);
     recipeNotes.remove(id);
     favorites.remove(id);
+    for (final day in mealPlan.keys.toList()) {
+      mealPlan[day]?.removeWhere((_, meal) => meal.recipeId == id);
+      if (mealPlan[day]?.isEmpty ?? false) mealPlan.remove(day);
+    }
+    for (final collection in collections.values) {
+      collection.remove(id);
+    }
+    recentlyViewed.removeWhere((entry) => entry['recipe_id'] == id);
   }
 
   void setRecipeRating(String recipeId, int rating) {
