@@ -170,8 +170,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
 }
 
 class AppShell extends StatefulWidget {
-  const AppShell({super.key, required this.locale, required this.onLocaleChanged});
-  final Locale locale;
+  const AppShell({super.key, required this.onLocaleChanged});
   final ValueChanged<Locale> onLocaleChanged;
 
   @override
