@@ -191,10 +191,8 @@ class SettingsScreen extends StatelessWidget {
           alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(
             onPressed: () async {
-              final updated = await GatherHomeWidgetService.sync(state, RecipeCatalogScope.of(context));
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(updated
-                ? appStrings(context).label('Widget refreshed.', 'تم تحديث الأداة.')
-                : appStrings(context).label('Widget is available on supported Android launchers.', 'الأداة متاحة على مشغلات أندرويد المدعومة.'))));
+              await GatherHomeWidgetService.sync(state, RecipeCatalogScope.of(context));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Widget data refreshed. Add the widget from your Android launcher if it is not on your home screen.', 'تم تحديث بيانات الأداة. أضف الأداة من مشغل أندرويد إذا لم تكن على الشاشة الرئيسية.'))));
             },
             icon: const Icon(Icons.widgets_outlined),
             label: Text(appStrings(context).label('Refresh widget data', 'تحديث بيانات الأداة')),
