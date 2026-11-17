@@ -499,19 +499,8 @@ class PlannerState {
           ifAbsent: () => normalized.amount);
     }
 
-    final today = DateTime.now();
-    final firstDay = DateTime(today.year, today.month, today.day);
-    final shoppingWindowEnd = firstDay.add(const Duration(days: 7));
-    for (final entry in mealPlan.entries) {
-      final plannedDate = DateTime.tryParse(entry.key);
-      // Weekday-name entries are the existing current-week planner. Dated
-      // entries only contribute when they fall in the next seven days, so
-      // recurring plans months away do not inflate today's shopping list.
-      if (plannedDate != null &&
-          (plannedDate.isBefore(firstDay) || plannedDate.isAfter(shoppingWindowEnd))) {
-        continue;
-      }
-      for (final meal in entry.value.values) {
+    for (final slots in mealPlan.values) {
+      for (final meal in slots.values) {
         final recipe = byId[meal.recipeId];
         if (recipe == null) continue;
         for (final item in recipe.ingredients) {
