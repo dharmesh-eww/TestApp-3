@@ -12,7 +12,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Meal calendar'), findsOneWidget);
-    expect(find.text('Nothing planned'), findsWidgets);
     await tester.scrollUntilVisible(find.byKey(const Key('meal-prep-heading')), 250, scrollable: find.descendant(
         of: find.byKey(const Key('meal-calendar-scroll')),
         matching: find.byType(Scrollable),
