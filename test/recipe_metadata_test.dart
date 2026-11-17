@@ -59,6 +59,7 @@ void main() {
         'image': '',
         'servings': 1,
         'calories_kcal': 200,
+        'nutrition': {'protein_g': 8},
         'seasons': ['winter'],
         'ingredients': [],
         'instructions': [],

@@ -12,6 +12,12 @@ import 'package:testapp_3/features/recipes/presentation/custom_recipe_editor_scr
 import 'package:testapp_3/features/cooking/presentation/cooking_mode_screen.dart';
 import 'package:testapp_3/features/planning/presentation/plan_screen.dart';
 
+String vitaminLabel(String key) {
+  final normalized = key.toLowerCase().replaceAll('_mg', '').replaceAll('_mcg', '').replaceAll('_ug', '').replaceAll('_', ' ');
+  if (normalized.startsWith('vitamin ')) return normalized.replaceFirst('vitamin ', 'Vit. ').toUpperCase();
+  return 'Vit. ${normalized.toUpperCase()}';
+}
+
 String seasonLabel(String season) => switch (season.toLowerCase()) { 'rainy' || 'monsoon' => 'Rainy season', 'winter' => 'Winter', 'summer' => 'Summer', 'spring' => 'Spring', 'autumn' || 'fall' => 'Autumn', _ => season };
 
 class _MetaPill extends StatelessWidget {
@@ -159,7 +165,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 const SizedBox(height: 10),
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   if (recipe.fiberGrams != null) _MetaPill(icon: Icons.grass_outlined, text: '${appStrings(context).recipeLabel('Fiber')} ${recipe.fiberGrams!.toStringAsFixed(1)} g'),
-                  for (final vitamin in recipe.vitamins.entries) _MetaPill(icon: Icons.local_florist_outlined, text: '${vitamin.key.toUpperCase()} ${vitamin.value.toStringAsFixed(1)}'),
+                  for (final vitamin in recipe.vitamins.entries) _MetaPill(icon: Icons.local_florist_outlined, text: '${vitaminLabel(vitamin.key)} ${vitamin.value.toStringAsFixed(1)}'),
                 ]),
               ],
               if (recipe.healthBenefits.isNotEmpty) ...[

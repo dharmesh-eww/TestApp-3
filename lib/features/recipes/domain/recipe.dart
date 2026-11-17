@@ -68,7 +68,7 @@ class Recipe {
   final List<String> seasons;
   final List<RecipeStep> stepDetails;
 
-  bool get hasNutritionData => calories > 0 || proteinGrams > 0 || carbsGrams > 0 || fatGrams > 0 || (fiberGrams ?? 0) > 0 || vitamins.isNotEmpty;
+  bool get hasNutritionData => proteinGrams > 0 || carbsGrams > 0 || fatGrams > 0 || (fiberGrams ?? 0) > 0 || vitamins.isNotEmpty;
 
   factory Recipe.fromJson(Map<String, dynamic> json, {String localeCode = 'en'}) {
     final prep = _asInt(json['prep_minutes'] ?? json['preparation_time_minutes'] ?? json['preparation_time']);
@@ -140,8 +140,8 @@ class Recipe {
       fatGrams: _asDouble(nutritionMap['fat_g'] ?? json['fat_g']),
       fiberGrams: _optionalDouble(nutritionMap['fiber_g'] ?? nutritionMap['fibre_g'] ?? json['fiber_g'] ?? json['fibre_g']),
       vitamins: _numericMap(nutritionMap['vitamins'] ?? json['vitamins']),
-      healthBenefits: _stringList(json['health_benefits'] ?? json['benefits']),
-      seasons: _stringList(json['seasons'] ?? json['seasonal_suitability'] ?? json['season_tags']).map((value) => value.toLowerCase()).toList(),
+      healthBenefits: _localizedStringList(json['health_benefits'] ?? json['benefits'], localeCode),
+      seasons: _stringList(json['seasons'] ?? json['seasonal_suitability'] ?? json['season_tags']).map(_normalizeSeason).toList(),
       stepDetails: stepDetails,
     );
   }
@@ -183,7 +183,18 @@ class Recipe {
         'instructions': instructions.map((step) => step.toJson()).toList(),
         'tags': tags,
         'image_attribution': imageAttribution,
-        'nutrition': {'calories_kcal': calories, 'protein_g': proteinGrams, 'carbs_g': carbsGrams, 'fat_g': fatGrams, 'serving_basis': 'per_serving', 'is_estimate': true},
+        'nutrition': {
+          'calories_kcal': calories,
+          if (proteinGrams > 0) 'protein_g': proteinGrams,
+          if (carbsGrams > 0) 'carbs_g': carbsGrams,
+          if (fatGrams > 0) 'fat_g': fatGrams,
+          if (fiberGrams != null) 'fiber_g': fiberGrams,
+          if (vitamins.isNotEmpty) 'vitamins': vitamins,
+          'serving_basis': 'per_serving',
+          'is_estimate': true,
+        },
+        if (healthBenefits.isNotEmpty) 'health_benefits': healthBenefits,
+        if (seasons.isNotEmpty) 'seasons': seasons,
         'allergens': {'verified': allergensVerified, 'items': verifiedAllergens},
         'is_published': isPublished,
       };
@@ -294,6 +305,23 @@ Map<String, double> _numericMap(dynamic value) {
 
 List<String> _stringList(dynamic value) =>
     value is List ? value.map((item) => item.toString()).toList() : <String>[];
+
+List<String> _localizedStringList(dynamic value, String localeCode) {
+  if (value is Map) {
+    final selected = value[localeCode] ?? value['en'];
+    return _stringList(selected);
+  }
+  return _stringList(value);
+}
+
+String _normalizeSeason(String value) {
+  final normalized = value.toLowerCase().trim().replaceAll('-', '_').replaceAll(' ', '_');
+  return switch (normalized) {
+    'monsoon' || 'rain' || 'rainy_season' => 'rainy',
+    'fall' => 'autumn',
+    _ => normalized,
+  };
+}
 
 FoodType _foodTypeFromJson(dynamic value) {
   switch ((value ?? 'vegetarian').toString().toLowerCase()) {
