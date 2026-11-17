@@ -106,7 +106,7 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
                   child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Text('${date.day}', style: TextStyle(color: isPast ? AppTheme.muted.withOpacity(.45) : AppTheme.ink, fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500)),
                     const SizedBox(height: 3),
-                    if (count > 0) Container(width: 5, height: 5, decoration: const BoxDecoration(color: AppTheme.olive, shape: BoxShape.circle)),
+                    if (count > 0) Container(width: 5, height: 5, decoration: BoxDecoration(color: AppTheme.olive, shape: BoxShape.circle)),
                   ]),
                 ),
               );
