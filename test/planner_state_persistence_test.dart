@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/planning/domain/planner_state.dart';
 import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
+import 'package:testapp_3/features/recipes/domain/recipe.dart';
 
 void main() {
   test('planner state round-trips every user-owned collection', () {
@@ -55,7 +56,7 @@ void main() {
   test('legacy v1 snapshots remain readable after the v3 schema migration', () {
     final restored = PlannerState.fromJson({'schema_version': 1, 'favorites': ['legacy-recipe']});
     expect(restored.isFavorite('legacy-recipe'), isTrue);
-    expect(restored.toJson()['schema_version'], 5);
+    expect(restored.toJson()['schema_version'], 6);
   });
 
   test('unsupported snapshots restore as an empty safe state', () {
@@ -85,12 +86,24 @@ test('reset personal data clears local user state without changing catalog', () 
       ..toggleFavorite('lemon-pasta')
       ..recordViewed(recipes.first)
       ..addCustomGroceryItem(name: 'Tea', amount: 1, unit: 'box')
-      ..preferredDietaryTags.add('plant_based');
+      ..preferredDietaryTags.add('plant_based')
+      ..allergies.add('peanuts')
+      ..groceryBudget = 100
+      ..mealPrepChecks['2026-11-18|Onions'] = true;
+    state.saveCustomRecipe(Recipe(
+      id: 'custom-reset-test', title: 'Reset test', subtitle: '', image: '', minutes: 1,
+      difficulty: 'Easy', category: 'Other', calories: 0, servings: 1,
+      ingredients: const [], steps: const ['Cook.'],
+    ));
     state.clearPersonalData();
     expect(state.favorites, isEmpty);
     expect(state.recentlyViewed, isEmpty);
     expect(state.customGroceryItems, isEmpty);
     expect(state.preferredDietaryTags, isEmpty);
+    expect(state.allergies, isEmpty);
+    expect(state.groceryBudget, isNull);
+    expect(state.mealPrepChecks, isEmpty);
+    expect(state.customRecipes, isEmpty);
     expect(state.localeCode, 'en');
     expect(recipes, isNotEmpty);
   });

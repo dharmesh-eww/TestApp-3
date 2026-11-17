@@ -1,4 +1,5 @@
 import 'recipe.dart';
+import 'measurement_units.dart';
 
 class IngredientMatch {
   const IngredientMatch({
@@ -51,8 +52,12 @@ class IngredientMatcher {
     Iterable<Recipe> recipes, {
     required Set<String> available,
     Set<String> excluded = const {},
+    Map<String, ({double amount, String unit})> availableQuantities = const {},
   }) {
-    final normalizedAvailable = available.map(_normalize).where((v) => v.isNotEmpty).toSet();
+    final normalizedAvailable = {
+      ...available.map(_normalize).where((v) => v.isNotEmpty),
+      ...availableQuantities.keys.map(_normalize).where((v) => v.isNotEmpty),
+    };
     final normalizedExcluded = excluded.map(_normalize).where((v) => v.isNotEmpty).toSet();
     final results = <IngredientMatch>[];
     for (final recipe in recipes.where((item) => item.isPublished)) {
@@ -72,11 +77,32 @@ class IngredientMatcher {
       if (recipe.ingredients.any((item) => matchesAny(item, normalizedExcluded))) {
         continue;
       }
+      bool quantityAvailable(Ingredient ingredient) {
+        if (ingredient.amount == null || ingredient.amountType != IngredientAmountType.quantity) return true;
+        final candidates = availableQuantities.entries.where((entry) {
+          final names = _names(entry.key);
+          return names.any((name) => _names(ingredient.name).contains(name)) ||
+              _normalize(entry.key) == _normalize(ingredient.id);
+        });
+        if (candidates.isEmpty) return true;
+        final requiredAmount = _toBase(ingredient.amount!, ingredient.unit);
+        for (final entry in candidates) {
+          final availableAmount = _toBase(entry.value.amount, entry.value.unit);
+          if (requiredAmount != null && availableAmount != null && requiredAmount.unit == availableAmount.unit) {
+            if (availableAmount.amount >= requiredAmount.amount) return true;
+          } else if (entry.value.unit.toLowerCase() == ingredient.unit.toLowerCase() &&
+              entry.value.amount >= ingredient.amount!) {
+            return true;
+          }
+        }
+        return false;
+      }
+
       final matched = recipe.ingredients
-          .where((item) => matchesAny(item, normalizedAvailable))
+          .where((item) => matchesAny(item, normalizedAvailable) && quantityAvailable(item))
           .toList(growable: false);
       final missing = recipe.ingredients
-          .where((item) => !matchesAny(item, normalizedAvailable))
+          .where((item) => !matchesAny(item, normalizedAvailable) || !quantityAvailable(item))
           .toList(growable: false);
       if (normalizedAvailable.isEmpty) {
         results.add(IngredientMatch(
@@ -106,9 +132,18 @@ class IngredientMatcher {
     return results;
   }
 
+  static ({double amount, String unit})? _toBase(double amount, String unit) {
+    final converted = MeasurementUnits.convert(amount, unit, 'metric');
+    if (converted == null) return null;
+    final normalizedUnit = converted.unit.toLowerCase();
+    if (normalizedUnit == 'kg') return (amount: converted.amount * 1000, unit: 'g');
+    if (normalizedUnit == 'l') return (amount: converted.amount * 1000, unit: 'ml');
+    return (amount: converted.amount, unit: normalizedUnit);
+  }
+
   static String _normalize(String value) => value
       .trim()
       .toLowerCase()
-      .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
+      .replaceAll(RegExp(r'[.,;:!?()_\-\[\]{}"“”‘’/\\|]+'), ' ')
       .trim();
 }

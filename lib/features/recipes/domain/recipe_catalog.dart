@@ -327,6 +327,8 @@ class RecipeCatalog {
     int? minMinutes,
     int? maxMinutes,
     Set<String> dietaryTags = const {},
+    Set<String> preferredCuisines = const {},
+    Set<String> allergies = const {},
     RecipeSort sort = RecipeSort.recommended,
   }) {
     final normalized = query.trim().toLowerCase();
@@ -342,8 +344,17 @@ class RecipeCatalog {
       final matchesTime = (minMinutes == null || recipe.totalMinutes >= minMinutes) &&
           (maxMinutes == null || recipe.totalMinutes <= maxMinutes);
       final matchesDiet = dietaryTags.isEmpty || dietaryTags.every(recipe.dietaryTags.contains);
+      final matchesPreferredCuisine = preferredCuisines.isEmpty ||
+          recipe.cuisineIds.any(preferredCuisines.contains);
+      final blockedAllergens = allergies.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
+      final recipeAllergens = recipe.verifiedAllergens.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
+      // With an active allergy profile, unverified recipes are excluded rather
+      // than being presented as safe.
+      final matchesAllergies = allergies.isEmpty ||
+          (recipe.allergensVerified && !recipeAllergens.any(blockedAllergens.contains));
       return recipe.isPublished && matchesCategory && matchesCuisine && matchesFoodType &&
-          matchesDifficulty && matchesTime && matchesDiet && recipe.matches(normalized);
+          matchesDifficulty && matchesTime && matchesDiet &&
+          matchesPreferredCuisine && matchesAllergies && recipe.matches(normalized);
     }).toList();
 
     switch (sort) {

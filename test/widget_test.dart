@@ -83,6 +83,8 @@ void main() {
     final indonesianOption = find.byKey(const Key('language-option-indonesian'));
     final spanishOption = find.byKey(const Key('language-option-spanish'));
     final chineseOption = find.byKey(const Key('language-option-chinese'));
+    await tester.drag(find.byType(ListView).last, const Offset(0, -900));
+    await tester.pumpAndSettle();
     final orderedOptions = [englishOption, hindiOption, gujaratiOption, arabicOption, japaneseOption, portugueseOption, indonesianOption, spanishOption, chineseOption];
     for (final option in orderedOptions) {
       expect(option, findsOneWidget);
@@ -91,6 +93,7 @@ void main() {
       expect(tester.getTopLeft(orderedOptions[i]).dy, lessThan(tester.getTopLeft(orderedOptions[i + 1]).dy));
     }
 
+    await tester.ensureVisible(japaneseOption);
     await tester.tap(japaneseOption);
     await tester.pumpAndSettle();
 
@@ -117,6 +120,7 @@ void main() {
     await tester.tap(find.byKey(const Key('confirm-recipe-schedule')));
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(find.textContaining('Dinner · Lemon ricotta pasta'), 250);
     expect(find.textContaining('Dinner · Lemon ricotta pasta'), findsOneWidget);
     expect(find.textContaining('Added 1 date(s)'), findsOneWidget);
   });

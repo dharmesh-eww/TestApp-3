@@ -22,10 +22,10 @@ class RecipeCatalogLoader {
   static const assetPath = 'assets/data/recipes.json';
   static const supportedSchemaVersion = 1;
 
-  static Future<RecipeCatalogDocument> load({AssetBundle? bundle}) async =>
-      decode(await (bundle ?? rootBundle).loadString(assetPath));
+  static Future<RecipeCatalogDocument> load({AssetBundle? bundle, String localeCode = 'en'}) async =>
+      decode(await (bundle ?? rootBundle).loadString(assetPath), localeCode: localeCode);
 
-  static RecipeCatalogDocument decode(String source) {
+  static RecipeCatalogDocument decode(String source, {String localeCode = 'en'}) {
     Object? decoded;
     try {
       decoded = jsonDecode(source);
@@ -77,11 +77,17 @@ class RecipeCatalogLoader {
         final ingredient = ingredients[j];
         if (ingredient is! Map) throw CatalogLoadException('invalid_ingredient', 'Ingredient $j in recipe "$id" must be an object.');
         final name = ingredient['display_name'] ?? ingredient['name'];
-        if (name is! String || name.trim().isEmpty) {
+        final hasName = name is String
+            ? name.trim().isNotEmpty
+            : name is Map &&
+                ((name[localeCode] is String && (name[localeCode] as String).trim().isNotEmpty) ||
+                 (name['en'] is String && (name['en'] as String).trim().isNotEmpty) ||
+                 (name[localeCode] is Map && (name[localeCode] as Map)['name'] is String));
+        if (!hasName) {
           throw CatalogLoadException('invalid_ingredient', 'Ingredient $j in recipe "$id" needs a name.');
         }
       }
-      final recipe = Recipe.fromJson(map);
+      final recipe = Recipe.fromJson(map, localeCode: localeCode);
       if (recipe.steps.isEmpty) throw CatalogLoadException('invalid_recipe_steps', 'Recipe "$id" must contain at least one non-empty instruction.');
       recipes.add(recipe);
     }

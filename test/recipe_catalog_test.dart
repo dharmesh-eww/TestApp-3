@@ -43,8 +43,8 @@ void main() {
 
     test('supports selecting multiple cuisines at once', () {
       final result = RecipeCatalog.search(recipes, cuisineIds: {'italian', 'gujarati'});
-      expect(result.map((recipe) => recipe.id), containsAll(['lemon-pasta', 'gujarati-dhokla']));
-      expect(result, hasLength(2));
+      expect(result.map((recipe) => recipe.id), containsAll(['lemon-pasta', 'italian-bruschetta', 'gujarati-dhokla']));
+      expect(result, hasLength(3));
     });
 
     test('filters recipes within an inclusive cooking-time range', () {

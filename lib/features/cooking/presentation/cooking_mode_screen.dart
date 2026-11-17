@@ -39,6 +39,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
         final currentStep = session.stepFor(widget.recipe.id).clamp(
           0, total == 0 ? 0 : total - 1,
         ).toInt();
+        final instruction = total == 0 ? null : widget.recipe.instructions[currentStep];
         return WillPopScope(
           onWillPop: () async {
             final hasRunningTimer = session.timers.any((timer) => timer.isRunning);
@@ -122,6 +123,19 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                             style: TextStyle(fontFamily: 'Georgia', fontSize: 58,
                               height: 1, color: AppTheme.terracotta, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 20),
+                          if (instruction?.image != null && instruction!.image!.isNotEmpty) ...[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.network(
+                                instruction.image!,
+                                height: 190,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
                           Semantics(
                             liveRegion: true,
                             label: strings.label('Step ${currentStep + 1} of $total. ${widget.recipe.steps[currentStep]}', 'الخطوة ${currentStep + 1} من $total. ${widget.recipe.steps[currentStep]}'),
@@ -133,6 +147,17 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                               fontWeight: FontWeight.w600,
                             )),
                           ),
+                          if (instruction?.durationMinutes != null && instruction!.durationMinutes! > 0) ...[
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: () => _addTimer(
+                                initialLabel: '${appStrings(context).label('Step', 'الخطوة')} ${currentStep + 1}',
+                                initialMinutes: instruction.durationMinutes,
+                              ),
+                              icon: const Icon(Icons.timer_outlined),
+                              label: Text(appStrings(context).label('Add ${instruction.durationMinutes}-minute step timer', 'إضافة مؤقت لمدة ${instruction.durationMinutes} دقيقة')),
+                            ),
+                          ],
                           const SizedBox(height: 28),
                           _ingredientPanel(widget.recipe, servings),
                         ]),
@@ -313,9 +338,9 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
     );
   }
 
-  Future<void> _addTimer({String? initialLabel}) async {
+  Future<void> _addTimer({String? initialLabel, int? initialMinutes}) async {
     final labelController = TextEditingController(text: initialLabel ?? '');
-    final minutesController = TextEditingController(text: '5');
+    final minutesController = TextEditingController(text: '${initialMinutes ?? 5}');
     final result = await showDialog<(String, int)>(
       context: context,
       builder: (dialogContext) => AlertDialog(

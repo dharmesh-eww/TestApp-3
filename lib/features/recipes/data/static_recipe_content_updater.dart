@@ -24,7 +24,7 @@ class StaticRecipeContentUpdater {
   StaticRecipeContentUpdater({http.Client? client}) : _client = client ?? http.Client();
   final http.Client _client;
 
-  Future<DownloadedRecipeCatalog> checkAndDownload(Uri manifestUri) async {
+  Future<DownloadedRecipeCatalog> checkAndDownload(Uri manifestUri, {String localeCode = 'en'}) async {
     final manifestBytes = await _get(manifestUri);
     final Object? decoded;
     try {
@@ -64,7 +64,7 @@ class StaticRecipeContentUpdater {
       }
     }
     final payload = utf8.decode(payloadBytes);
-    final document = RecipeCatalogLoader.decode(payload);
+    final document = RecipeCatalogLoader.decode(payload, localeCode: localeCode);
     return DownloadedRecipeCatalog(contentVersion: version, payload: payload, document: document, byteSize: payloadBytes.length);
   }
 

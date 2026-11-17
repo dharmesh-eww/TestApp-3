@@ -16,6 +16,20 @@ class PlannerState {
   final List<Map<String, String>> recentlyViewed = [];
   final Set<String> preferredDietaryTags = {};
   final Set<String> preferredCuisines = {};
+  final Set<String> allergies = {};
+  final Map<String, Recipe> customRecipes = {};
+  final Map<String, int> recipeRatings = {};
+  final Map<String, String> recipeNotes = {};
+  final Map<String, double> groceryPrices = {};
+  final Map<String, String> groceryStores = {};
+  final Map<String, bool> mealPrepChecks = {};
+  final Set<String> activeReminderKeys = {};
+  int dailyCalorieTarget = 2000;
+  double dailyProteinTargetGrams = 100;
+  double? groceryBudget;
+  bool mealRemindersEnabled = false;
+  bool pantryExpiryRemindersEnabled = false;
+  int mealReminderMinutes = 60;
   String measurementSystem = 'metric';
   int weekStartsOn = 1;
   String localeCode = 'en';
@@ -31,7 +45,7 @@ class PlannerState {
   String themePreference = 'system';
 
   Map<String, Object?> toJson() => {
-    'schema_version': 5,
+    'schema_version': 6,
     'favorites': favorites.toList()..sort(),
     'meals': [
       for (final slots in mealPlan.values)
@@ -57,6 +71,24 @@ class PlannerState {
     'grocery_lists': {for (final entry in groceryLists.entries) entry.key: entry.value.toList()..sort()},
     'grocery_list_names': groceryListNames,
     'pantry_expiry_dates': {for (final entry in pantryExpiryDates.entries) entry.key: entry.value?.toIso8601String()},
+    'custom_recipes': [for (final recipe in customRecipes.values) recipe.toJson()],
+    'allergies': allergies.toList()..sort(),
+    'recipe_ratings': recipeRatings,
+    'recipe_notes': recipeNotes,
+    'grocery_prices': groceryPrices,
+    'grocery_stores': groceryStores,
+    'meal_prep_checks': mealPrepChecks,
+    'active_reminder_keys': activeReminderKeys.toList()..sort(),
+    'grocery_budget': groceryBudget,
+    'nutrition_goals': {
+      'daily_calories': dailyCalorieTarget,
+      'daily_protein_grams': dailyProteinTargetGrams,
+    },
+    'notification_preferences': {
+      'meal_reminders_enabled': mealRemindersEnabled,
+      'pantry_expiry_reminders_enabled': pantryExpiryRemindersEnabled,
+      'meal_reminder_minutes': mealReminderMinutes,
+    },
     'collections': {
       for (final entry in collections.entries) entry.key: entry.value.toList()..sort(),
     },
@@ -81,7 +113,7 @@ class PlannerState {
     return state;
   }
 
-  /// Reads v1-v5 snapshots. The next save always writes v5.
+  /// Reads v1-v6 snapshots. The next save writes schema v6.
   void restoreFromJson(Map<String, dynamic> json) {
     favorites.clear();
     mealPlan.clear();
@@ -104,11 +136,25 @@ class PlannerState {
     recentlyViewed.clear();
     preferredDietaryTags.clear();
     preferredCuisines.clear();
+    allergies.clear();
+    customRecipes.clear();
+    recipeRatings.clear();
+    recipeNotes.clear();
+    groceryPrices.clear();
+    groceryStores.clear();
+    mealPrepChecks.clear();
+    activeReminderKeys.clear();
+    dailyCalorieTarget = 2000;
+    dailyProteinTargetGrams = 100;
+    groceryBudget = null;
+    mealRemindersEnabled = false;
+    pantryExpiryRemindersEnabled = false;
+    mealReminderMinutes = 60;
     measurementSystem = 'metric';
     weekStartsOn = 1;
     localeCode = 'en';
     final version = json['schema_version'];
-    if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5) return;
+    if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != 6) return;
 
     final rawFavorites = json['favorites'];
     if (rawFavorites is List) {
@@ -243,6 +289,50 @@ class PlannerState {
       }
       if (recentlyViewed.length > 30) recentlyViewed.removeRange(30, recentlyViewed.length);
     }
+    final rawCustomRecipes = json['custom_recipes'];
+    if (rawCustomRecipes is List) {
+      for (final raw in rawCustomRecipes.whereType<Map>()) {
+        try {
+          final recipe = Recipe.fromJson(Map<String, dynamic>.from(raw));
+          if (recipe.id.startsWith('custom-') && recipe.title.trim().isNotEmpty) {
+            customRecipes[recipe.id] = recipe;
+          }
+        } catch (_) {
+          // Ignore malformed custom recipe snapshots without losing other data.
+        }
+      }
+    }
+    final rawAllergies = json['allergies'];
+    if (rawAllergies is List) allergies.addAll(rawAllergies.whereType<String>());
+    _restoreStringIntMap(json['recipe_ratings'], recipeRatings, min: 1, max: 5);
+    _restoreStringStringMap(json['recipe_notes'], recipeNotes);
+    _restoreStringDoubleMap(json['grocery_prices'], groceryPrices);
+    _restoreStringStringMap(json['grocery_stores'], groceryStores);
+    final rawReminderKeys = json['active_reminder_keys'];
+    if (rawReminderKeys is List) activeReminderKeys.addAll(rawReminderKeys.whereType<String>());
+    final rawPrepChecks = json['meal_prep_checks'];
+    if (rawPrepChecks is Map) {
+      for (final entry in rawPrepChecks.entries) {
+        if (entry.key is String && entry.value is bool) mealPrepChecks[entry.key as String] = entry.value as bool;
+      }
+    }
+    final rawBudget = json['grocery_budget'];
+    if (rawBudget is num && rawBudget >= 0) groceryBudget = rawBudget.toDouble();
+    final nutritionGoals = json['nutrition_goals'];
+    if (nutritionGoals is Map) {
+      final calories = nutritionGoals['daily_calories'];
+      final protein = nutritionGoals['daily_protein_grams'];
+      if (calories is num && calories > 0) dailyCalorieTarget = calories.round();
+      if (protein is num && protein > 0) dailyProteinTargetGrams = protein.toDouble();
+    }
+    final notificationPreferences = json['notification_preferences'];
+    if (notificationPreferences is Map) {
+      mealRemindersEnabled = notificationPreferences['meal_reminders_enabled'] == true;
+      pantryExpiryRemindersEnabled = notificationPreferences['pantry_expiry_reminders_enabled'] == true;
+      final minutes = notificationPreferences['meal_reminder_minutes'];
+      if (minutes is int && minutes >= 0 && minutes <= 240) mealReminderMinutes = minutes;
+    }
+
     final preferences = json['preferences'];
     if (preferences is Map) {
       final tags = preferences['dietary_tags'];
@@ -254,7 +344,9 @@ class PlannerState {
       final week = preferences['week_starts_on'];
       if (week == 1 || week == 7) weekStartsOn = week as int;
       final locale = preferences['locale_code'];
-      if (const {'en', 'ar', 'hi', 'gu'}.contains(locale)) localeCode = locale as String;
+      if (const {'en', 'hi', 'gu', 'ar', 'ja', 'pt', 'id', 'es', 'zh'}.contains(locale)) {
+        localeCode = locale as String;
+      }
       final theme = preferences['theme_preference'];
       if (theme == 'system' || theme == 'light' || theme == 'dark') themePreference = theme as String;
       reduceMotion = preferences['reduce_motion'] == true;
@@ -267,6 +359,16 @@ class PlannerState {
     for (final entry in source.entries) {
       if (entry.key is String && entry.value is num && (entry.value as num) >= 0) {
         target[entry.key as String] = (entry.value as num).toDouble();
+      }
+    }
+  }
+
+  void _restoreStringIntMap(Object? source, Map<String, int> target, {required int min, required int max}) {
+    if (source is! Map) return;
+    for (final entry in source.entries) {
+      if (entry.key is String && entry.value is num) {
+        final value = (entry.value as num).toInt();
+        if (value >= min && value <= max) target[entry.key as String] = value;
       }
     }
   }
@@ -307,6 +409,19 @@ class PlannerState {
     recentlyViewed.clear();
     preferredDietaryTags.clear();
     preferredCuisines.clear();
+    allergies.clear();
+    customRecipes.clear();
+    recipeRatings.clear();
+    recipeNotes.clear();
+    groceryPrices.clear();
+    groceryStores.clear();
+    mealPrepChecks.clear();
+    groceryBudget = null;
+    dailyCalorieTarget = 2000;
+    dailyProteinTargetGrams = 100;
+    mealRemindersEnabled = false;
+    pantryExpiryRemindersEnabled = false;
+    mealReminderMinutes = 60;
     measurementSystem = 'metric';
     weekStartsOn = 1;
     localeCode = 'en';
@@ -343,6 +458,40 @@ class PlannerState {
     final recipes = collections[collectionId];
     if (recipes == null || recipeId.isEmpty) return;
     if (!recipes.add(recipeId)) recipes.remove(recipeId);
+  }
+
+  void saveCustomRecipe(Recipe recipe) {
+    if (!recipe.id.startsWith('custom-') || recipe.title.trim().isEmpty) return;
+    customRecipes[recipe.id] = recipe;
+  }
+
+  void deleteCustomRecipe(String id) {
+    customRecipes.remove(id);
+    recipeRatings.remove(id);
+    recipeNotes.remove(id);
+    favorites.remove(id);
+    for (final day in mealPlan.keys.toList()) {
+      mealPlan[day]?.removeWhere((_, meal) => meal.recipeId == id);
+      if (mealPlan[day]?.isEmpty ?? false) mealPlan.remove(day);
+    }
+    for (final collection in collections.values) {
+      collection.remove(id);
+    }
+    recentlyViewed.removeWhere((entry) => entry['recipe_id'] == id);
+  }
+
+  void setRecipeRating(String recipeId, int rating) {
+    if (rating < 1 || rating > 5) return;
+    recipeRatings[recipeId] = rating;
+  }
+
+  void setRecipeNote(String recipeId, String note) {
+    final clean = note.trim();
+    if (clean.isEmpty) {
+      recipeNotes.remove(recipeId);
+    } else {
+      recipeNotes[recipeId] = clean;
+    }
   }
 
   void recordCooked(Recipe recipe) {
@@ -633,6 +782,34 @@ class PlannerState {
         isCustom: customKeys.contains(key),
       );
     }).toList();
+  }
+
+  bool isMealPrepDone(String day, String ingredient) => mealPrepChecks['$day|$ingredient'] == true;
+
+  void setMealPrepDone(String day, String ingredient, bool done) {
+    final key = '$day|$ingredient';
+    if (done) {
+      mealPrepChecks[key] = true;
+    } else {
+      mealPrepChecks.remove(key);
+    }
+  }
+
+  void setGroceryPrice(String key, double? price) {
+    if (price == null || price < 0) {
+      groceryPrices.remove(key);
+    } else {
+      groceryPrices[key] = price;
+    }
+  }
+
+  void setGroceryStore(String key, String store) {
+    final clean = store.trim();
+    if (clean.isEmpty) {
+      groceryStores.remove(key);
+    } else {
+      groceryStores[key] = clean;
+    }
   }
 
   void updateGroceryItem(String key, {required String name, required double amount}) {

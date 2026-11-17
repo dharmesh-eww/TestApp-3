@@ -13,17 +13,17 @@ void main() {
     expect(find.text('Monday'), findsOneWidget);
     await tester.tap(find.byKey(const Key('add-Monday-breakfast')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Overnight berry oats').last);
+    await tester.tap(find.byKey(const Key('plan-select-recipe-lemon-pasta')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Overnight berry oats'), findsOneWidget);
-    final planContext = tester.element(find.text('Overnight berry oats'));
+    expect(find.text('Lemon ricotta pasta'), findsOneWidget);
+    final planContext = tester.element(find.text('Lemon ricotta pasta'));
     final planner = PlannerScope.of(planContext);
     expect(planner.plannedMealCount, 1);
     final groceryItems = planner.buildGroceryList(RecipeCatalogScope.of(planContext));
-    final oats = groceryItems.singleWhere((item) => item.name == 'Rolled oats');
-    expect(oats.amount, 50);
-    expect(oats.unit, 'g');
+    final pasta = groceryItems.singleWhere((item) => item.name == 'Pasta');
+    expect(pasta.amount, 200);
+    expect(pasta.unit, 'g');
   });
 
   testWidgets('removes an assigned meal from its slot', (tester) async {
@@ -32,7 +32,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('add-Monday-breakfast')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Overnight berry oats').last);
+    await tester.tap(find.byKey(const Key('plan-select-recipe-lemon-pasta')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('remove-Monday-breakfast')));

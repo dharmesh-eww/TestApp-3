@@ -17,6 +17,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.util.Locale
+import org.json.JSONObject
 
 class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
     private val channelName = "gather/cooking_assist"
@@ -57,6 +58,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                 "cancelTimerNotification" -> {
                     val id = call.argument<Int>("id") ?: 0
                     pendingTimers.remove(id)
+                    getSharedPreferences("GatherReminderSchedules", Context.MODE_PRIVATE).edit().remove(id.toString()).apply()
                     val intent = Intent(this, CookingTimerReceiver::class.java).setAction("com.example.testapp_3.COOKING_TIMER").putExtra("title", "Cooking timer").putExtra("body", "A timer has finished.")
                     val pending = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                     (getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(pending)
@@ -70,6 +72,8 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
 
     private fun scheduleTimer(id: Int, title: String, body: String, fireAt: Long): Boolean {
         if (fireAt <= System.currentTimeMillis()) return false
+        val saved = JSONObject().put("title", title).put("body", body).put("fireAt", fireAt).toString()
+        getSharedPreferences("GatherReminderSchedules", Context.MODE_PRIVATE).edit().putString(id.toString(), saved).apply()
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             pendingTimers[id] = PendingTimer(title, body, fireAt)
             if (!permissionRequestInFlight) {
@@ -119,17 +123,68 @@ class CookingTimerReceiver : BroadcastReceiver() {
     @Suppress("DEPRECATION")
     override fun onReceive(context: Context, intent: Intent) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "gather_cooking_timers"
+        val channelId = "gather_smart_reminders"
         if (Build.VERSION.SDK_INT >= 26) manager.createNotificationChannel(
-            NotificationChannel(channelId, "Cooking timers", NotificationManager.IMPORTANCE_HIGH)
+            NotificationChannel(channelId, "Gather reminders", NotificationManager.IMPORTANCE_HIGH)
         )
         val notification = if (Build.VERSION.SDK_INT >= 26) android.app.Notification.Builder(context, channelId)
             else android.app.Notification.Builder(context)
-        notification.setSmallIcon(android.R.drawable.ic_popup_reminder)
-            .setContentTitle(intent.getStringExtra("title") ?: "Cooking timer finished")
-            .setContentText(intent.getStringExtra("body") ?: "Your timer is complete.")
-            .setAutoCancel(true)
         val notificationId = intent.getIntExtra("notification_id", 0)
+        notification.setSmallIcon(android.R.drawable.ic_popup_reminder)
+            .setContentTitle(intent.getStringExtra("title") ?: "Gather reminder")
+            .setContentText(intent.getStringExtra("body") ?: "You have a planned kitchen task.")
+            .setAutoCancel(true)
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+        if (launchIntent != null) {
+            val contentIntent = PendingIntent.getActivity(
+                context,
+                notificationId,
+                launchIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            notification.setContentIntent(contentIntent)
+        }
         manager.notify(notificationId, notification.build())
+        context.getSharedPreferences("GatherReminderSchedules", Context.MODE_PRIVATE)
+            .edit().remove(notificationId.toString()).apply()
+    }
+}
+
+class GatherReminderBootReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
+        val schedules = context.getSharedPreferences("GatherReminderSchedules", Context.MODE_PRIVATE)
+        val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val now = System.currentTimeMillis()
+        schedules.all.forEach { (key, value) ->
+            val id = key.toIntOrNull() ?: return@forEach
+            val payload = value as? String ?: return@forEach
+            try {
+                val data = JSONObject(payload)
+                val fireAt = data.getLong("fireAt")
+                if (fireAt <= now) {
+                    schedules.edit().remove(key).apply()
+                    return@forEach
+                }
+                val reminderIntent = Intent(context, CookingTimerReceiver::class.java)
+                    .setAction("com.example.testapp_3.COOKING_TIMER")
+                    .putExtra("notification_id", id)
+                    .putExtra("title", data.optString("title", "Gather reminder"))
+                    .putExtra("body", data.optString("body", "You have a planned kitchen task."))
+                val pending = PendingIntent.getBroadcast(
+                    context,
+                    id,
+                    reminderIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarm.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAt, pending)
+                } else {
+                    alarm.set(AlarmManager.RTC_WAKEUP, fireAt, pending)
+                }
+            } catch (_: Exception) {
+                schedules.edit().remove(key).apply()
+            }
+        }
     }
 }

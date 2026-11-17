@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:label="testapp_3"
         android:name="${applicationName}"
@@ -21,6 +22,17 @@
             </intent-filter>
         </activity>
         <receiver android:name=".CookingTimerReceiver" android:exported="false" />
+        <receiver android:name=".GatherReminderBootReceiver" android:enabled="true" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".GatherMealWidgetProvider" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/gather_meal_widget_info" />
+        </receiver>
         <meta-data android:name="flutterEmbedding" android:value="2" />
     </application>
     <queries>
