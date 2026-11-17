@@ -177,7 +177,11 @@ class GatherReminderBootReceiver : BroadcastReceiver() {
                     reminderIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )
-                alarm.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAt, pending)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarm.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAt, pending)
+                } else {
+                    alarm.set(AlarmManager.RTC_WAKEUP, fireAt, pending)
+                }
             } catch (_: Exception) {
                 schedules.edit().remove(key).apply()
             }
