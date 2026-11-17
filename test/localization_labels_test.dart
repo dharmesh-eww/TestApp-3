@@ -10,6 +10,17 @@ void main() {
         'مؤقتات المطبخ');
   });
 
+  test('Hindi and Gujarati labels, weekdays and meal slots are localized', () {
+    final hindi = AppLocalizations(const Locale('hi'));
+    expect(hindi.label('Today', 'اليوم'), 'आज');
+    expect(hindi.weekday('Sunday'), 'रविवार');
+    expect(hindi.mealSlot('dinner'), 'रात का भोजन');
+    final gujarati = AppLocalizations(const Locale('gu'));
+    expect(gujarati.label('Today', 'اليوم'), 'આજે');
+    expect(gujarati.weekday('Sunday'), 'રવિવાર');
+    expect(gujarati.mealSlot('dinner'), 'રાત્રિભોજન');
+  });
+
   test('weekdays and meal slots are localized', () {
     final arabic = AppLocalizations(const Locale('ar'));
     expect(arabic.weekday('Monday'), 'الإثنين');
