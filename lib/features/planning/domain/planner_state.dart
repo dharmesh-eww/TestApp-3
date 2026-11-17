@@ -81,7 +81,7 @@ class PlannerState {
     return state;
   }
 
-  /// Reads v1-v4 snapshots. The next save always writes v4.
+  /// Reads v1-v5 snapshots. The next save always writes v5.
   void restoreFromJson(Map<String, dynamic> json) {
     favorites.clear();
     mealPlan.clear();
