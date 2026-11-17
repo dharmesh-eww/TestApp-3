@@ -30,7 +30,7 @@ class SmartReminderService {
     await CookingAssistService.requestNotificationPermission();
 
     final today = DateTime(currentTime.year, currentTime.month, currentTime.day);
-    final mealEnd = today.add(const Duration(days: 92));
+    final mealEnd = today.add(const Duration(days: 93));
     final pantryEnd = currentTime.add(const Duration(days: 365));
 
     if (state.mealRemindersEnabled) {
