@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:testapp_3/app/planner_scope.dart';
-import 'package:testapp_3/features/recipes/domain/recipe.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/features/kitchen/presentation/collections_screen.dart';
 import 'package:testapp_3/features/kitchen/presentation/cooking_history_screen.dart';
