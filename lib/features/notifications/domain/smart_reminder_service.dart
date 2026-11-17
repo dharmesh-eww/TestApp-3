@@ -51,6 +51,11 @@ class SmartReminderService {
           for (final meal in entry.value.values) {
             final recipe = recipesById[meal.recipeId];
             if (recipe == null) continue;
+            if (state.allergies.isNotEmpty) {
+              final blocked = state.allergies.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
+              final declared = recipe.verifiedAllergens.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
+              if (!recipe.allergensVerified || declared.any(blocked.contains)) continue;
+            }
             final time = switch (meal.slot.name) {
               'breakfast' => (hour: 8, minute: 0),
               'lunch' => (hour: 12, minute: 0),
