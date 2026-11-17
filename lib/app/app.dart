@@ -314,7 +314,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                         for (final id in options)
                           FilterChip(
                             key: Key('cuisine-option-$id'),
-                            label: Text(cuisineLabels[id] ?? id.split('_').map((p)=>p.isEmpty?p:'\${p[0].toUpperCase()}\${p.substring(1)}').join(' ')),
+                            label: Text(cuisineLabels[id] ?? id.split('_').map((p)=>p.isEmpty?p:'${p[0].toUpperCase()}${p.substring(1)}').join(' ')),
                             selected: selectedCuisines.contains(id),
                             onSelected: (v) => setSheetState(() { if(v) { selectedCuisines.add(id); } else { selectedCuisines.remove(id); } }),
                             selectedColor: AppTheme.terracotta.withOpacity(.16),
@@ -338,9 +338,9 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       const SizedBox(height: 22),
                       Row(children: [
                         Expanded(child: Text(appStrings(sheetContext).label('Total cooking time','إجمالي وقت الطهي'), style: Theme.of(sheetContext).textTheme.titleMedium)),
-                        Text('\${timeRange.start.round()}–\${timeRange.end.round()} min', style: TextStyle(color: AppTheme.terracotta,fontWeight:FontWeight.w700)),
+                        Text('${timeRange.start.round()}–${timeRange.end.round()} min', style: TextStyle(color: AppTheme.terracotta,fontWeight:FontWeight.w700)),
                       ]),
-                      RangeSlider(min:0,max:180,divisions:36,values:timeRange,labels:RangeLabels('\${timeRange.start.round()} min','\${timeRange.end.round()} min'),activeColor:AppTheme.terracotta,onChanged:(v)=>setSheetState(()=>timeRange=v)),
+                      RangeSlider(min:0,max:180,divisions:36,values:timeRange,labels:RangeLabels('${timeRange.start.round()} min','${timeRange.end.round()} min'),activeColor:AppTheme.terracotta,onChanged:(v)=>setSheetState(()=>timeRange=v)),
                       Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[
                         Text('0 min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
                         Text('180+ min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
