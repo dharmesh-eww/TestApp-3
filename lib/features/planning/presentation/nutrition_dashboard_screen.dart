@@ -23,7 +23,10 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     final catalog = RecipeCatalogScope.of(context);
     var calories = 0.0, protein = 0.0, carbs = 0.0, fat = 0.0;
     final planned = <Recipe>[];
-    for (final meal in state.mealsFor(_dateKey)) {
+    final dateMeals = state.mealsFor(_dateKey);
+    final weekdayNames = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    final mealsForSelectedDate = dateMeals.isNotEmpty ? dateMeals : state.mealsFor(weekdayNames[_date.weekday - 1]);
+    for (final meal in mealsForSelectedDate) {
       final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
       if (recipe == null) continue;
       final factor = meal.servings / (recipe.servings < 1 ? 1 : recipe.servings);
