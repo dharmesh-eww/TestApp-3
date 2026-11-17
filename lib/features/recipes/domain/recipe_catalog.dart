@@ -327,6 +327,7 @@ class RecipeCatalog {
     int? minMinutes,
     int? maxMinutes,
     Set<String> dietaryTags = const {},
+    Set<String> preferredCuisines = const {},
     RecipeSort sort = RecipeSort.recommended,
   }) {
     final normalized = query.trim().toLowerCase();
@@ -342,8 +343,11 @@ class RecipeCatalog {
       final matchesTime = (minMinutes == null || recipe.totalMinutes >= minMinutes) &&
           (maxMinutes == null || recipe.totalMinutes <= maxMinutes);
       final matchesDiet = dietaryTags.isEmpty || dietaryTags.every(recipe.dietaryTags.contains);
+      final matchesPreferredCuisine = preferredCuisines.isEmpty ||
+          recipe.cuisineIds.any(preferredCuisines.contains);
       return recipe.isPublished && matchesCategory && matchesCuisine && matchesFoodType &&
-          matchesDifficulty && matchesTime && matchesDiet && recipe.matches(normalized);
+          matchesDifficulty && matchesTime && matchesDiet &&
+          matchesPreferredCuisine && recipe.matches(normalized);
     }).toList();
 
     switch (sort) {
