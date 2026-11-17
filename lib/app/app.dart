@@ -39,6 +39,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   Locale _locale = const Locale('en');
   List<Recipe> _catalogRecipes = recipes;
   String _contentVersion = 'bundled';
+  String? _catalogPayload;
   StaticRecipeContentUpdater? _contentUpdater;
 
   @override
@@ -50,19 +51,32 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
 
   Future<void> _initializeLocalData() async {
     try {
-      final cached = await widget.repository?.loadCatalog();
-      if (cached != null) {
-        final document = RecipeCatalogLoader.decode(cached.payload);
-        if (mounted) setState(() { _catalogRecipes = document.recipes; _contentVersion = cached.contentVersion; });
-      } else {
-        final document = await RecipeCatalogLoader.load();
-        if (!mounted) return;
-        setState(() => _catalogRecipes = document.recipes);
-      }
       final restored = await widget.repository?.loadPlannerState();
       if (restored != null && mounted) {
         dependencies.plannerState.restoreFromJson(restored.toJson());
         setState(() => _locale = Locale(dependencies.plannerState.localeCode));
+      }
+
+      final cached = await widget.repository?.loadCatalog();
+      if (cached != null) {
+        _catalogPayload = cached.payload;
+        final document = RecipeCatalogLoader.decode(
+          cached.payload,
+          localeCode: dependencies.plannerState.localeCode,
+        );
+        if (mounted) setState(() {
+          _catalogRecipes = document.recipes;
+          _contentVersion = cached.contentVersion;
+        });
+      } else {
+        final payload = await rootBundle.loadString(RecipeCatalogLoader.assetPath);
+        _catalogPayload = payload;
+        final document = RecipeCatalogLoader.decode(
+          payload,
+          localeCode: dependencies.plannerState.localeCode,
+        );
+        if (!mounted) return;
+        setState(() => _catalogRecipes = document.recipes);
       }
       final cookingSnapshot = await widget.repository?.loadCookingSession();
       if (cookingSnapshot != null && mounted) {
@@ -95,11 +109,15 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   Future<bool> _checkForContentUpdates() async {
     final uri = Uri.parse('https://raw.githubusercontent.com/dharmesh-eww/TestApp-3/main/content/manifest.json');
     try {
-      final update = await (_contentUpdater ??= StaticRecipeContentUpdater()).checkAndDownload(uri);
+      final update = await (_contentUpdater ??= StaticRecipeContentUpdater()).checkAndDownload(uri, localeCode: _locale.languageCode);
       if (update.contentVersion == _contentVersion) return false;
       await widget.repository?.activateCatalog(contentVersion: update.contentVersion, payload: update.payload);
       if (!mounted) return false;
-      setState(() { _catalogRecipes = update.document.recipes; _contentVersion = update.contentVersion; });
+      setState(() {
+        _catalogPayload = update.payload;
+        _catalogRecipes = update.document.recipes;
+        _contentVersion = update.contentVersion;
+      });
       return true;
     } on ContentUpdateException {
       return false;
@@ -155,7 +173,16 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
               ? AppShell(
             onLocaleChanged: (locale) {
             dependencies.plannerState.localeCode = locale.languageCode;
-            setState(() => _locale = locale);
+            setState(() {
+              _locale = locale;
+              final payload = _catalogPayload;
+              if (payload != null) {
+                _catalogRecipes = RecipeCatalogLoader.decode(
+                  payload,
+                  localeCode: locale.languageCode,
+                ).recipes;
+              }
+            });
             _onPlannerChanged();
           },
           )
@@ -436,6 +463,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       minMinutes: _minMinutes == 0 ? null : _minMinutes,
       maxMinutes: _maxMinutes == 180 ? null : _maxMinutes,
       dietaryTags: PlannerScope.of(context).preferredDietaryTags,
+      preferredCuisines: PlannerScope.of(context).preferredCuisines,
       sort: _sort,
     );
 
