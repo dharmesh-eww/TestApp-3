@@ -83,4 +83,26 @@ void main() {
     expect(find.text('اللغة'), findsOneWidget);
     expect(find.byKey(const Key('locale-toggle')), findsNothing);
   });
+
+  testWidgets('schedules a recipe on a selected date from the Plan page', (tester) async {
+    await tester.pumpWidget(const RecipePlannerApp());
+
+    await tester.tap(find.text('Plan'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('schedule-recipe-from-plan')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Choose a recipe'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('plan-select-recipe-lemon-pasta')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Plan Lemon ricotta pasta'), findsOneWidget);
+    expect(find.text('Repeat'), findsOneWidget);
+    expect(find.text('Start date'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('confirm-recipe-schedule')));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Dinner · Lemon ricotta pasta'), findsOneWidget);
+    expect(find.textContaining('Added 1 date(s)'), findsOneWidget);
+  });
 }
