@@ -31,6 +31,7 @@ class SmartReminderService {
       };
       for (final entry in state.mealPlan.entries) {
         final parsedDate = DateTime.tryParse(entry.key);
+        final isWeekdayTemplate = parsedDate == null;
         final occurrences = <DateTime>[];
         if (parsedDate != null) {
           occurrences.add(parsedDate);
@@ -57,10 +58,11 @@ class SmartReminderService {
               'snack' => (hour: 15, minute: 0),
               _ => (hour: 18, minute: 0),
             };
+            final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+            if (isWeekdayTemplate && state.mealsFor(dateKey).any((dated) => dated.slot == meal.slot)) continue;
             final plannedAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
             final fireAt = plannedAt.subtract(Duration(minutes: state.mealReminderMinutes));
             if (!fireAt.isAfter(now) || fireAt.isAfter(mealEnd)) continue;
-            final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
             final key = 'meal:$dateKey:${meal.slot.name}:${meal.recipeId}';
             await CookingAssistService.scheduleTimerNotification(
               id: key,
