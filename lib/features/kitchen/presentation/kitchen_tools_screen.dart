@@ -288,7 +288,7 @@ class SettingsScreen extends StatelessWidget {
             key: const Key('open-language-selection'),
             leading: const Icon(Icons.language),
             title: Text(appStrings(context).label('Language', 'اللغة')),
-            subtitle: Text(currentLocale.languageCode == 'ar' ? 'العربية' : 'English'),
+            subtitle: Text(appStrings(context).languageName),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.push(
               context,
@@ -441,6 +441,34 @@ class LanguageSelectionScreen extends StatelessWidget {
               onChanged: (value) {
                 if (value == null) return;
                 onLocaleChanged(const Locale('ar'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-hindi'),
+              value: 'hi',
+              groupValue: locale.languageCode,
+              title: const Text('हिन्दी'),
+              secondary: const Text('HI'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('hi'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-gujarati'),
+              value: 'gu',
+              groupValue: locale.languageCode,
+              title: const Text('ગુજરાતી'),
+              secondary: const Text('GU'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('gu'));
                 Navigator.pop(context);
               },
             ),
