@@ -254,7 +254,9 @@ class PlannerState {
       final week = preferences['week_starts_on'];
       if (week == 1 || week == 7) weekStartsOn = week as int;
       final locale = preferences['locale_code'];
-      if (const {'en', 'ar', 'hi', 'gu'}.contains(locale)) localeCode = locale as String;
+      if (const {'en', 'hi', 'gu', 'ar', 'ja', 'pt', 'id', 'es', 'zh'}.contains(locale)) {
+        localeCode = locale as String;
+      }
       final theme = preferences['theme_preference'];
       if (theme == 'system' || theme == 'light' || theme == 'dark') themePreference = theme as String;
       reduceMotion = preferences['reduce_motion'] == true;
