@@ -267,7 +267,10 @@ class _DiscoveryFilterBar extends StatelessWidget {
     'indian':'Indian', 'north_indian':'North Indian', 'south_indian':'South Indian',
     'gujarati':'Gujarati', 'chinese':'Chinese', 'japanese':'Japanese', 'italian':'Italian',
     'korean':'Korean', 'mexican':'Mexican', 'american':'American', 'thai':'Thai',
-    'mediterranean':'Mediterranean', 'global':'Global / Fusion',
+    'mediterranean':'Mediterranean', 'vietnamese':'Vietnamese', 'greek':'Greek',
+    'french':'French', 'spanish':'Spanish', 'middle_eastern':'Middle Eastern',
+    'turkish':'Turkish', 'african':'African', 'british':'British',
+    'other':'Other', 'global':'Global / Fusion',
   };
 
   @override
@@ -322,15 +325,15 @@ class _DiscoveryFilterBar extends StatelessWidget {
                       Text(appStrings(sheetContext).label('Food type','نوع الطعام'), style: Theme.of(sheetContext).textTheme.titleMedium),
                       const SizedBox(height: 10),
                       Wrap(spacing: 8, runSpacing: 8, children: [
-                        for (final option in const [('all','All'),('vegetarian','Vegetarian'),('vegan','Vegan'),('eggetarian','Eggetarian'),('nonVegetarian','Non-vegetarian'),('pescatarian','Pescatarian')])
-                          ChoiceChip(label: Text(option.$2), selected: foodType == option.$1, onSelected: (_) => setSheetState(() => foodType=option.$1), selectedColor: AppTheme.terracotta.withOpacity(.16)),
+                        for (final option in const [('all','All','الكل'),('vegetarian','Vegetarian','نباتي'),('vegan','Vegan','نباتي صرف'),('eggetarian','Eggetarian','نباتي مع البيض'),('nonVegetarian','Non-vegetarian','غير نباتي'),('pescatarian','Pescatarian','نباتي مع الأسماك')])
+                          ChoiceChip(label: Text(appStrings(sheetContext).label(option.$2, option.$3)), selected: foodType == option.$1, onSelected: (_) => setSheetState(() => foodType=option.$1), selectedColor: AppTheme.terracotta.withOpacity(.16)),
                       ]),
                       const SizedBox(height: 22),
                       Text(appStrings(sheetContext).label('Difficulty','مستوى الصعوبة'), style: Theme.of(sheetContext).textTheme.titleMedium),
                       const SizedBox(height: 10),
                       Wrap(spacing: 8, children: [
-                        for (final option in const [('all','Any'),('easy','Easy'),('medium','Medium'),('hard','Hard')])
-                          ChoiceChip(label: Text(option.$2), selected: level == option.$1, onSelected: (_) => setSheetState(() => level=option.$1), selectedColor: AppTheme.terracotta.withOpacity(.16)),
+                        for (final option in const [('all','Any','أي مستوى'),('easy','Easy','سهل'),('medium','Medium','متوسط'),('hard','Hard','صعب')])
+                          ChoiceChip(label: Text(appStrings(sheetContext).label(option.$2, option.$3)), selected: level == option.$1, onSelected: (_) => setSheetState(() => level=option.$1), selectedColor: AppTheme.terracotta.withOpacity(.16)),
                       ]),
                       const SizedBox(height: 22),
                       Row(children: [
