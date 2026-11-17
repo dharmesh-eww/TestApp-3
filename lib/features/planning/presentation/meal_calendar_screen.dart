@@ -84,7 +84,14 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
               if (index < offset) return const SizedBox.shrink();
               final date = DateTime(_month.year, _month.month, index - offset + 1);
               final key = _key(date);
-              final count = state.mealsFor(key).length;
+              final datedForDay = state.mealsFor(key);
+              final todayForGrid = DateUtils.dateOnly(DateTime.now());
+              final currentWeekForGrid = todayForGrid.subtract(Duration(days: todayForGrid.weekday - 1));
+              final dateWeekStart = date.subtract(Duration(days: date.weekday - 1));
+              final dayTemplate = DateUtils.isSameDay(currentWeekForGrid, dateWeekStart)
+                  ? state.mealsFor(const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][date.weekday - 1])
+                  : const [];
+              final count = datedForDay.length + dayTemplate.where((template) => !datedForDay.any((dated) => dated.slot == template.slot)).length;
               final isSelected = DateUtils.isSameDay(date, _selected);
               final isPast = date.isBefore(DateUtils.dateOnly(DateTime.now()));
               return InkWell(
