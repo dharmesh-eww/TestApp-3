@@ -13,7 +13,11 @@ void main() {
     expect(find.text('Monday'), findsOneWidget);
     await tester.tap(find.byKey(const Key('add-Monday-breakfast')));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Overnight berry oats').last);
+    await tester.scrollUntilVisible(
+      find.text('Overnight berry oats').last,
+      180,
+      scrollable: find.byKey(const Key('plan-recipe-picker-list')),
+    );
     await tester.tap(find.text('Overnight berry oats').last);
     await tester.pumpAndSettle();
 
