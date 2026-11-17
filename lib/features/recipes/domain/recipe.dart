@@ -30,6 +30,8 @@ class Recipe {
     this.prepMinutes = 0, this.cookMinutes = 0, this.equipment = const [],
     this.tags = const [], this.isPublished = true, this.imageAttribution,
     this.allergensVerified = false, this.verifiedAllergens = const [],
+    this.proteinGrams = 0, this.carbsGrams = 0, this.fatGrams = 0,
+    this.stepDetails = const [],
   });
 
   final String id;
@@ -56,6 +58,10 @@ class Recipe {
   final String? imageAttribution;
   final bool allergensVerified;
   final List<String> verifiedAllergens;
+  final double proteinGrams;
+  final double carbsGrams;
+  final double fatGrams;
+  final List<RecipeStep> stepDetails;
 
   factory Recipe.fromJson(Map<String, dynamic> json, {String localeCode = 'en'}) {
     final prep = _asInt(json['prep_minutes'] ?? json['preparation_time_minutes'] ?? json['preparation_time']);
@@ -72,18 +78,30 @@ class Recipe {
         .map((item) => Ingredient.fromJson(Map<String, dynamic>.from(item), localeCode: localeCode))
         .toList();
     final rawSteps = json['instructions'] as List? ?? json['steps'] as List? ?? const [];
-    final steps = rawSteps.map((item) {
-      if (item is String) return item;
-      if (item is Map) {
-        final localizedInstruction = item['localized_instruction'];
-        if (localizedInstruction is Map) {
-          return (localizedInstruction[localeCode] ?? localizedInstruction['en'] ??
-              item['text'] ?? item['instruction'] ?? '').toString();
+    final stepDetails = <RecipeStep>[];
+    for (var index = 0; index < rawSteps.length; index++) {
+      final item = rawSteps[index];
+      if (item is String) {
+        if (item.trim().isNotEmpty) {
+          stepDetails.add(RecipeStep(step: index + 1, text: item));
         }
-        return (item['text'] ?? item['instruction'] ?? '').toString();
+      } else if (item is Map) {
+        final localizedInstruction = item['localized_instruction'];
+        final text = localizedInstruction is Map
+            ? (localizedInstruction[localeCode] ?? localizedInstruction['en'] ??
+                item['text'] ?? item['instruction'] ?? '').toString()
+            : (item['text'] ?? item['instruction'] ?? '').toString();
+        if (text.trim().isNotEmpty) {
+          stepDetails.add(RecipeStep(
+            step: _asInt(item['step'], index + 1),
+            text: text,
+            durationMinutes: item['duration_minutes'] == null ? null : _asInt(item['duration_minutes']),
+            image: item['image'] as String?,
+          ));
+        }
       }
-      return '';
-    }).where((step) => step.isNotEmpty).toList();
+    }
+    final steps = stepDetails.map((step) => step.text).toList();
 
     return Recipe(
       id: (json['id'] ?? '').toString(),
@@ -110,15 +128,18 @@ class Recipe {
       imageAttribution: json['image_attribution'] as String?,
       allergensVerified: allergenMap['verified'] as bool? ?? false,
       verifiedAllergens: _stringList(allergenMap['items']),
+      proteinGrams: _asDouble(nutritionMap['protein_g'] ?? json['protein_g']),
+      carbsGrams: _asDouble(nutritionMap['carbs_g'] ?? json['carbs_g']),
+      fatGrams: _asDouble(nutritionMap['fat_g'] ?? json['fat_g']),
+      stepDetails: stepDetails,
     );
   }
 
   int get totalMinutes =>
       prepMinutes + cookMinutes == 0 ? minutes : prepMinutes + cookMinutes;
 
-  List<RecipeStep> get instructions => [
-        for (var i = 0; i < steps.length; i++)
-          RecipeStep(step: i + 1, text: steps[i]),
+  List<RecipeStep> get instructions => stepDetails.isNotEmpty ? stepDetails : [
+        for (var i = 0; i < steps.length; i++) RecipeStep(step: i + 1, text: steps[i]),
       ];
 
   bool matches(String query) {
@@ -150,7 +171,7 @@ class Recipe {
         'instructions': instructions.map((step) => step.toJson()).toList(),
         'tags': tags,
         'image_attribution': imageAttribution,
-        'nutrition': {'calories_kcal': calories, 'serving_basis': 'per_serving', 'is_estimate': true},
+        'nutrition': {'calories_kcal': calories, 'protein_g': proteinGrams, 'carbs_g': carbsGrams, 'fat_g': fatGrams, 'serving_basis': 'per_serving', 'is_estimate': true},
         'allergens': {'verified': allergensVerified, 'items': verifiedAllergens},
         'is_published': isPublished,
       };
@@ -251,6 +272,8 @@ String _slugify(String value) => value
 
 int _asInt(dynamic value, [int fallback = 0]) =>
     value is num ? value.round() : int.tryParse('$value') ?? fallback;
+
+double _asDouble(dynamic value) => value is num ? value.toDouble() : double.tryParse('$value') ?? 0;
 
 List<String> _stringList(dynamic value) =>
     value is List ? value.map((item) => item.toString()).toList() : <String>[];
