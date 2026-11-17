@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import 'package:testapp_3/app/planner_scope.dart';
+import 'package:testapp_3/app/recipe_catalog_scope.dart';
+import 'package:testapp_3/core/theme/app_theme.dart';
+import 'package:testapp_3/features/recipes/domain/recipe.dart';
+import 'package:testapp_3/localization/app_localizations.dart';
+
+class NutritionDashboardScreen extends StatefulWidget {
+  const NutritionDashboardScreen({super.key});
+
+  @override
+  State<NutritionDashboardScreen> createState() => _NutritionDashboardScreenState();
+}
+
+class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
+  DateTime _date = DateUtils.dateOnly(DateTime.now());
+
+  String get _dateKey => '${_date.year.toString().padLeft(4, '0')}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')}';
+
+  @override
+  Widget build(BuildContext context) {
+    final state = PlannerScope.of(context);
+    final catalog = RecipeCatalogScope.of(context);
+    var calories = 0.0, protein = 0.0, carbs = 0.0, fat = 0.0;
+    final planned = <Recipe>[];
+    for (final meal in state.mealsFor(_dateKey)) {
+      final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
+      if (recipe == null) continue;
+      final factor = meal.servings / (recipe.servings < 1 ? 1 : recipe.servings);
+      calories += recipe.calories * factor;
+      protein += recipe.proteinGrams * factor;
+      carbs += recipe.carbsGrams * factor;
+      fat += recipe.fatGrams * factor;
+      planned.add(recipe);
+    }
+    final strings = appStrings(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(strings.label('Nutrition', 'التغذية')),
+        actions: [
+          IconButton(
+            tooltip: strings.label('Set daily goals', 'تحديد الأهداف اليومية'),
+            onPressed: () => _editGoals(context, state),
+            icon: const Icon(Icons.tune),
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Row(children: [
+            Expanded(child: Text(strings.label('Planned nutrition', 'التغذية المخططة'), style: Theme.of(context).textTheme.titleLarge)),
+            TextButton.icon(
+              onPressed: () async {
+                final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime.now().subtract(const Duration(days: 365)), lastDate: DateTime.now().add(const Duration(days: 365))),
+                if (picked != null) setState(() => _date = DateUtils.dateOnly(picked));
+              },
+              icon: const Icon(Icons.calendar_month_outlined, size: 18),
+              label: Text(MaterialLocalizations.of(context).formatShortDate(_date)),
+            ),
+          ]),
+          const SizedBox(height: 14),
+          _goalCard(
+            title: strings.label('Calories', 'السعرات الحرارية'),
+            value: calories,
+            target: state.dailyCalorieTarget.toDouble(),
+            unit: 'kcal',
+            icon: Icons.local_fire_department_outlined,
+          ),
+          const SizedBox(height: 10),
+          _goalCard(title: strings.label('Protein', 'البروتين'), value: protein, target: state.dailyProteinTargetGrams, unit: 'g', icon: Icons.fitness_center),
+          const SizedBox(height: 18),
+          Text(strings.label('Macronutrients', 'المغذيات الكبرى'), style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: _macroCard('Carbs', carbs, 'g')),
+            const SizedBox(width: 8),
+            Expanded(child: _macroCard('Protein', protein, 'g')),
+            const SizedBox(width: 8),
+            Expanded(child: _macroCard('Fat', fat, 'g')),
+          ]),
+          const SizedBox(height: 22),
+          Text(strings.label('Meals included', 'الوجبات المدرجة'), style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          if (planned.isEmpty)
+            Text(strings.label('No meals planned for this date yet.', 'لا توجد وجبات مخططة لهذا التاريخ بعد.'), style: TextStyle(color: AppTheme.muted))
+          else
+            for (final recipe in planned)
+              Card(child: ListTile(
+                leading: const Icon(Icons.restaurant_menu, color: AppTheme.olive),
+                title: Text(recipe.title),
+                subtitle: Text('${recipe.calories} kcal · ${recipe.totalMinutes} min'),
+              )),
+          const SizedBox(height: 18),
+          Text(strings.label('Nutrition values are estimates based on recipe data and planned servings. Missing macro data is shown as zero; verify labels for dietary decisions.', 'القيم الغذائية تقديرية وتعتمد على بيانات الوصفة والحصص المخططة. تظهر بيانات المغذيات غير المتوفرة كصفر؛ تحقق من الملصقات لاتخاذ القرارات الغذائية.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _goalCard({required String title, required double value, required double target, required String unit, required IconData icon}) {
+    final progress = target <= 0 ? 0.0 : (value / target).clamp(0.0, 1.0);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Icon(icon, color: AppTheme.terracotta),
+            const SizedBox(width: 8),
+            Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w700))),
+            Text('${value.round()} / ${target.round()} $unit', style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700)),
+          ]),
+          const SizedBox(height: 12),
+          ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: progress, minHeight: 9, color: AppTheme.terracotta, backgroundColor: AppTheme.line)),
+        ]),
+      ),
+    );
+  }
+
+  Widget _macroCard(String label, double value, String unit) => Container(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.line)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(label, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
+      const SizedBox(height: 5),
+      Text('${value.round()} $unit', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+    ]),
+  );
+
+  Future<void> _editGoals(BuildContext context, dynamic state) async {
+    final calories = TextEditingController(text: '${state.dailyCalorieTarget}');
+    final protein = TextEditingController(text: '${state.dailyProteinTargetGrams.round()}');
+    final saved = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
+      title: Text(appStrings(context).label('Daily nutrition goals', 'الأهداف الغذائية اليومية')),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextField(controller: calories, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Calories (kcal)')),
+        TextField(controller: protein, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Protein (g)')),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Save', 'حفظ'))),
+      ],
+    ));
+    if (saved == true && context.mounted) {
+      final calorieValue = int.tryParse(calories.text.trim());
+      final proteinValue = double.tryParse(protein.text.trim());
+      if (calorieValue != null && calorieValue > 0) state.dailyCalorieTarget = calorieValue;
+      if (proteinValue != null && proteinValue > 0) state.dailyProteinTargetGrams = proteinValue;
+      PlannerScope.refresh(context);
+    }
+    calories.dispose();
+    protein.dispose();
+  }
+}
