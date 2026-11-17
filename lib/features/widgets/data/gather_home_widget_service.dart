@@ -27,7 +27,7 @@ class GatherHomeWidgetService {
         'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
       ][date.weekday - 1];
       final dateWeekStart = date.subtract(Duration(days: date.weekday - 1));
-      final templateMeals = DateUtils.isSameDay(currentWeekStart, dateWeekStart)
+      final templateMeals = dateWeekStart.year == currentWeekStart.year && dateWeekStart.month == currentWeekStart.month && dateWeekStart.day == currentWeekStart.day
           ? state.mealsFor(weekdayKey)
           : const [];
       final meals = [
