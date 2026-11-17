@@ -256,103 +256,105 @@ class _AppShellState extends State<AppShell> {
 
 
 class _DiscoveryFilterBar extends StatelessWidget {
-  const _DiscoveryFilterBar({
-    required this.cuisineId, required this.foodTypeId, required this.difficulty,
-    required this.maxMinutes, required this.cuisines, required this.onChanged,
-  });
-  final String cuisineId, foodTypeId, difficulty;
-  final int? maxMinutes;
+  const _DiscoveryFilterBar({required this.cuisineIds, required this.foodTypeId, required this.difficulty, required this.minMinutes, required this.maxMinutes, required this.cuisines, required this.onChanged});
+  final Set<String> cuisineIds;
+  final String foodTypeId, difficulty;
+  final int minMinutes, maxMinutes;
   final List<String> cuisines;
-  final void Function(String cuisine, String foodType, String difficulty, int? minutes) onChanged;
+  final void Function(Set<String>, String, String, int, int) onChanged;
+
+  static const cuisineLabels = <String, String>{
+    'indian':'Indian', 'north_indian':'North Indian', 'south_indian':'South Indian',
+    'gujarati':'Gujarati', 'chinese':'Chinese', 'japanese':'Japanese', 'italian':'Italian',
+    'korean':'Korean', 'mexican':'Mexican', 'american':'American', 'thai':'Thai',
+    'mediterranean':'Mediterranean', 'global':'Global / Fusion',
+  };
 
   @override
   Widget build(BuildContext context) {
-    final active = (cuisineId != 'all' ? 1 : 0) + (foodTypeId != 'all' ? 1 : 0) +
-        (difficulty != 'all' ? 1 : 0) + (maxMinutes != null ? 1 : 0);
+    final active = cuisineIds.length + (foodTypeId != 'all' ? 1 : 0) +
+        (difficulty != 'all' ? 1 : 0) + ((minMinutes > 0 || maxMinutes < 180) ? 1 : 0);
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: OutlinedButton.icon(
         key: const Key('open-recipe-filters'),
-        icon: Icon(Icons.tune, size: 17),
+        icon: const Icon(Icons.tune, size: 17),
         label: Text(active == 0 ? 'More filters' : 'More filters ($active)'),
         onPressed: () async {
-          var cuisine = cuisineId;
+          var selectedCuisines = Set<String>.from(cuisineIds);
           var foodType = foodTypeId;
           var level = difficulty;
-          var minutes = maxMinutes;
+          var timeRange = RangeValues(minMinutes.toDouble(), maxMinutes.toDouble());
+          final options = <String>{...cuisineLabels.keys, ...cuisines}.toList()
+            ..sort((x,y) => (cuisineLabels[x] ?? x).compareTo(cuisineLabels[y] ?? y));
           await showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled: true,
+            context: context, isScrollControlled: true, useSafeArea: true,
             backgroundColor: AppTheme.paper,
             builder: (sheetContext) => StatefulBuilder(
-              builder: (sheetContext, setSheetState) => SafeArea(
+              builder: (sheetContext, setSheetState) => SizedBox(
+                height: MediaQuery.of(sheetContext).size.height * .84,
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(sheetContext).viewInsets.bottom + 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(appStrings(sheetContext).label('Refine recipes', 'تصفية الوصفات'), style: Theme.of(sheetContext).textTheme.headlineMedium),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: cuisine,
-                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Cuisine', 'المطبخ')),
-                        items: [DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All cuisines', 'كل المطابخ'))),
-                          ...cuisines.map((value) => DropdownMenuItem(value: value, child: Text(value)))],
-                        onChanged: (value) => setSheetState(() => cuisine = value ?? 'all'),
-                      ),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Center(child: Container(width: 38, height: 4, decoration: BoxDecoration(color: AppTheme.line, borderRadius: BorderRadius.circular(4)))),
+                    const SizedBox(height: 16),
+                    Row(children: [
+                      Expanded(child: Text(appStrings(sheetContext).label('Recipe filters','فلاتر الوصفات'), style: Theme.of(sheetContext).textTheme.headlineMedium)),
+                      TextButton(onPressed: () => setSheetState(() {
+                        selectedCuisines.clear(); foodType = 'all'; level = 'all'; timeRange = const RangeValues(0,180);
+                      }), child: Text(appStrings(sheetContext).label('Reset all','إعادة ضبط الكل'))),
+                    ]),
+                    Expanded(child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(appStrings(sheetContext).label('Cuisine','نوع المطبخ'), style: Theme.of(sheetContext).textTheme.titleMedium),
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: foodType,
-                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Food type', 'نوع الطعام')),
-                        items: [
-                          DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('All food types', 'كل أنواع الطعام'))),
-                          DropdownMenuItem(value: 'vegetarian', child: Text(appStrings(sheetContext).label('Vegetarian', 'نباتي'))),
-                          DropdownMenuItem(value: 'vegan', child: Text(appStrings(sheetContext).label('Vegan', 'نباتي صرف'))),
-                          DropdownMenuItem(value: 'eggetarian', child: Text(appStrings(sheetContext).label('Eggetarian', 'نباتي مع البيض'))),
-                          DropdownMenuItem(value: 'nonVegetarian', child: Text(appStrings(sheetContext).label('Non-vegetarian', 'غير نباتي'))),
-                          DropdownMenuItem(value: 'pescatarian', child: Text(appStrings(sheetContext).label('Pescatarian', 'نباتي مع الأسماك'))),
-                        ],
-                        onChanged: (value) => setSheetState(() => foodType = value ?? 'all'),
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: level,
-                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Difficulty', 'مستوى الصعوبة')),
-                        items: [
-                          DropdownMenuItem(value: 'all', child: Text(appStrings(sheetContext).label('Any difficulty', 'أي مستوى'))),
-                          DropdownMenuItem(value: 'easy', child: Text(appStrings(sheetContext).label('Easy', 'سهل'))),
-                          DropdownMenuItem(value: 'medium', child: Text(appStrings(sheetContext).label('Medium', 'متوسط'))),
-                          DropdownMenuItem(value: 'hard', child: Text(appStrings(sheetContext).label('Hard', 'صعب'))),
-                        ],
-                        onChanged: (value) => setSheetState(() => level = value ?? 'all'),
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<int?>(
-                        value: minutes,
-                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Maximum time', 'الوقت الأقصى')),
-                        items: [
-                          DropdownMenuItem<int?>(value: null, child: Text(appStrings(sheetContext).label('Any time', 'أي وقت'))),
-                          DropdownMenuItem<int?>(value: 20, child: Text(appStrings(sheetContext).label('20 minutes', '20 دقيقة'))),
-                          DropdownMenuItem<int?>(value: 30, child: Text(appStrings(sheetContext).label('30 minutes', '30 دقيقة'))),
-                          DropdownMenuItem<int?>(value: 45, child: Text(appStrings(sheetContext).label('45 minutes', '45 دقيقة'))),
-                          DropdownMenuItem<int?>(value: 60, child: Text(appStrings(sheetContext).label('60 minutes', '60 دقيقة'))),
-                        ],
-                        onChanged: (value) => setSheetState(() => minutes = value),
-                      ),
-                      const SizedBox(height: 18),
-                      Row(children: [
-                        TextButton(onPressed: () => setSheetState(() {
-                          cuisine = 'all'; foodType = 'all'; level = 'all'; minutes = null;
-                        }), child: Text(appStrings(sheetContext).label('Reset', 'إعادة ضبط'))),
-                        const Spacer(),
-                        FilledButton(onPressed: () {
-                          onChanged(cuisine, foodType, level, minutes);
-                          Navigator.pop(sheetContext);
-                        }, child: Text(appStrings(sheetContext).label('Apply filters', 'تطبيق التصفية'))),
+                      Wrap(spacing: 8, runSpacing: 8, children: [
+                        for (final id in options)
+                          FilterChip(
+                            key: Key('cuisine-option-$id'),
+                            label: Text(cuisineLabels[id] ?? id.split('_').map((p)=>p.isEmpty?p:'\${p[0].toUpperCase()}\${p.substring(1)}').join(' ')),
+                            selected: selectedCuisines.contains(id),
+                            onSelected: (v) => setSheetState(() { if(v) { selectedCuisines.add(id); } else { selectedCuisines.remove(id); } }),
+                            selectedColor: AppTheme.terracotta.withOpacity(.16),
+                            side: BorderSide(color: selectedCuisines.contains(id) ? AppTheme.terracotta : AppTheme.line),
+                          ),
                       ]),
-                    ],
-                  ),
+                      const SizedBox(height: 22),
+                      Text(appStrings(sheetContext).label('Food type','نوع الطعام'), style: Theme.of(sheetContext).textTheme.titleMedium),
+                      const SizedBox(height: 10),
+                      Wrap(spacing: 8, runSpacing: 8, children: [
+                        for (final option in const [('all','All'),('vegetarian','Vegetarian'),('vegan','Vegan'),('eggetarian','Eggetarian'),('nonVegetarian','Non-vegetarian'),('pescatarian','Pescatarian')])
+                          ChoiceChip(label: Text(option.$2), selected: foodType == option.$1, onSelected: (_) => setSheetState(() => foodType=option.$1), selectedColor: AppTheme.terracotta.withOpacity(.16)),
+                      ]),
+                      const SizedBox(height: 22),
+                      Text(appStrings(sheetContext).label('Difficulty','مستوى الصعوبة'), style: Theme.of(sheetContext).textTheme.titleMedium),
+                      const SizedBox(height: 10),
+                      Wrap(spacing: 8, children: [
+                        for (final option in const [('all','Any'),('easy','Easy'),('medium','Medium'),('hard','Hard')])
+                          ChoiceChip(label: Text(option.$2), selected: level == option.$1, onSelected: (_) => setSheetState(() => level=option.$1), selectedColor: AppTheme.terracotta.withOpacity(.16)),
+                      ]),
+                      const SizedBox(height: 22),
+                      Row(children: [
+                        Expanded(child: Text(appStrings(sheetContext).label('Total cooking time','إجمالي وقت الطهي'), style: Theme.of(sheetContext).textTheme.titleMedium)),
+                        Text('\${timeRange.start.round()}–\${timeRange.end.round()} min', style: TextStyle(color: AppTheme.terracotta,fontWeight:FontWeight.w700)),
+                      ]),
+                      RangeSlider(min:0,max:180,divisions:36,values:timeRange,labels:RangeLabels('\${timeRange.start.round()} min','\${timeRange.end.round()} min'),activeColor:AppTheme.terracotta,onChanged:(v)=>setSheetState(()=>timeRange=v)),
+                      Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[
+                        Text('0 min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
+                        Text('180+ min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
+                      ]),
+                      const SizedBox(height:20),
+                    ]))),
+                    const SizedBox(height:12),
+                    Row(children:[
+                      Expanded(child:OutlinedButton(onPressed:(){onChanged(const {},'all','all',0,180);Navigator.pop(sheetContext);},child:Text(appStrings(sheetContext).label('Clear filters','مسح الفلاتر')))),
+                      const SizedBox(width:12),
+                      Expanded(child:FilledButton(
+                        style:FilledButton.styleFrom(backgroundColor:AppTheme.terracotta),
+                        onPressed:(){onChanged(selectedCuisines,foodType,level,timeRange.start.round(),timeRange.end.round());Navigator.pop(sheetContext);},
+                        child:Text(appStrings(sheetContext).label('Show recipes','عرض الوصفات')),
+                      )),
+                    ]),
+                  ]),
                 ),
               ),
             ),
@@ -362,7 +364,6 @@ class _DiscoveryFilterBar extends StatelessWidget {
     );
   }
 }
-
 class TodayScreen extends StatelessWidget {
   const TodayScreen({super.key});
 
@@ -423,10 +424,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   String _query = '';
   String _categoryId = 'all';
   RecipeSort _sort = RecipeSort.recommended;
-  String _cuisineId = 'all';
+  Set<String> _cuisineIds = {};
   String _foodTypeId = 'all';
   String _difficulty = 'all';
-  int? _maxMinutes;
+  int _minMinutes = 0;
+  int _maxMinutes = 180;
 
   @override
   void dispose() {
@@ -442,10 +444,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       catalog,
       query: _query,
       categoryId: _categoryId,
-      cuisineId: _cuisineId,
+      cuisineIds: _cuisineIds,
       foodType: _foodTypeId == 'all' ? null : FoodType.values.firstWhere((value) => value.name == _foodTypeId),
       difficulty: _difficulty,
-      maxMinutes: _maxMinutes,
+      minMinutes: _minMinutes == 0 ? null : _minMinutes,
+      maxMinutes: _maxMinutes == 180 ? null : _maxMinutes,
       dietaryTags: PlannerScope.of(context).preferredDietaryTags,
       sort: _sort,
     );
@@ -529,11 +532,18 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ),
         const SizedBox(height: 10),
         _DiscoveryFilterBar(
-          cuisineId: _cuisineId, foodTypeId: _foodTypeId, difficulty: _difficulty,
+          cuisineIds: _cuisineIds,
+          foodTypeId: _foodTypeId,
+          difficulty: _difficulty,
+          minMinutes: _minMinutes,
           maxMinutes: _maxMinutes,
-          cuisines: catalog.expand((recipe) => recipe.cuisineIds).toSet().toList()..sort(),
-          onChanged: (cuisine, foodType, difficulty, minutes) => setState(() {
-            _cuisineId = cuisine; _foodTypeId = foodType; _difficulty = difficulty; _maxMinutes = minutes;
+          cuisines: catalog.expand((recipe) => recipe.cuisineIds).toSet().toList(),
+          onChanged: (cuisines, foodType, difficulty, minMinutes, maxMinutes) => setState(() {
+            _cuisineIds = cuisines;
+            _foodTypeId = foodType;
+            _difficulty = difficulty;
+            _minMinutes = minMinutes;
+            _maxMinutes = maxMinutes;
           }),
         ),
         const SizedBox(height: 14),
