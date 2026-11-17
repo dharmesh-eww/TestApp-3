@@ -4,6 +4,7 @@ import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/recipes/domain/ingredient_matcher.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
+import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 
 class IngredientFinderScreen extends StatefulWidget {
@@ -21,8 +22,8 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final recipes = RecipeCatalogScope.of(context);
     final planner = PlannerScope.of(context);
+    final recipes = RecipeCatalog.search(RecipeCatalogScope.of(context), allergies: planner.allergies);
     final availableNames = <String>{..._available, if (_usePantry) ...planner.pantry.values.map((item) => item.name)};
     final availableQuantities = <String, ({double amount, String unit})>{
       if (_usePantry) for (final item in planner.pantry.values) item.name: (amount: item.amount, unit: item.unit),
