@@ -81,5 +81,22 @@ void main() {
         ..assignMeal(day: 'Monday', slot: MealSlot.dinner, recipeId: 'c', servings: 1);
       expect(state.buildGroceryList([grams, cups]), hasLength(2));
     });
+
+    test('persists dated meal plans using ISO calendar dates', () {
+      final state = PlannerState();
+      state.assignMeal(
+        day: '2026-11-20',
+        slot: MealSlot.dinner,
+        recipeId: 'lemon-pasta',
+        servings: 2,
+      );
+
+      final restored = PlannerState.fromJson(state.toJson());
+      final meal = restored.mealsFor('2026-11-20').single;
+
+      expect(meal.recipeId, 'lemon-pasta');
+      expect(meal.slot, MealSlot.dinner);
+      expect(meal.servings, 2);
+    });
   });
 }
