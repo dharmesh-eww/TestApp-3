@@ -19,7 +19,7 @@ class LanguageSelectionScreen extends StatelessWidget {
         title: Text(appStrings(context).label('Language', 'اللغة')),
       ),
       body: ListView(
-        cacheExtent: 1000,
+        cacheExtent: 5000,
         padding: const EdgeInsets.all(20),
         children: [
           Text(
