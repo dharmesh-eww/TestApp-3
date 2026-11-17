@@ -152,7 +152,7 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
       id: previous?.id ?? 'custom-${DateTime.now().microsecondsSinceEpoch}',
       title: title,
       subtitle: _description.text.trim(),
-      image: previous?.image ?? '',
+      image: (previous?.image.isNotEmpty == true) ? previous!.image : 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000',
       minutes: prep + cook,
       prepMinutes: prep,
       cookMinutes: cook,
