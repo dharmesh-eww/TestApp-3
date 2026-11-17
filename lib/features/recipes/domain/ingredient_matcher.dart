@@ -85,11 +85,11 @@ class IngredientMatcher {
               _normalize(entry.key) == _normalize(ingredient.id);
         });
         if (candidates.isEmpty) return true;
-        final required = _toBase(ingredient.amount!, ingredient.unit);
+        final requiredAmount = _toBase(ingredient.amount!, ingredient.unit);
         for (final entry in candidates) {
           final availableAmount = _toBase(entry.value.amount, entry.value.unit);
-          if (required != null && availableAmount != null && required.unit == availableAmount.unit) {
-            if (availableAmount.amount >= required.amount) return true;
+          if (requiredAmount != null && availableAmount != null && requiredAmount.unit == availableAmount.unit) {
+            if (availableAmount.amount >= requiredAmount.amount) return true;
           } else if (entry.value.unit.toLowerCase() == ingredient.unit.toLowerCase() &&
               entry.value.amount >= ingredient.amount!) {
             return true;
