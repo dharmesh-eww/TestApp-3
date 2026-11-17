@@ -21,6 +21,7 @@ import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../localization/app_localizations.dart';
 import 'app_dependencies.dart';
 import 'planner_scope.dart';
+import '../features/planning/domain/planner_state.dart';
 import 'recipe_catalog_scope.dart';
 
 class RecipePlannerApp extends StatefulWidget {
@@ -797,7 +798,7 @@ String _dateKey(DateTime date) =>
 DateTime _addCalendarMonths(DateTime date, int months) {
   final firstOfTarget = DateTime(date.year, date.month + months, 1);
   final lastDay = DateTime(firstOfTarget.year, firstOfTarget.month + 1, 0).day;
-  return DateTime(firstOfTarget.year, firstOfTarget.month, date.day.clamp(1, lastDay));
+  return DateTime(firstOfTarget.year, firstOfTarget.month, date.day.clamp(1, lastDay).toInt());
 }
 
 List<DateTime> _scheduledDates({
