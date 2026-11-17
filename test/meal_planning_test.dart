@@ -82,6 +82,17 @@ void main() {
       expect(state.buildGroceryList([grams, cups]), hasLength(2));
     });
 
+    test('adds recipe ingredients to groceries without requiring a meal plan', () {
+      final state = PlannerState();
+      final recipe = recipes.firstWhere((item) => item.id == 'lemon-pasta');
+
+      state.addIngredients(recipe, recipe.servings);
+
+      final pasta = state.buildGroceryList(recipes).singleWhere((item) => item.name == 'Pasta');
+      expect(pasta.amount, 200);
+      expect(pasta.unit, 'g');
+    });
+
     test('persists dated meal plans using ISO calendar dates', () {
       final state = PlannerState();
       state.assignMeal(
