@@ -31,7 +31,8 @@ class Recipe {
     this.tags = const [], this.isPublished = true, this.imageAttribution,
     this.allergensVerified = false, this.verifiedAllergens = const [],
     this.proteinGrams = 0, this.carbsGrams = 0, this.fatGrams = 0,
-    this.stepDetails = const [],
+    this.fiberGrams, this.vitamins = const {}, this.healthBenefits = const [],
+    this.seasons = const [], this.stepDetails = const [],
   });
 
   final String id;
@@ -61,7 +62,13 @@ class Recipe {
   final double proteinGrams;
   final double carbsGrams;
   final double fatGrams;
+  final double? fiberGrams;
+  final Map<String, double> vitamins;
+  final List<String> healthBenefits;
+  final List<String> seasons;
   final List<RecipeStep> stepDetails;
+
+  bool get hasNutritionData => calories > 0 || proteinGrams > 0 || carbsGrams > 0 || fatGrams > 0 || (fiberGrams ?? 0) > 0 || vitamins.isNotEmpty;
 
   factory Recipe.fromJson(Map<String, dynamic> json, {String localeCode = 'en'}) {
     final prep = _asInt(json['prep_minutes'] ?? json['preparation_time_minutes'] ?? json['preparation_time']);
@@ -131,6 +138,10 @@ class Recipe {
       proteinGrams: _asDouble(nutritionMap['protein_g'] ?? json['protein_g']),
       carbsGrams: _asDouble(nutritionMap['carbs_g'] ?? json['carbs_g']),
       fatGrams: _asDouble(nutritionMap['fat_g'] ?? json['fat_g']),
+      fiberGrams: _optionalDouble(nutritionMap['fiber_g'] ?? nutritionMap['fibre_g'] ?? json['fiber_g'] ?? json['fibre_g']),
+      vitamins: _numericMap(nutritionMap['vitamins'] ?? json['vitamins']),
+      healthBenefits: _stringList(json['health_benefits'] ?? json['benefits']),
+      seasons: _stringList(json['seasons'] ?? json['seasonal_suitability'] ?? json['season_tags']).map((value) => value.toLowerCase()).toList(),
       stepDetails: stepDetails,
     );
   }
@@ -275,6 +286,11 @@ int _asInt(dynamic value, [int fallback = 0]) =>
     value is num ? value.round() : int.tryParse('$value') ?? fallback;
 
 double _asDouble(dynamic value) => value is num ? value.toDouble() : double.tryParse('$value') ?? 0;
+double? _optionalDouble(dynamic value) => value == null ? null : (value is num ? value.toDouble() : double.tryParse('$value'));
+Map<String, double> _numericMap(dynamic value) {
+  if (value is! Map) return const {};
+  return value.map((key, amount) => MapEntry(key.toString(), _asDouble(amount)))..removeWhere((key, amount) => amount <= 0);
+}
 
 List<String> _stringList(dynamic value) =>
     value is List ? value.map((item) => item.toString()).toList() : <String>[];

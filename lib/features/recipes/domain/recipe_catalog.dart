@@ -326,6 +326,8 @@ class RecipeCatalog {
     String difficulty = 'all',
     int? minMinutes,
     int? maxMinutes,
+    String season = 'all',
+    bool nutritionOnly = false,
     Set<String> dietaryTags = const {},
     Set<String> preferredCuisines = const {},
     Set<String> allergies = const {},
@@ -343,6 +345,8 @@ class RecipeCatalog {
       final matchesDifficulty = difficulty == 'all' || recipe.difficulty.toLowerCase() == difficulty.toLowerCase();
       final matchesTime = (minMinutes == null || recipe.totalMinutes >= minMinutes) &&
           (maxMinutes == null || recipe.totalMinutes <= maxMinutes);
+      final matchesSeason = season == 'all' || recipe.seasons.contains(season.toLowerCase());
+      final matchesNutrition = !nutritionOnly || recipe.hasNutritionData;
       final matchesDiet = dietaryTags.isEmpty || dietaryTags.every(recipe.dietaryTags.contains);
       final matchesPreferredCuisine = preferredCuisines.isEmpty ||
           recipe.cuisineIds.any(preferredCuisines.contains);
@@ -353,7 +357,7 @@ class RecipeCatalog {
       final matchesAllergies = allergies.isEmpty ||
           (recipe.allergensVerified && !recipeAllergens.any(blockedAllergens.contains));
       return recipe.isPublished && matchesCategory && matchesCuisine && matchesFoodType &&
-          matchesDifficulty && matchesTime && matchesDiet &&
+          matchesDifficulty && matchesTime && matchesSeason && matchesNutrition && matchesDiet &&
           matchesPreferredCuisine && matchesAllergies && recipe.matches(normalized);
     }).toList();
 

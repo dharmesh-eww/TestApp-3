@@ -12,6 +12,8 @@ import 'package:testapp_3/features/recipes/presentation/custom_recipe_editor_scr
 import 'package:testapp_3/features/cooking/presentation/cooking_mode_screen.dart';
 import 'package:testapp_3/features/planning/presentation/plan_screen.dart';
 
+String seasonLabel(String season) => switch (season.toLowerCase()) { 'rainy' || 'monsoon' => 'Rainy season', 'winter' => 'Winter', 'summer' => 'Summer', 'spring' => 'Spring', 'autumn' || 'fall' => 'Autumn', _ => season };
+
 class _MetaPill extends StatelessWidget {
   const _MetaPill({required this.icon, required this.text});
   final IconData icon;
@@ -140,7 +142,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               const SizedBox(width: 8),
               _MetaPill(icon: Icons.signal_cellular_alt, text: recipe.difficulty),
               const SizedBox(width: 8),
-              _MetaPill(icon: Icons.local_fire_department_outlined, text: '${recipe.calories} kcal'),
+              if (recipe.calories > 0) _MetaPill(icon: Icons.local_fire_department_outlined, text: '${recipe.calories} kcal'),
             ]),
             if (recipe.proteinGrams > 0 || recipe.carbsGrams > 0 || recipe.fatGrams > 0) ...[
               const SizedBox(height: 10),
@@ -149,6 +151,39 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
                 _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
               ]),
+            ],
+            if (recipe.fiberGrams != null || recipe.vitamins.isNotEmpty || recipe.healthBenefits.isNotEmpty || recipe.seasons.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              if (recipe.fiberGrams != null || recipe.vitamins.isNotEmpty) ...[
+                Text(appStrings(context).recipeLabel('Nutrition details'), style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 10),
+                Wrap(spacing: 8, runSpacing: 8, children: [
+                  if (recipe.fiberGrams != null) _MetaPill(icon: Icons.grass_outlined, text: '${appStrings(context).recipeLabel('Fiber')} ${recipe.fiberGrams!.toStringAsFixed(1)} g'),
+                  for (final vitamin in recipe.vitamins.entries) _MetaPill(icon: Icons.local_florist_outlined, text: '${vitamin.key.toUpperCase()} ${vitamin.value.toStringAsFixed(1)}'),
+                ]),
+              ],
+              if (recipe.healthBenefits.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Text(appStrings(context).recipeLabel('Health benefits'), style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                ...recipe.healthBenefits.map((benefit) => Padding(
+                  padding: const EdgeInsets.only(bottom: 7),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Icon(Icons.check_circle_outline, size: 17, color: AppTheme.olive),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(benefit, style: TextStyle(color: AppTheme.ink))),
+                  ]),
+                )),
+              ],
+              if (recipe.seasons.isNotEmpty) ...[
+                const SizedBox(height: 14),
+                Text(appStrings(context).recipeLabel('Seasonal suitability'), style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Wrap(spacing: 8, children: recipe.seasons.map((season) => Chip(
+                  label: Text(appStrings(context).recipeLabel(seasonLabel(season))),
+                  visualDensity: VisualDensity.compact,
+                )).toList()),
+              ],
             ],
             const SizedBox(height: 18),
             Card(

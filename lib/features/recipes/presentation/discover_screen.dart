@@ -140,6 +140,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   String _difficulty = 'all';
   int _minMinutes = 0;
   int _maxMinutes = 180;
+  String _seasonId = 'all';
+  bool _nutritionOnly = false;
 
   @override
   void dispose() {
@@ -160,6 +162,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       difficulty: _difficulty,
       minMinutes: _minMinutes == 0 ? null : _minMinutes,
       maxMinutes: _maxMinutes == 180 ? null : _maxMinutes,
+      season: _seasonId,
+      nutritionOnly: _nutritionOnly,
       dietaryTags: PlannerScope.of(context).preferredDietaryTags,
       preferredCuisines: PlannerScope.of(context).preferredCuisines,
       allergies: PlannerScope.of(context).allergies,
@@ -243,6 +247,32 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               ),
           ]),
         ),
+        const SizedBox(height: 10),
+        Row(children: [
+          Expanded(child: DropdownButtonFormField<String>(
+            key: const Key('recipe-season-filter'),
+            value: _seasonId,
+            isExpanded: true,
+            decoration: InputDecoration(labelText: appStrings(context).recipeLabel('Season'), isDense: true, contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10)),
+            items: [
+              DropdownMenuItem(value: 'all', child: Text(appStrings(context).recipeLabel('All seasons'))),
+              DropdownMenuItem(value: 'winter', child: Text(appStrings(context).recipeLabel('Winter'))),
+              DropdownMenuItem(value: 'rainy', child: Text(appStrings(context).recipeLabel('Rainy season'))),
+              DropdownMenuItem(value: 'summer', child: Text(appStrings(context).recipeLabel('Summer'))),
+              DropdownMenuItem(value: 'spring', child: Text(appStrings(context).recipeLabel('Spring'))),
+              DropdownMenuItem(value: 'autumn', child: Text(appStrings(context).recipeLabel('Autumn'))),
+            ],
+            onChanged: (value) => setState(() => _seasonId = value ?? 'all'),
+          )),
+          const SizedBox(width: 10),
+          Expanded(child: FilterChip(
+            key: const Key('recipe-nutrition-filter'),
+            selected: _nutritionOnly,
+            onSelected: (value) => setState(() => _nutritionOnly = value),
+            label: Text(appStrings(context).recipeLabel('Nutrition data')),
+            avatar: const Icon(Icons.monitor_heart_outlined, size: 17),
+          )),
+        ]),
         const SizedBox(height: 10),
         _DiscoveryFilterBar(
           cuisineIds: _cuisineIds,

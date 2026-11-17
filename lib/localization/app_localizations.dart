@@ -414,6 +414,20 @@ class AppLocalizations {
     return extra?[english] ?? english;
   }
 
+  String recipeLabel(String english) {
+    const translations = <String, Map<String, String>>{
+      'ar': {'Nutrition details':'التفاصيل الغذائية','Fiber':'الألياف','Health benefits':'الفوائد الصحية','Seasonal suitability':'مناسب للموسم','Season':'الموسم','All seasons':'كل المواسم','Winter':'الشتاء','Rainy season':'موسم الأمطار','Summer':'الصيف','Spring':'الربيع','Autumn':'الخريف','Nutrition data':'بيانات غذائية'},
+      'hi': {'Nutrition details':'पोषण विवरण','Fiber':'फाइबर','Health benefits':'स्वास्थ्य लाभ','Seasonal suitability':'मौसमी उपयुक्तता','Season':'मौसम','All seasons':'सभी मौसम','Winter':'सर्दी','Rainy season':'बरसात का मौसम','Summer':'गर्मी','Spring':'वसंत','Autumn':'पतझड़','Nutrition data':'पोषण डेटा'},
+      'gu': {'Nutrition details':'પોષણની વિગતો','Fiber':'ફાઇબર','Health benefits':'આરોગ્ય લાભો','Seasonal suitability':'ઋતુ મુજબ યોગ્યતા','Season':'ઋતુ','All seasons':'બધી ઋતુઓ','Winter':'શિયાળો','Rainy season':'ચોમાસું','Summer':'ઉનાળો','Spring':'વસંત','Autumn':'પાનખર','Nutrition data':'પોષણની માહિતી'},
+      'ja': {'Nutrition details':'栄養情報','Fiber':'食物繊維','Health benefits':'健康上の利点','Seasonal suitability':'季節への適性','Season':'季節','All seasons':'すべての季節','Winter':'冬','Rainy season':'雨季','Summer':'夏','Spring':'春','Autumn':'秋','Nutrition data':'栄養データ'},
+      'pt': {'Nutrition details':'Informações nutricionais','Fiber':'Fibra','Health benefits':'Benefícios para a saúde','Seasonal suitability':'Adequação sazonal','Season':'Estação','All seasons':'Todas as estações','Winter':'Inverno','Rainy season':'Estação chuvosa','Summer':'Verão','Spring':'Primavera','Autumn':'Outono','Nutrition data':'Dados nutricionais'},
+      'id': {'Nutrition details':'Informasi nutrisi','Fiber':'Serat','Health benefits':'Manfaat kesehatan','Seasonal suitability':'Kesesuaian musim','Season':'Musim','All seasons':'Semua musim','Winter':'Musim dingin','Rainy season':'Musim hujan','Summer':'Musim panas','Spring':'Musim semi','Autumn':'Musim gugur','Nutrition data':'Data nutrisi'},
+      'es': {'Nutrition details':'Información nutricional','Fiber':'Fibra','Health benefits':'Beneficios para la salud','Seasonal suitability':'Adecuación estacional','Season':'Temporada','All seasons':'Todas las temporadas','Winter':'Invierno','Rainy season':'Temporada de lluvias','Summer':'Verano','Spring':'Primavera','Autumn':'Otoño','Nutrition data':'Datos nutricionales'},
+      'zh': {'Nutrition details':'营养详情','Fiber':'膳食纤维','Health benefits':'健康益处','Seasonal suitability':'季节适宜性','Season':'季节','All seasons':'所有季节','Winter':'冬季','Rainy season':'雨季','Summer':'夏季','Spring':'春季','Autumn':'秋季','Nutrition data':'营养数据'},
+    };
+    return translations[locale.languageCode]?[english] ?? english;
+  }
+
   String weekday(String day) {
     if (isHindi) return const {'Monday':'सोमवार','Tuesday':'मंगलवार','Wednesday':'बुधवार','Thursday':'गुरुवार','Friday':'शुक्रवार','Saturday':'शनिवार','Sunday':'रविवार'}[day] ?? day;
     if (isGujarati) return const {'Monday':'સોમવાર','Tuesday':'મંગળવાર','Wednesday':'બુધવાર','Thursday':'ગુરુવાર','Friday':'શુક્રવાર','Saturday':'શનિવાર','Sunday':'રવિવાર'}[day] ?? day;
