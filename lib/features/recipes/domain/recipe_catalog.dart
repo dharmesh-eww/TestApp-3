@@ -346,8 +346,8 @@ class RecipeCatalog {
       final matchesDiet = dietaryTags.isEmpty || dietaryTags.every(recipe.dietaryTags.contains);
       final matchesPreferredCuisine = preferredCuisines.isEmpty ||
           recipe.cuisineIds.any(preferredCuisines.contains);
-      final blockedAllergens = allergies.map((value) => value.toLowerCase()).toSet();
-      final recipeAllergens = recipe.verifiedAllergens.map((value) => value.toLowerCase()).toSet();
+      final blockedAllergens = allergies.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
+      final recipeAllergens = recipe.verifiedAllergens.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
       // With an active allergy profile, unverified recipes are excluded rather
       // than being presented as safe.
       final matchesAllergies = allergies.isEmpty ||
