@@ -185,7 +185,7 @@ class _AppShellState extends State<AppShell> {
     const DiscoverScreen(),
     const PlanScreen(),
     const GroceryScreen(),
-    KitchenScreen(locale: widget.locale, onLocaleChanged: widget.onLocaleChanged),
+    KitchenScreen(onLocaleChanged: widget.onLocaleChanged),
   ];
 
   void selectTab(int index) {
@@ -1063,9 +1063,8 @@ String _formatAmount(double value)=>value==value.roundToDouble()?value.toInt().t
 
 
 class KitchenScreen extends StatelessWidget {
-  const KitchenScreen({super.key, required this.locale, required this.onLocaleChanged});
+  const KitchenScreen({super.key, required this.onLocaleChanged});
 
-  final Locale locale;
   final ValueChanged<Locale> onLocaleChanged;
 
   @override
@@ -1095,7 +1094,7 @@ class KitchenScreen extends StatelessWidget {
             icon: Icon(Icons.history), label: Text(appStrings(context).label('Cooking history', 'سجل الطهي')),
           ),
           OutlinedButton.icon(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen(locale: locale, onLocaleChanged: onLocaleChanged))),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen(onLocaleChanged: onLocaleChanged))),
             icon: Icon(Icons.tune), label: Text(appStrings(context).label('Settings', 'الإعدادات')),
           ),
         ]),
