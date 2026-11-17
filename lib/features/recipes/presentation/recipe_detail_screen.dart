@@ -92,7 +92,10 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             if (widget.recipe.id.startsWith('custom-'))
               IconButton(
                 tooltip: appStrings(context).label('Edit recipe', 'تعديل الوصفة'),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CustomRecipeEditorScreen(recipe: widget.recipe))),
+                onPressed: () async {
+                  await Navigator.push(context, MaterialPageRoute(builder: (_) => CustomRecipeEditorScreen(recipe: widget.recipe)));
+                  if (mounted) Navigator.pop(context);
+                },
                 icon: const Icon(Icons.edit_outlined),
                 style: IconButton.styleFrom(backgroundColor: AppTheme.card),
               ),
