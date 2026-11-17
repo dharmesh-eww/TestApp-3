@@ -142,12 +142,14 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               const SizedBox(width: 8),
               _MetaPill(icon: Icons.local_fire_department_outlined, text: '${recipe.calories} kcal'),
             ]),
-            const SizedBox(height: 10),
-            Wrap(spacing: 8, runSpacing: 6, children: [
-              _MetaPill(icon: Icons.fitness_center, text: 'P ${recipe.proteinGrams.round()} g'),
-              _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
-              _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
-            ]),
+            if (recipe.proteinGrams > 0 || recipe.carbsGrams > 0 || recipe.fatGrams > 0) ...[
+              const SizedBox(height: 10),
+              Wrap(spacing: 8, runSpacing: 6, children: [
+                _MetaPill(icon: Icons.fitness_center, text: 'P ${recipe.proteinGrams.round()} g'),
+                _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
+                _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
+              ]),
+            ],
             const SizedBox(height: 18),
             Card(
               child: Padding(
