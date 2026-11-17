@@ -152,7 +152,6 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
           ],
           home: (!widget.showOnboarding || dependencies.plannerState.onboardingComplete)
               ? AppShell(
-            locale: _locale,
             onLocaleChanged: (locale) {
             dependencies.plannerState.localeCode = locale.languageCode;
             setState(() => _locale = locale);
