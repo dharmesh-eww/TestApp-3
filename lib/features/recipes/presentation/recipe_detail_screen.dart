@@ -35,11 +35,20 @@ class RecipeDetailScreen extends StatefulWidget {
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   int servings = 2;
   bool _recordedView = false;
+  late final TextEditingController _noteController;
+  bool _loadedNote = false;
 
   @override
   void initState() {
     super.initState();
     servings = widget.recipe.servings;
+    _noteController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,6 +68,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     final recipe = widget.recipe;
     final state = PlannerScope.of(context);
     final favorite = state.isFavorite(recipe.id);
+    if (!_loadedNote) {
+      _noteController.text = state.recipeNotes[recipe.id] ?? '';
+      _loadedNote = true;
+    }
+    final rating = state.recipeRatings[recipe.id] ?? 0;
     return Scaffold(
       body: CustomScrollView(slivers: [
         SliverAppBar(
@@ -121,6 +135,39 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
               _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
             ]),
+            const SizedBox(height: 18),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(appStrings(context).label('Your rating', 'تقييمك'), style: const TextStyle(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 6),
+                  Row(children: [
+                    for (var star = 1; star <= 5; star++)
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () { state.setRecipeRating(recipe.id, star); PlannerScope.refresh(context); },
+                        icon: Icon(star <= rating ? Icons.star : Icons.star_border, color: AppTheme.terracotta),
+                      ),
+                    if (rating > 0) Text('$rating/5', style: TextStyle(color: AppTheme.muted)),
+                  ]),
+                  TextField(
+                    controller: _noteController,
+                    minLines: 2,
+                    maxLines: 4,
+                    decoration: InputDecoration(labelText: appStrings(context).label('Personal cooking notes', 'ملاحظاتك الخاصة للطهي')),
+                  ),
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TextButton.icon(
+                      onPressed: () { state.setRecipeNote(recipe.id, _noteController.text); PlannerScope.refresh(context); },
+                      icon: const Icon(Icons.save_outlined),
+                      label: Text(appStrings(context).label('Save note', 'حفظ الملاحظة')),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
             const SizedBox(height: 26),
             Row(children: [
               Expanded(child: Text(appStrings(context).label('Ingredients', 'المكونات'), style: Theme.of(context).textTheme.headlineMedium)),
