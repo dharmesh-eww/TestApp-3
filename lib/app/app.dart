@@ -132,6 +132,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
         _catalogRecipes = update.document.recipes;
         _contentVersion = update.contentVersion;
       });
+      unawaited(_syncPlatformIntegrations());
       return true;
     } on ContentUpdateException {
       return false;
