@@ -36,6 +36,9 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
       fat += recipe.fatGrams * factor;
       planned.add(recipe);
     }
+    final weekStart = _date.subtract(Duration(days: _date.weekday - 1));
+    final weekCalories = List.generate(7, (index) => _caloriesForDate(state, catalog, weekStart.add(Duration(days: index))));
+    final weeklyTotal = weekCalories.fold<double>(0, (sum, value) => sum + value);
     final strings = appStrings(context);
     return Scaffold(
       appBar: AppBar(
@@ -83,6 +86,35 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
             Expanded(child: _macroCard('Fat', fat, 'g')),
           ]),
           const SizedBox(height: 22),
+          Row(children: [
+            Expanded(child: Text(strings.label('This week', 'هذا الأسبوع'), style: Theme.of(context).textTheme.titleLarge)),
+            Text('${weeklyTotal.round()} kcal', style: const TextStyle(fontWeight: FontWeight.w800, color: AppTheme.terracotta)),
+          ]),
+          const SizedBox(height: 10),
+          Row(children: [
+            for (var index = 0; index < 7; index++)
+              Expanded(child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Column(children: [
+                  Text(const ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index], style: TextStyle(color: AppTheme.muted, fontSize: 10)),
+                  const SizedBox(height: 5),
+                  RotatedBox(
+                    quarterTurns: 3,
+                    child: SizedBox(
+                      height: 7,
+                      child: LinearProgressIndicator(
+                        value: state.dailyCalorieTarget <= 0 ? 0 : (weekCalories[index] / state.dailyCalorieTarget).clamp(0.0, 1.0),
+                        backgroundColor: AppTheme.line,
+                        color: AppTheme.terracotta,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(weekCalories[index].round().toString(), style: const TextStyle(fontSize: 9)),
+                ]),
+              )),
+          ]),
+          const SizedBox(height: 22),
           Text(strings.label('Meals included', 'الوجبات المدرجة'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
           if (planned.isEmpty)
@@ -99,6 +131,20 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
         ],
       ),
     );
+  }
+
+  double _caloriesForDate(dynamic state, List<Recipe> catalog, DateTime date) {
+    final key = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    final datedMeals = state.mealsFor(key);
+    final weekdays = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    final meals = datedMeals.isNotEmpty ? datedMeals : state.mealsFor(weekdays[date.weekday - 1]);
+    var total = 0.0;
+    for (final meal in meals) {
+      final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
+      if (recipe == null) continue;
+      total += recipe.calories * meal.servings / (recipe.servings < 1 ? 1 : recipe.servings);
+    }
+    return total;
   }
 
   Widget _goalCard({required String title, required double value, required double target, required String unit, required IconData icon}) {
