@@ -21,6 +21,7 @@ class PlannerState {
   String localeCode = 'en';
   final Map<String, double> _manualAmounts = {};
   final Map<String, String> _manualNames = {};
+  final Set<String> _manualUnquantifiedIngredients = {};
   final Map<String, GroceryEdit> customGroceryItems = {};
   final Map<String, Set<String>> groceryLists = {};
   final Map<String, String> groceryListNames = {};
@@ -30,7 +31,7 @@ class PlannerState {
   String themePreference = 'system';
 
   Map<String, Object?> toJson() => {
-    'schema_version': 4,
+    'schema_version': 5,
     'favorites': favorites.toList()..sort(),
     'meals': [
       for (final slots in mealPlan.values)
@@ -48,6 +49,7 @@ class PlannerState {
     },
     'manual_amounts': _manualAmounts,
     'manual_names': _manualNames,
+    'manual_unquantified_ingredients': _manualUnquantifiedIngredients.toList()..sort(),
     'custom_grocery_items': {
       for (final entry in customGroceryItems.entries)
         entry.key: {'name': entry.value.name, 'amount': entry.value.amount},
@@ -88,6 +90,7 @@ class PlannerState {
     groceryEdits.clear();
     _manualAmounts.clear();
     _manualNames.clear();
+    _manualUnquantifiedIngredients.clear();
     customGroceryItems.clear();
     groceryLists.clear();
     groceryListNames.clear();
@@ -105,7 +108,7 @@ class PlannerState {
     weekStartsOn = 1;
     localeCode = 'en';
     final version = json['schema_version'];
-    if (version != 1 && version != 2 && version != 3 && version != 4) return;
+    if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5) return;
 
     final rawFavorites = json['favorites'];
     if (rawFavorites is List) {
@@ -160,6 +163,12 @@ class PlannerState {
     }
     _restoreStringDoubleMap(json['manual_amounts'], _manualAmounts);
     _restoreStringStringMap(json['manual_names'], _manualNames);
+    final rawManualUnquantified = json['manual_unquantified_ingredients'];
+    if (rawManualUnquantified is List) {
+      _manualUnquantifiedIngredients.addAll(
+        rawManualUnquantified.whereType<String>().map((name) => name.trim()).where((name) => name.isNotEmpty),
+      );
+    }
     final rawCustomGroceries = json['custom_grocery_items'];
     if (rawCustomGroceries is Map) {
       for (final entry in rawCustomGroceries.entries) {
@@ -439,7 +448,10 @@ class PlannerState {
 
   void addIngredients(Recipe recipe, int servings) {
     for (final item in recipe.ingredients) {
-      if (item.amount == null || item.amountType != IngredientAmountType.quantity) continue;
+      if (item.amount == null || item.amountType != IngredientAmountType.quantity) {
+        _manualUnquantifiedIngredients.add(item.name.trim());
+        continue;
+      }
       final key = _key(item.name, item.unit);
       final value = item.amount! * servings / _safeServings(recipe);
       _manualAmounts.update(key, (old) => old + value, ifAbsent: () => value);
@@ -517,6 +529,9 @@ class PlannerState {
       if (parts.length < 2) continue;
       add(_manualNames[entry.key] ?? parts.first, entry.value,
           parts.sublist(1).join('|'), IngredientAmountType.quantity);
+    }
+    for (final name in _manualUnquantifiedIngredients) {
+      add(name, null, '', IngredientAmountType.toTaste);
     }
     for (final entry in customGroceryItems.entries) {
       final parts = entry.key.split('|');
