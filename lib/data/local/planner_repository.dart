@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 import '../../features/planning/domain/planner_state.dart';
+import '../../core/data/app_repository.dart';
 
 /// SQLite-backed local store. Personal data remains on this device.
-class PlannerRepository {
+class PlannerRepository implements AppRepository {
   PlannerRepository._(this._database);
   final Database _database;
 
@@ -50,6 +51,21 @@ class PlannerRepository {
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
+
+  // Pantry and grocery data intentionally share the planner aggregate for
+  // atomic cross-feature updates. These feature contracts allow their storage
+  // to be split or synchronized later without coupling widgets to SQLite.
+  @override
+  Future<PlannerState?> loadPantryState() => loadPlannerState();
+
+  @override
+  Future<void> savePantryState(PlannerState state) => savePlannerState(state);
+
+  @override
+  Future<PlannerState?> loadGroceryState() => loadPlannerState();
+
+  @override
+  Future<void> saveGroceryState(PlannerState state) => savePlannerState(state);
 
   Future<Map<String, dynamic>?> loadCookingSession() async {
     final rows = await _database.query('cooking_session_snapshot',

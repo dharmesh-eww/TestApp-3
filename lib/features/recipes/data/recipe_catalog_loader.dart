@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../domain/recipe.dart';
+import '../../../localization/app_locale.dart';
 
 class CatalogLoadException implements Exception {
   const CatalogLoadException(this.code, this.message);
@@ -26,6 +27,7 @@ class RecipeCatalogLoader {
       decode(await (bundle ?? rootBundle).loadString(assetPath), localeCode: localeCode);
 
   static RecipeCatalogDocument decode(String source, {String localeCode = 'en'}) {
+    final resolvedLocaleCode = AppLocale.normalizeCode(localeCode);
     Object? decoded;
     try {
       decoded = jsonDecode(source);
@@ -80,14 +82,14 @@ class RecipeCatalogLoader {
         final hasName = name is String
             ? name.trim().isNotEmpty
             : name is Map &&
-                ((name[localeCode] is String && (name[localeCode] as String).trim().isNotEmpty) ||
+                ((name[resolvedLocaleCode] is String && (name[resolvedLocaleCode] as String).trim().isNotEmpty) ||
                  (name['en'] is String && (name['en'] as String).trim().isNotEmpty) ||
-                 (name[localeCode] is Map && (name[localeCode] as Map)['name'] is String));
+                 (name[resolvedLocaleCode] is Map && (name[resolvedLocaleCode] as Map)['name'] is String));
         if (!hasName) {
           throw CatalogLoadException('invalid_ingredient', 'Ingredient $j in recipe "$id" needs a name.');
         }
       }
-      final recipe = Recipe.fromJson(map, localeCode: localeCode);
+      final recipe = Recipe.fromJson(map, localeCode: resolvedLocaleCode);
       if (recipe.steps.isEmpty) throw CatalogLoadException('invalid_recipe_steps', 'Recipe "$id" must contain at least one non-empty instruction.');
       recipes.add(recipe);
     }

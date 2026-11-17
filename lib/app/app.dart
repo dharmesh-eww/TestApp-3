@@ -8,24 +8,20 @@ import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/recipe_catalog.dart';
 import '../features/recipes/data/recipe_catalog_loader.dart';
 import '../features/recipes/data/static_recipe_content_updater.dart';
-import '../data/local/planner_repository.dart';
+import '../core/data/app_repository.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
-import '../features/today/presentation/today_screen.dart';
-import '../features/recipes/presentation/discover_screen.dart';
-import '../features/planning/presentation/plan_screen.dart';
-import '../features/groceries/presentation/grocery_screen.dart';
-import '../features/kitchen/presentation/kitchen_home_screen.dart';
+import 'app_shell.dart';
 import '../localization/app_localizations.dart';
 import 'app_dependencies.dart';
 import 'planner_scope.dart';
 import 'recipe_catalog_scope.dart';
-import 'app_tab_navigation.dart';
+import '../localization/app_locale.dart';
 import '../features/notifications/domain/smart_reminder_service.dart';
 import '../features/widgets/data/gather_home_widget_service.dart';
 
 class RecipePlannerApp extends StatefulWidget {
   const RecipePlannerApp({super.key, this.repository, this.showOnboarding = false});
-  final PlannerRepository? repository;
+  final AppRepository? repository;
   final bool showOnboarding;
 
   @override
@@ -33,7 +29,7 @@ class RecipePlannerApp extends StatefulWidget {
 }
 
 class _RecipePlannerAppState extends State<RecipePlannerApp> {
-  final AppDependencies dependencies = AppDependencies();
+  late final AppDependencies dependencies = AppDependencies(repository: widget.repository);
   Timer? _cookingPersistTimer;
   Locale _locale = const Locale('en');
   List<Recipe> _catalogRecipes = recipes;
@@ -50,13 +46,13 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
 
   Future<void> _initializeLocalData() async {
     try {
-      final restored = await widget.repository?.loadPlannerState();
+      final restored = await dependencies.repository?.loadPlannerState();
       if (restored != null && mounted) {
         dependencies.plannerState.restoreFromJson(restored.toJson());
-        setState(() => _locale = Locale(dependencies.plannerState.localeCode));
+        setState(() => _locale = AppLocale.normalize(Locale(dependencies.plannerState.localeCode)));
       }
 
-      final cached = await widget.repository?.loadCatalog();
+      final cached = await dependencies.repository?.loadCatalog();
       if (cached != null) {
         _catalogPayload = cached.payload;
         final document = RecipeCatalogLoader.decode(
@@ -77,7 +73,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
         if (!mounted) return;
         setState(() => _catalogRecipes = document.recipes);
       }
-      final cookingSnapshot = await widget.repository?.loadCookingSession();
+      final cookingSnapshot = await dependencies.repository?.loadCookingSession();
       if (cookingSnapshot != null && mounted) {
         dependencies.cookingSession.restoreFromJson(cookingSnapshot);
       }
@@ -91,7 +87,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
 
   void _onPlannerChanged() {
     setState(() {});
-    final store = widget.repository;
+    final store = dependencies.repository;
     if (store != null) unawaited(store.savePlannerState(dependencies.plannerState).catchError((_) {}));
     unawaited(_syncPlatformIntegrations());
   }
@@ -102,7 +98,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     try {
       await SmartReminderService.sync(state, catalog);
       await GatherHomeWidgetService.sync(state, catalog);
-      final store = widget.repository;
+      final store = dependencies.repository;
       if (store != null) await store.savePlannerState(state);
     } catch (_) {
       // Native integrations are optional; core planning remains usable.
@@ -113,7 +109,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     if (_cookingPersistTimer != null) return;
     _cookingPersistTimer = Timer(const Duration(seconds: 1), () {
       _cookingPersistTimer = null;
-      final store = widget.repository;
+      final store = dependencies.repository;
       if (store != null) {
         unawaited(store.saveCookingSession(dependencies.cookingSession.toJson()).catchError((_) {}));
       }
@@ -125,7 +121,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     try {
       final update = await (_contentUpdater ??= StaticRecipeContentUpdater()).checkAndDownload(uri, localeCode: _locale.languageCode);
       if (update.contentVersion == _contentVersion) return false;
-      await widget.repository?.activateCatalog(contentVersion: update.contentVersion, payload: update.payload);
+      await dependencies.repository?.activateCatalog(contentVersion: update.contentVersion, payload: update.payload);
       if (!mounted) return false;
       setState(() {
         _catalogPayload = update.payload;
@@ -145,7 +141,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   void dispose() {
     _cookingPersistTimer?.cancel();
     dependencies.cookingSession.removeListener(_onCookingChanged);
-    final store = widget.repository;
+    final store = dependencies.repository;
     if (store != null) {
       unawaited(store.saveCookingSession(dependencies.cookingSession.toJson()).catchError((_) {}));
     }
@@ -177,7 +173,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
             _ => ThemeMode.system,
           },
           locale: _locale,
-          supportedLocales: const [Locale('en'), Locale('hi'), Locale('gu'), Locale('ar'), Locale('ja'), Locale('pt'), Locale('id'), Locale('es'), Locale('zh')],
+          supportedLocales: AppLocale.supportedLocales,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -187,14 +183,15 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
           home: (!widget.showOnboarding || dependencies.plannerState.onboardingComplete)
               ? AppShell(
             onLocaleChanged: (locale) {
-            dependencies.plannerState.localeCode = locale.languageCode;
+            final selectedLocale = AppLocale.normalize(locale);
+            dependencies.plannerState.localeCode = selectedLocale.languageCode;
             setState(() {
-              _locale = locale;
+              _locale = selectedLocale;
               final payload = _catalogPayload;
               if (payload != null) {
                 _catalogRecipes = RecipeCatalogLoader.decode(
                   payload,
-                  localeCode: locale.languageCode,
+                  localeCode: selectedLocale.languageCode,
                 ).recipes;
               }
             });
@@ -211,70 +208,3 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   }
 }
 
-class AppShell extends StatefulWidget {
-  const AppShell({super.key, required this.onLocaleChanged});
-  final ValueChanged<Locale> onLocaleChanged;
-
-  @override
-  State<AppShell> createState() => _AppShellState();
-}
-
-class _AppShellState extends State<AppShell> {
-  int selected = 0;
-  List<Widget> get pages => [
-    const TodayScreen(),
-    const DiscoverScreen(),
-    const PlanScreen(),
-    const GroceryScreen(),
-    KitchenScreen(onLocaleChanged: widget.onLocaleChanged),
-  ];
-
-  void selectTab(int index) {
-    if (index < 0 || index >= pages.length || index == selected) return;
-    setState(() => selected = index);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AppTabNavigation(onSelect: selectTab, child: Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: PlannerScope.of(context).reduceMotion ? Duration.zero : AppMotion.page,
-                switchInCurve: AppMotion.enter,
-                switchOutCurve: AppMotion.exit,
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, .018),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                ),
-                child: KeyedSubtree(
-                  key: ValueKey(selected),
-                  child: pages[selected],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selected,
-        onDestinationSelected: (value) => setState(() => selected = value),
-        destinations: [
-          NavigationDestination(icon: Icon(Icons.wb_sunny_outlined), selectedIcon: Icon(Icons.wb_sunny), label: appStrings(context).today),
-          NavigationDestination(icon: Icon(Icons.search), label: appStrings(context).recipes),
-          NavigationDestination(icon: Icon(Icons.calendar_month_outlined), label: appStrings(context).plan),
-          NavigationDestination(icon: Icon(Icons.shopping_basket_outlined), label: appStrings(context).groceries),
-          NavigationDestination(icon: Icon(Icons.shelves), label: appStrings(context).kitchen),
-        ],
-      ),
-    ));
-  }
-}

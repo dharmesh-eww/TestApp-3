@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'app_locale.dart';
 
 class AppLocalizations {
-  const AppLocalizations(this.locale);
+  AppLocalizations(Locale locale) : locale = AppLocale.normalize(locale);
   final Locale locale;
   bool get isArabic => locale.languageCode == 'ar';
   bool get isHindi => locale.languageCode == 'hi';
@@ -616,9 +617,9 @@ AppLocalizations appStrings(BuildContext context) => AppLocalizations.of(context
 class _Delegate extends LocalizationsDelegate<AppLocalizations> {
   const _Delegate();
   @override
-  bool isSupported(Locale locale) => const {'en', 'ar', 'hi', 'gu', 'ja', 'pt', 'id', 'es', 'zh'}.contains(locale.languageCode);
+  bool isSupported(Locale locale) => AppLocale.isSupported(locale.languageCode);
   @override
-  Future<AppLocalizations> load(Locale locale) => SynchronousFuture(AppLocalizations(locale));
+  Future<AppLocalizations> load(Locale locale) => SynchronousFuture(AppLocalizations(AppLocale.normalize(locale)));
   @override
   bool shouldReload(_Delegate old) => false;
 }
