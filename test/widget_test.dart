@@ -58,4 +58,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('A little more joy\nin the kitchen.'), findsOneWidget);
   });
+
+  testWidgets('language is changed from Kitchen > Settings > Language', (tester) async {
+    await tester.pumpWidget(const RecipePlannerApp());
+
+    expect(find.byKey(const Key('locale-toggle')), findsNothing);
+    await tester.tap(find.text('Kitchen'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.byKey(const Key('open-language-selection')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('open-language-selection')));
+    await tester.pumpAndSettle();
+    expect(find.text('CHOOSE YOUR LANGUAGE'), findsOneWidget);
+    expect(find.byKey(const Key('language-option-arabic')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('language-option-arabic')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('الإعدادات'), findsOneWidget);
+    expect(find.text('اللغة'), findsOneWidget);
+    expect(find.byKey(const Key('locale-toggle')), findsNothing);
+  });
 }
