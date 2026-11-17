@@ -25,6 +25,8 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
   late final TextEditingController _fat;
   late final TextEditingController _ingredients;
   late final TextEditingController _steps;
+  final Set<String> _allergens = {};
+  bool _allergensReviewed = false;
 
   @override
   void initState() {
@@ -42,6 +44,10 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
     _fat = TextEditingController(text: '${recipe?.fatGrams ?? 0}');
     _ingredients = TextEditingController(text: recipe == null ? '' : recipe.ingredients.map((item) => '${item.name}|${item.amount ?? ''}|${item.unit}').join('\n'));
     _steps = TextEditingController(text: recipe?.steps.join('\n') ?? '');
+    if (recipe != null) {
+      _allergens.addAll(recipe.verifiedAllergens);
+      _allergensReviewed = recipe.allergensVerified;
+    }
   }
 
   @override
@@ -98,6 +104,26 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
           Text(strings.label('COOKING INSTRUCTIONS', 'تعليمات الطهي'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           TextField(controller: _steps, minLines: 4, maxLines: 10, decoration: InputDecoration(hintText: strings.label('One step per line', 'خطوة واحدة في كل سطر'))),
+          const SizedBox(height: 18),
+          Text(strings.label('ALLERGEN REVIEW', 'مراجعة مسببات الحساسية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800)),
+          Text(strings.label('Select allergens present, then confirm you reviewed every ingredient. This is your own review, not a certified safety check.', 'حدد مسببات الحساسية الموجودة، ثم أكد أنك راجعت كل مكوّن. هذه مراجعتك الشخصية وليست فحص سلامة معتمدًا.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+          const SizedBox(height: 8),
+          Wrap(spacing: 6, runSpacing: 4, children: [
+            for (final allergen in const ['peanuts', 'tree nuts', 'milk', 'eggs', 'wheat', 'gluten', 'soy', 'fish', 'shellfish', 'sesame', 'mustard', 'celery', 'lupin', 'sulphites'])
+              FilterChip(
+                label: Text(allergen),
+                selected: _allergens.contains(allergen),
+                onSelected: (selected) => setState(() {
+                  if (selected) { _allergens.add(allergen); } else { _allergens.remove(allergen); }
+                }),
+              ),
+          ]),
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            value: _allergensReviewed,
+            title: Text(strings.label('I reviewed the ingredient list for allergens', 'راجعت قائمة المكونات بحثًا عن مسببات الحساسية')),
+            onChanged: (value) => setState(() => _allergensReviewed = value ?? false),
+          ),
           const SizedBox(height: 24),
           FilledButton.icon(
             key: const Key('save-custom-recipe'),
@@ -172,8 +198,8 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
       stepDetails: [for (var i = 0; i < steps.length; i++) RecipeStep(step: i + 1, text: steps[i])],
       tags: previous?.tags ?? const [],
       isPublished: true,
-      allergensVerified: false,
-      verifiedAllergens: const [],
+      allergensVerified: _allergensReviewed,
+      verifiedAllergens: _allergens.toList()..sort(),
     );
     PlannerScope.of(context).saveCustomRecipe(recipe);
     PlannerScope.refresh(context);
