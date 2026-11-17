@@ -831,7 +831,7 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
           const SizedBox(height: 8),
           ExpansionTile(
             tilePadding: EdgeInsets.zero, childrenPadding: const EdgeInsets.only(bottom: 8),
-            leading: const Icon(Icons.tune, color: AppTheme.olive),
+            leading: Icon(Icons.tune, color: AppTheme.olive),
             title: Text(appStrings(context).label('Filters', 'الفلاتر')),
             trailing: Row(mainAxisSize: MainAxisSize.min, children: [
               if (activeFilters > 0) Text('$activeFilters active', style: TextStyle(color: AppTheme.terracotta, fontSize: 11)),
@@ -864,7 +864,7 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
           const SizedBox(height: 8),
           Expanded(child: filtered.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.search_off_rounded, size: 38, color: AppTheme.olive), const SizedBox(height: 8),
+                Icon(Icons.search_off_rounded, size: 38, color: AppTheme.olive), const SizedBox(height: 8),
                 Text(appStrings(context).label('No recipes found', 'لم يتم العثور على وصفات'), style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
                 Text(appStrings(context).label('Try another search or adjust your filters.', 'جرّب بحثًا آخر أو غيّر الفلاتر.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
               ]))
