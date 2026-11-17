@@ -89,7 +89,7 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
               final currentWeekForGrid = todayForGrid.subtract(Duration(days: todayForGrid.weekday - 1));
               final dateWeekStart = date.subtract(Duration(days: date.weekday - 1));
               final dayTemplate = DateUtils.isSameDay(currentWeekForGrid, dateWeekStart)
-                  ? state.mealsFor(const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][date.weekday - 1])
+                  ? state.mealsFor(weekdays[date.weekday - 1])
                   : const [];
               final count = datedForDay.length + dayTemplate.where((template) => !datedForDay.any((dated) => dated.slot == template.slot)).length;
               final isSelected = DateUtils.isSameDay(date, _selected);
