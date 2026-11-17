@@ -3,6 +3,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:testapp_3/app/app.dart';
 
 void main() {
+  testWidgets('opens expanded cuisine and cooking-time filters in a bottom sheet', (tester) async {
+    await tester.pumpWidget(const RecipePlannerApp());
+    await tester.tap(find.text('Recipes'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('open-recipe-filters')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Recipe filters'), findsOneWidget);
+    expect(find.byKey(const Key('cuisine-option-north_indian')), findsOneWidget);
+    expect(find.byKey(const Key('cuisine-option-south_indian')), findsOneWidget);
+    expect(find.byKey(const Key('cuisine-option-chinese')), findsOneWidget);
+    expect(find.text('Total cooking time'), findsOneWidget);
+    expect(find.byType(RangeSlider), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('cuisine-option-italian')));
+    await tester.tap(find.text('Show recipes'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lemon ricotta pasta'), findsOneWidget);
+    expect(find.text('Gujarati dhokla'), findsNothing);
+  });
+
   testWidgets('shows the Gather recipe planner home', (tester) async {
     await tester.pumpWidget(const RecipePlannerApp());
 
