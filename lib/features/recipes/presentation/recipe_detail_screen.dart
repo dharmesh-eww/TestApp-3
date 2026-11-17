@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:testapp_3/core/navigation/animated_page_route.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
+import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 import 'package:testapp_3/features/recipes/domain/ingredient_substitution_service.dart';
 import 'package:testapp_3/features/recipes/presentation/custom_recipe_editor_screen.dart';
 import 'package:testapp_3/features/cooking/presentation/cooking_mode_screen.dart';
@@ -73,6 +74,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       _loadedNote = true;
     }
     final rating = state.recipeRatings[recipe.id] ?? 0;
+    final allergyBlocked = RecipeCatalog.search([recipe], allergies: state.allergies).isEmpty;
     return Scaffold(
       body: CustomScrollView(slivers: [
         SliverAppBar(
@@ -124,6 +126,14 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             Text(recipe.title, style: Theme.of(context).textTheme.headlineLarge),
             const SizedBox(height: 8),
             Text(recipe.subtitle, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme.muted)),
+            if (allergyBlocked) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: Colors.red.withOpacity(.08), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.red.withOpacity(.3))),
+                child: Text(appStrings(context).label('Blocked by your allergy settings or missing verified allergen data. Do not prepare this recipe until you have checked every ingredient.', 'تم حظر الوصفة بسبب إعدادات الحساسية أو نقص بيانات مسببات الحساسية الموثقة. لا تحضّر هذه الوصفة قبل التحقق من جميع المكونات.'), style: const TextStyle(color: Colors.red)),
+              ),
+            ],
             const SizedBox(height: 18),
             Row(children: [
               _MetaPill(icon: Icons.schedule, text: '${recipe.minutes} min'),
@@ -202,14 +212,14 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               width: double.infinity,
               child: OutlinedButton.icon(
                 key: const Key('schedule-recipe-button'),
-                onPressed: () => showRecipeScheduleDialog(context, recipe, servings),
+                onPressed: allergyBlocked ? null : () => showRecipeScheduleDialog(context, recipe, servings),
                 icon: const Icon(Icons.event_available_outlined),
                 label: Text(appStrings(context).label('Plan this recipe', 'خطط لهذه الوصفة')),
               ),
             ),
             const SizedBox(height: 10),
             SizedBox(width: double.infinity, child: OutlinedButton.icon(
-              onPressed: () {
+              onPressed: allergyBlocked ? null : () {
                 state.addIngredients(recipe, servings);
                 PlannerScope.refresh(context);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Ingredients added to your grocery list', 'تمت إضافة المكونات إلى قائمة المشتريات'))));
@@ -221,7 +231,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               width: double.infinity,
               child: FilledButton.icon(
                 key: const Key('start-cooking-button'),
-                onPressed: () {
+                onPressed: allergyBlocked ? null : () {
                   PlannerScope.cookingOf(context).setServings(recipe.id, servings);
                   Navigator.push(
                     context,
