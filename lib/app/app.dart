@@ -12,7 +12,6 @@ import '../data/local/planner_repository.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/recipes/presentation/discover_screen.dart';
-import '../features/recipes/presentation/recipe_detail_screen.dart';
 import '../features/planning/presentation/plan_screen.dart';
 import '../features/groceries/presentation/grocery_screen.dart';
 import '../features/kitchen/presentation/kitchen_home_screen.dart';
