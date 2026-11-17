@@ -113,7 +113,7 @@ class PlannerState {
     return state;
   }
 
-  /// Reads v1-v5 snapshots. The next save always writes v5.
+  /// Reads v1-v6 snapshots. The next save writes schema v6.
   void restoreFromJson(Map<String, dynamic> json) {
     favorites.clear();
     mealPlan.clear();
@@ -415,6 +415,7 @@ class PlannerState {
     recipeNotes.clear();
     groceryPrices.clear();
     groceryStores.clear();
+    mealPrepChecks.clear();
     groceryBudget = null;
     dailyCalorieTarget = 2000;
     dailyProteinTargetGrams = 100;
