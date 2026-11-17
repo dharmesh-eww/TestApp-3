@@ -9,7 +9,7 @@ class GatherHomeWidgetService {
 
   static const androidWidgetName = 'GatherMealWidgetProvider';
 
-  static Future<void> sync(PlannerState state, Iterable<Recipe> catalog) async {
+  static Future<bool> sync(PlannerState state, Iterable<Recipe> catalog) async {
     final now = DateTime.now();
     final key = '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     final datedMeals = state.mealsFor(key);
@@ -36,8 +36,10 @@ class GatherHomeWidgetService {
         lines.isEmpty ? 'No meals planned yet. Open Gather to plan your day.' : lines.join('\n'),
       );
       await HomeWidget.updateWidget(androidName: androidWidgetName);
+      return true;
     } catch (error) {
       debugPrint('Gather home widget update skipped: $error');
+      return false;
     }
   }
 }
