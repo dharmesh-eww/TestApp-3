@@ -6,7 +6,7 @@ import 'package:testapp_3/core/navigation/animated_page_route.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
 import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
-import 'package:testapp_3/features/kitchen/presentation/kitchen_tools_screen.dart';
+import 'package:testapp_3/features/kitchen/presentation/ingredient_finder_screen.dart';
 import 'package:testapp_3/features/recipes/presentation/recipe_detail_screen.dart';
 import 'package:testapp_3/app/app_widgets.dart';
 
