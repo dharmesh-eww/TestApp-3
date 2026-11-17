@@ -31,7 +31,7 @@ class AppLocalizations {
         'Change language': 'भाषा बदलें', 'Language': 'भाषा',
         'Settings': 'सेटिंग्स', 'CHOOSE YOUR LANGUAGE': 'अपनी भाषा चुनें',
         'YOUR LITTLE COOKBOOK': 'आपकी छोटी रेसिपी किताब',
-        'Your kitchen,\\nyour rhythm.': 'आपकी रसोई,\\nआपकी लय।',
+        'Your kitchen,\nyour rhythm.': 'आपकी रसोई,\\nआपकी लय।',
         'Collections': 'संग्रह', 'Cooking history': 'पकाने का इतिहास',
         'Recently viewed': 'हाल ही में देखे गए', 'Your saved recipes': 'आपकी सहेजी गई रेसिपी',
         'Saved recipes': 'सहेजी गई रेसिपी', 'Meals planned': 'नियोजित भोजन',
@@ -59,7 +59,7 @@ class AppLocalizations {
         'Change language': 'ભાષા બદલો', 'Language': 'ભાષા',
         'Settings': 'સેટિંગ્સ', 'CHOOSE YOUR LANGUAGE': 'તમારી ભાષા પસંદ કરો',
         'YOUR LITTLE COOKBOOK': 'તમારી નાની રસોઈપોથી',
-        'Your kitchen,\\nyour rhythm.': 'તમારું રસોડું,\\nતમારી લય.',
+        'Your kitchen,\nyour rhythm.': 'તમારું રસોડું,\\nતમારી લય.',
         'Collections': 'સંગ્રહો', 'Cooking history': 'રસોઈનો ઇતિહાસ',
         'Recently viewed': 'તાજેતરમાં જોયેલી', 'Your saved recipes': 'તમારી સાચવેલી વાનગીઓ',
         'Saved recipes': 'સાચવેલી વાનગીઓ', 'Meals planned': 'આયોજિત ભોજન',
@@ -137,9 +137,9 @@ class AppLocalizations {
         "Made for your week": "今週のおすすめ",
         "A few good ideas": "おすすめレシピ",
         "Search recipes or ingredients": "レシピや材料を検索",
-        "Find your next\\nfavourite.": "次のお気に入りを\\n見つけましょう。",
+        "Find your next\nfavourite.": "次のお気に入りを\\n見つけましょう。",
         "Nothing on this shelf": "レシピがありません",
-        "Your meal\\nplanner.": "あなたの\\n献立プランナー。",
+        "Your meal\nplanner.": "あなたの\\n献立プランナー。",
         "Ingredients added to your grocery list": "材料を買い物リストに追加しました",
         "Recipe copied to clipboard.": "レシピをコピーしました。",
         "View recipe": "レシピを見る",
@@ -414,7 +414,8 @@ class AppLocalizations {
   }
 
   String weekday(String day) {
-    if (isHindi) return const {'Monday':'सोमवार','Tuesday':'मंगलवार','Wednesday':'बुधवार','Thursday':'गुरुवार','Friday':'शुक्रवार','Saturday':'शनिवार','Sunday':'रविवार'}[day] ?? day;\n    if (isGujarati) return const {'Monday':'સોમવાર','Tuesday':'મંગળવાર','Wednesday':'બુધવાર','Thursday':'ગુરુવાર','Friday':'શુક્રવાર','Saturday':'શનિવાર','Sunday':'રવિવાર'}[day] ?? day;
+    if (isHindi) return const {'Monday':'सोमवार','Tuesday':'मंगलवार','Wednesday':'बुधवार','Thursday':'गुरुवार','Friday':'शुक्रवार','Saturday':'शनिवार','Sunday':'रविवार'}[day] ?? day;
+    if (isGujarati) return const {'Monday':'સોમવાર','Tuesday':'મંગળવાર','Wednesday':'બુધવાર','Thursday':'ગુરુવાર','Friday':'શુક્રવાર','Saturday':'શનિવાર','Sunday':'રવિવાર'}[day] ?? day;
     if (isJapanese) return const {'Monday':'月曜日','Tuesday':'火曜日','Wednesday':'水曜日','Thursday':'木曜日','Friday':'金曜日','Saturday':'土曜日','Sunday':'日曜日'}[day] ?? day;
     if (isPortuguese) return const {'Monday':'segunda-feira','Tuesday':'terça-feira','Wednesday':'quarta-feira','Thursday':'quinta-feira','Friday':'sexta-feira','Saturday':'sábado','Sunday':'domingo'}[day] ?? day;
     if (isIndonesian) return const {'Monday':'Senin','Tuesday':'Selasa','Wednesday':'Rabu','Thursday':'Kamis','Friday':'Jumat','Saturday':'Sabtu','Sunday':'Minggu'}[day] ?? day;
@@ -434,7 +435,8 @@ class AppLocalizations {
   }
 
   String weekdayShort(String day) {
-    if (isHindi) return const {'Monday':'सो','Tuesday':'मं','Wednesday':'बु','Thursday':'गु','Friday':'शु','Saturday':'श','Sunday':'र'}[day] ?? day.substring(0, 1);\n    if (isGujarati) return const {'Monday':'સો','Tuesday':'મં','Wednesday':'બુ','Thursday':'ગુ','Friday':'શુ','Saturday':'શ','Sunday':'ર'}[day] ?? day.substring(0, 1);
+    if (isHindi) return const {'Monday':'सो','Tuesday':'मं','Wednesday':'बु','Thursday':'गु','Friday':'शु','Saturday':'श','Sunday':'र'}[day] ?? day.substring(0, 1);
+    if (isGujarati) return const {'Monday':'સો','Tuesday':'મં','Wednesday':'બુ','Thursday':'ગુ','Friday':'શુ','Saturday':'શ','Sunday':'ર'}[day] ?? day.substring(0, 1);
     if (isJapanese) return const {'Monday':'月','Tuesday':'火','Wednesday':'水','Thursday':'木','Friday':'金','Saturday':'土','Sunday':'日'}[day] ?? day.substring(0, 1);
     if (isPortuguese || isIndonesian || isSpanish) return weekday(day).substring(0, 2);
     if (isChinese) return weekday(day).substring(2);
@@ -534,7 +536,9 @@ class AppLocalizations {
   String get weekDescription => isArabic ? 'سبعة أيام وأربع وجبات يومياً. خطط أسبوعك بطريقتك.' : 'Seven days, four gentle prompts a day. Make the week your own.';
 
   String category(String id, String fallback) {
-    if (isHindi) return const {'all':'सभी व्यंजन','breakfast':'नाश्ता','lunch':'दोपहर का भोजन','dinner':'रात का भोजन','snacks':'हल्के नाश्ते'}[id] ?? fallback;\n    if (isGujarati) return const {'all':'બધી વાનગીઓ','breakfast':'નાસ્તો','lunch':'બપોરનું ભોજન','dinner':'રાત્રિભોજન','snacks':'હળવો નાસ્તો'}[id] ?? fallback;\n    final extra = <String, Map<String, String>>{
+    if (isHindi) return const {'all':'सभी व्यंजन','breakfast':'नाश्ता','lunch':'दोपहर का भोजन','dinner':'रात का भोजन','snacks':'हल्के नाश्ते'}[id] ?? fallback;
+    if (isGujarati) return const {'all':'બધી વાનગીઓ','breakfast':'નાસ્તો','lunch':'બપોરનું ભોજન','dinner':'રાત્રિભોજન','snacks':'હળવો નાસ્તો'}[id] ?? fallback;
+    final extra = <String, Map<String, String>>{
       'ja': {'all':'すべて','breakfast':'朝食','lunch':'昼食','dinner':'夕食','snacks':'軽食'},
       'pt': {'all':'Todas','breakfast':'Café da manhã','lunch':'Almoço','dinner':'Jantar','snacks':'Lanches'},
       'id': {'all':'Semua','breakfast':'Sarapan','lunch':'Makan siang','dinner':'Makan malam','snacks':'Camilan'},
