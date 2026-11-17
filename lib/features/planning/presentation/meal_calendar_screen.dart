@@ -30,7 +30,15 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
     final lastMonth = DateTime(DateTime.now().year, DateTime.now().month, 1);
     final maxMonth = DateTime(DateTime.now().year, DateTime.now().month + 3, 1);
     final selectedKey = _key(_selected);
-    final meals = state.mealsFor(selectedKey);
+    final datedMeals = state.mealsFor(selectedKey);
+    final today = DateUtils.dateOnly(DateTime.now());
+    final currentWeekStart = today.subtract(Duration(days: today.weekday - 1));
+    final selectedWeekStart = _selected.subtract(Duration(days: _selected.weekday - 1));
+    final weekdays = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    final mealPlanKey = datedMeals.isNotEmpty || !DateUtils.isSameDay(currentWeekStart, selectedWeekStart)
+        ? selectedKey
+        : weekdays[_selected.weekday - 1];
+    final meals = state.mealsFor(mealPlanKey);
     final prepIngredients = <String, String>{};
     for (final meal in meals) {
       final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
@@ -109,7 +117,7 @@ class _MealCalendarScreenState extends State<MealCalendarScreen> {
                 trailing: meals.any((item) => item.slot == slot)
                     ? IconButton(
                         tooltip: appStrings(context).label('Remove meal', 'إزالة الوجبة'),
-                        onPressed: () { state.removeMeal(selectedKey, slot); PlannerScope.refresh(context); },
+                        onPressed: () { state.removeMeal(mealPlanKey, slot); PlannerScope.refresh(context); },
                         icon: const Icon(Icons.close),
                       )
                     : IconButton(
