@@ -126,7 +126,7 @@ class SmartReminderService {
       final meals = state.mealPlan[day]!.values.toList()..sort((a, b) => a.slot.name.compareTo(b.slot.name));
       for (final meal in meals) {
         final recipe = recipesById[meal.recipeId];
-        final allergens = recipe?.verifiedAllergens.toList()..sort();
+        final allergens = recipe == null ? const <String>[] : (recipe.verifiedAllergens.toList()..sort());
         buffer.write('|$day:${meal.slot.name}:${meal.recipeId}:${recipe?.title ?? ''}:${recipe?.allergensVerified ?? false}:$allergens');
       }
     }
