@@ -12,9 +12,13 @@ class GatherHomeWidgetService {
   static Future<void> sync(PlannerState state, Iterable<Recipe> catalog) async {
     final now = DateTime.now();
     final key = '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final meals = state.mealsFor(key).isNotEmpty
-        ? state.mealsFor(key)
-        : state.mealsFor(const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][now.weekday - 1]);
+    final datedMeals = state.mealsFor(key);
+    final weekdayKey = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][now.weekday - 1];
+    final templateMeals = state.mealsFor(weekdayKey);
+    final meals = [
+      ...templateMeals.where((template) => !datedMeals.any((dated) => dated.slot == template.slot)),
+      ...datedMeals,
+    ];
     final recipesById = {for (final recipe in catalog) recipe.id: recipe};
     final lines = <String>[];
     for (final meal in meals) {
