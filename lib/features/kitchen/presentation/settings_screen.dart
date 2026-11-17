@@ -191,8 +191,10 @@ class SettingsScreen extends StatelessWidget {
           alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(
             onPressed: () async {
-              await GatherHomeWidgetService.sync(state, RecipeCatalogScope.of(context));
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Widget refreshed.', 'تم تحديث الأداة.'))));
+              final updated = await GatherHomeWidgetService.sync(state, RecipeCatalogScope.of(context));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(updated
+                ? appStrings(context).label('Widget refreshed.', 'تم تحديث الأداة.')
+                : appStrings(context).label('Widget is available on supported Android launchers.', 'الأداة متاحة على مشغلات أندرويد المدعومة.'))));
             },
             icon: const Icon(Icons.widgets_outlined),
             label: Text(appStrings(context).label('Refresh widget data', 'تحديث بيانات الأداة')),
