@@ -125,7 +125,9 @@ class SmartReminderService {
     for (final day in days) {
       final meals = state.mealPlan[day]!.values.toList()..sort((a, b) => a.slot.name.compareTo(b.slot.name));
       for (final meal in meals) {
-        buffer.write('|$day:${meal.slot.name}:${meal.recipeId}:${recipesById[meal.recipeId]?.title ?? ''}');
+        final recipe = recipesById[meal.recipeId];
+        final allergens = recipe?.verifiedAllergens.toList()..sort();
+        buffer.write('|$day:${meal.slot.name}:${meal.recipeId}:${recipe?.title ?? ''}:${recipe?.allergensVerified ?? false}:$allergens');
       }
     }
     final pantryIds = state.pantry.keys.toList()..sort();
