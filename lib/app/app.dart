@@ -145,7 +145,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
       cookingSession: dependencies.cookingSession,
       onChanged: _onPlannerChanged,
       child: RecipeCatalogScope(
-        recipes: _catalogRecipes,
+        recipes: [..._catalogRecipes, ...dependencies.plannerState.customRecipes.values],
         contentVersion: _contentVersion,
         onCheckForUpdates: _checkForContentUpdates,
         child: MaterialApp(
