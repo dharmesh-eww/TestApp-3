@@ -74,9 +74,19 @@ void main() {
     await tester.tap(find.byKey(const Key('open-language-selection')));
     await tester.pumpAndSettle();
     expect(find.text('CHOOSE YOUR LANGUAGE'), findsOneWidget);
-    expect(find.byKey(const Key('language-option-arabic')), findsOneWidget);
+    final englishOption = find.byKey(const Key('language-option-english'));
+    final hindiOption = find.byKey(const Key('language-option-hindi'));
+    final gujaratiOption = find.byKey(const Key('language-option-gujarati'));
+    final arabicOption = find.byKey(const Key('language-option-arabic'));
+    expect(englishOption, findsOneWidget);
+    expect(hindiOption, findsOneWidget);
+    expect(gujaratiOption, findsOneWidget);
+    expect(arabicOption, findsOneWidget);
+    expect(tester.getTopLeft(englishOption).dy, lessThan(tester.getTopLeft(hindiOption).dy));
+    expect(tester.getTopLeft(hindiOption).dy, lessThan(tester.getTopLeft(gujaratiOption).dy));
+    expect(tester.getTopLeft(gujaratiOption).dy, lessThan(tester.getTopLeft(arabicOption).dy));
 
-    await tester.tap(find.byKey(const Key('language-option-arabic')));
+    await tester.tap(arabicOption);
     await tester.pumpAndSettle();
 
     expect(find.text('الإعدادات'), findsOneWidget);
