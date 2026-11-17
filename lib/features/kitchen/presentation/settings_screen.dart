@@ -1,0 +1,146 @@
+import 'package:flutter/material.dart';
+import 'package:testapp_3/app/planner_scope.dart';
+import 'package:testapp_3/core/theme/app_theme.dart';
+import 'package:testapp_3/features/kitchen/presentation/language_selection_screen.dart';
+import 'package:testapp_3/localization/app_localizations.dart';
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key, required this.onLocaleChanged});
+
+  final ValueChanged<Locale> onLocaleChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = PlannerScope.of(context);
+    final currentLocale = Localizations.localeOf(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(appStrings(context).label('Settings', 'الإعدادات'))),
+      body: ListView(padding: const EdgeInsets.all(20), children: [
+        Card(
+          child: ListTile(
+            key: const Key('open-language-selection'),
+            leading: const Icon(Icons.language),
+            title: Text(appStrings(context).label('Language', 'اللغة')),
+            subtitle: Text(appStrings(context).languageName),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LanguageSelectionScreen(
+                  locale: currentLocale,
+                  onLocaleChanged: onLocaleChanged,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(appStrings(context).label('MEASUREMENTS', 'وحدات القياس'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: state.measurementSystem,
+          decoration: InputDecoration(labelText: appStrings(context).label('Measurement system', 'نظام القياس')),
+          items: [
+            DropdownMenuItem(value: 'metric', child: Text(appStrings(context).label('Metric (g, kg, ml, L)', 'النظام المتري (g، kg، ml، L)'))),
+            DropdownMenuItem(value: 'us', child: Text(appStrings(context).label('US customary (oz, lb, cups)', 'النظام الأمريكي (oz، lb، cups)'))),
+          ],
+          onChanged: (value) {
+            if (value == null) return;
+            state.measurementSystem = value;
+            PlannerScope.refresh(context);
+          },
+        ),
+        const SizedBox(height: 24),
+        Text(appStrings(context).label('WEEKLY PLANNER', 'مخطط الأسبوع'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<int>(
+          value: state.weekStartsOn,
+          decoration: InputDecoration(labelText: appStrings(context).label('First day of week', 'أول يوم في الأسبوع')),
+          items: [
+            DropdownMenuItem(value: 1, child: Text(appStrings(context).label('Monday', 'الإثنين'))),
+            DropdownMenuItem(value: 7, child: Text(appStrings(context).label('Sunday', 'الأحد'))),
+          ],
+          onChanged: (value) {
+            if (value == null) return;
+            state.weekStartsOn = value;
+            PlannerScope.refresh(context);
+          },
+        ),
+        const SizedBox(height: 24),
+        Text(appStrings(context).label('APPEARANCE', 'المظهر'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: state.themePreference,
+          decoration: InputDecoration(labelText: appStrings(context).label('Theme', 'السمة')),
+          items: [
+            DropdownMenuItem(value: 'system', child: Text(appStrings(context).label('Use device setting', 'استخدام إعداد الجهاز'))),
+            DropdownMenuItem(value: 'light', child: Text(appStrings(context).label('Light', 'فاتح'))),
+            DropdownMenuItem(value: 'dark', child: Text(appStrings(context).label('Dark', 'داكن'))),
+          ],
+          onChanged: (value) { if (value == null) return; state.themePreference = value; PlannerScope.refresh(context); },
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(appStrings(context).label('Reduce motion', 'تقليل الحركة')),
+          subtitle: Text(appStrings(context).label('Use simpler transitions throughout the app.', 'استخدام انتقالات أبسط في التطبيق.')),
+          value: state.reduceMotion,
+          onChanged: (value) { state.reduceMotion = value; PlannerScope.refresh(context); },
+        ),
+        const SizedBox(height: 24),
+        Text(appStrings(context).label('PERSONAL DISCOVERY', 'اكتشاف مخصص'), style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        const SizedBox(height: 8),
+        Text(appStrings(context).label('Prefer recipes with these dietary tags. Discover will apply every selected tag.', 'فضّل الوصفات التي تحمل هذه التصنيفات الغذائية. سيطبق قسم الاكتشاف جميع التصنيفات المحددة.'), style: TextStyle(color: AppTheme.muted)),
+        for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
+          CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(appStrings(context).dietaryTag(option.key)), value: state.preferredDietaryTags.contains(option.key),
+            onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
+        const SizedBox(height: 12),
+        Text(appStrings(context).label('Preferred cuisines', 'المطابخ المفضلة'), style: Theme.of(context).textTheme.titleMedium),
+        Text(appStrings(context).label('Discover will prioritize recipes from the cuisines you select.', 'سيعرض قسم الاكتشاف الوصفات من المطابخ التي تختارها.'), style: TextStyle(color: AppTheme.muted)),
+        for (final option in const {
+          'indian': 'Indian', 'north_indian': 'North Indian', 'south_indian': 'South Indian',
+          'gujarati': 'Gujarati', 'chinese': 'Chinese', 'japanese': 'Japanese',
+          'italian': 'Italian', 'korean': 'Korean', 'mexican': 'Mexican',
+          'american': 'American', 'thai': 'Thai', 'mediterranean': 'Mediterranean',
+          'vietnamese': 'Vietnamese', 'greek': 'Greek', 'french': 'French',
+          'spanish': 'Spanish', 'middle_eastern': 'Middle Eastern',
+        }.entries)
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(appStrings(context).label(option.value, option.value)),
+            value: state.preferredCuisines.contains(option.key),
+            onChanged: (selected) {
+              if (selected == true) {
+                state.preferredCuisines.add(option.key);
+              } else {
+                state.preferredCuisines.remove(option.key);
+              }
+              PlannerScope.refresh(context);
+            },
+          ),
+        const SizedBox(height: 16),
+        Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.'), style: TextStyle(color: AppTheme.muted)),
+        const SizedBox(height: 28),
+        Text(appStrings(context).label('LOCAL DATA', 'البيانات المحلية'), style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppTheme.terracotta, letterSpacing: 1.2)),
+        const SizedBox(height: 8),
+        Text(appStrings(context).label('Favorites, meal plans, groceries, pantry, collections, history and preferences are stored on this device. Resetting clears personal data but keeps the downloaded recipe library.', 'تُخزّن المفضلة وخطط الوجبات والمشتريات والمخزن والمجموعات والسجل والتفضيلات على هذا الجهاز. يؤدي إعادة الضبط إلى مسح بياناتك الشخصية مع الاحتفاظ بمكتبة الوصفات التي تم تنزيلها.'), style: TextStyle(color: AppTheme.muted)),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(key: const Key('reset-local-data'), style: OutlinedButton.styleFrom(foregroundColor: Colors.red), icon: Icon(Icons.delete_outline), label: Text(appStrings(context).label('Reset personal data', 'إعادة ضبط البيانات الشخصية')),
+          onPressed: () async {
+            final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
+              title: Text(appStrings(context).label('Reset personal data?', 'هل تريد إعادة ضبط البيانات الشخصية؟')),
+              content: Text(appStrings(context).label('Favorites, meal plans, groceries, pantry, collections, history and preferences will be cleared from this device. Your recipe catalog stays available.', 'سيتم مسح المفضلة وخطط الوجبات والمشتريات والمخزن والمجموعات والسجل والتفضيلات من هذا الجهاز. ستظل مكتبة الوصفات متاحة.')),
+              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Reset data', 'إعادة ضبط البيانات')))],
+            ));
+            if (confirmed != true || !context.mounted) return;
+            state.clearPersonalData();
+            PlannerScope.cookingOf(context).clearSession();
+            PlannerScope.refresh(context);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Personal data cleared from this device.', 'تم مسح البيانات الشخصية من هذا الجهاز.'))));
+          }),
+      ]),
+    );
+  }
+}
