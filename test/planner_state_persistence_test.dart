@@ -55,7 +55,7 @@ void main() {
   test('legacy v1 snapshots remain readable after the v3 schema migration', () {
     final restored = PlannerState.fromJson({'schema_version': 1, 'favorites': ['legacy-recipe']});
     expect(restored.isFavorite('legacy-recipe'), isTrue);
-    expect(restored.toJson()['schema_version'], 5);
+    expect(restored.toJson()['schema_version'], 6);
   });
 
   test('unsupported snapshots restore as an empty safe state', () {
