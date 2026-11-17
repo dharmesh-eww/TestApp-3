@@ -117,6 +117,7 @@ void main() {
     await tester.tap(find.byKey(const Key('confirm-recipe-schedule')));
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(find.textContaining('Dinner · Lemon ricotta pasta'), 250);
     expect(find.textContaining('Dinner · Lemon ricotta pasta'), findsOneWidget);
     expect(find.textContaining('Added 1 date(s)'), findsOneWidget);
   });
