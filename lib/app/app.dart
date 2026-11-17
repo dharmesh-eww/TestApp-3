@@ -822,7 +822,7 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
           SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
             for (final category in categories)
               Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: ChoiceChip(
-                label: Text(category == 'all' ? appStrings(context).label('All', 'الكل') : appStrings(context).category(category)),
+                label: Text(category == 'all' ? appStrings(context).label('All', 'الكل') : appStrings(context).category(category, category == 'snacks' ? 'Snacks' : category[0].toUpperCase() + category.substring(1))),
                 selected: _category == category, onSelected: (_) => setState(() => _category = category),
                 selectedColor: AppTheme.terracotta.withOpacity(.16),
                 side: BorderSide(color: _category == category ? AppTheme.terracotta : AppTheme.line),
