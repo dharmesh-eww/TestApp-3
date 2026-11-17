@@ -22,29 +22,53 @@ class SmartReminderService {
     final recipesById = {for (final recipe in catalog) recipe.id: recipe};
 
     if (state.mealRemindersEnabled) {
+      const weekdayNumbers = {
+        'Monday': DateTime.monday, 'Tuesday': DateTime.tuesday,
+        'Wednesday': DateTime.wednesday, 'Thursday': DateTime.thursday,
+        'Friday': DateTime.friday, 'Saturday': DateTime.saturday,
+        'Sunday': DateTime.sunday,
+      };
       for (final entry in state.mealPlan.entries) {
-        final date = DateTime.tryParse(entry.key);
-        if (date == null) continue; // Ignore legacy weekday-only planner entries.
-        for (final meal in entry.value.values) {
-          final recipe = recipesById[meal.recipeId];
-          if (recipe == null) continue;
-          final time = switch (meal.slot.name) {
-            'breakfast' => (hour: 8, minute: 0),
-            'lunch' => (hour: 12, minute: 0),
-            'snack' => (hour: 15, minute: 0),
-            _ => (hour: 18, minute: 0),
-          };
-          final plannedAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
-          final fireAt = plannedAt.subtract(Duration(minutes: state.mealReminderMinutes));
-          if (!fireAt.isAfter(now) || fireAt.isAfter(end)) continue;
-          final key = 'meal:${entry.key}:${meal.slot.name}:${meal.recipeId}';
-          await CookingAssistService.scheduleTimerNotification(
-            id: key,
-            title: 'Meal coming up',
-            body: '${recipe.title} is planned for ${meal.slot.name}.',
-            fireAt: fireAt,
-          );
-          state.activeReminderKeys.add(key);
+        final parsedDate = DateTime.tryParse(entry.key);
+        final occurrences = <DateTime>[];
+        if (parsedDate != null) {
+          occurrences.add(parsedDate);
+        } else {
+          final weekday = weekdayNumbers[entry.key];
+          if (weekday == null) continue;
+          var date = DateTime(now.year, now.month, now.day);
+          while (date.weekday != weekday) {
+            date = date.add(const Duration(days: 1));
+          }
+          occurrences.add(date);
+          while (occurrences.last.add(const Duration(days: 7)).isBefore(end)) {
+            occurrences.add(occurrences.last.add(const Duration(days: 7)));
+          }
+        }
+
+        for (final date in occurrences) {
+          for (final meal in entry.value.values) {
+            final recipe = recipesById[meal.recipeId];
+            if (recipe == null) continue;
+            final time = switch (meal.slot.name) {
+              'breakfast' => (hour: 8, minute: 0),
+              'lunch' => (hour: 12, minute: 0),
+              'snack' => (hour: 15, minute: 0),
+              _ => (hour: 18, minute: 0),
+            };
+            final plannedAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+            final fireAt = plannedAt.subtract(Duration(minutes: state.mealReminderMinutes));
+            if (!fireAt.isAfter(now) || fireAt.isAfter(end)) continue;
+            final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+            final key = 'meal:$dateKey:${meal.slot.name}:${meal.recipeId}';
+            await CookingAssistService.scheduleTimerNotification(
+              id: key,
+              title: 'Meal coming up',
+              body: '${recipe.title} is planned for ${meal.slot.name}.',
+              fireAt: fireAt,
+            );
+            state.activeReminderKeys.add(key);
+          }
         }
       }
     }
