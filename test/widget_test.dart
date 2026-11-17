@@ -93,6 +93,7 @@ void main() {
       expect(tester.getTopLeft(orderedOptions[i]).dy, lessThan(tester.getTopLeft(orderedOptions[i + 1]).dy));
     }
 
+    await tester.ensureVisible(japaneseOption);
     await tester.tap(japaneseOption);
     await tester.pumpAndSettle();
 
