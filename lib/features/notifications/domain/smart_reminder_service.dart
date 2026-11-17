@@ -37,14 +37,9 @@ class SmartReminderService {
         } else {
           final weekday = weekdayNumbers[entry.key];
           if (weekday == null) continue;
-          var date = DateTime(now.year, now.month, now.day);
-          while (date.weekday != weekday) {
-            date = date.add(const Duration(days: 1));
-          }
-          occurrences.add(date);
-          while (occurrences.last.add(const Duration(days: 7)).isBefore(mealEnd)) {
-            occurrences.add(occurrences.last.add(const Duration(days: 7)));
-          }
+          final today = DateTime(now.year, now.month, now.day);
+          final weekStart = today.subtract(Duration(days: today.weekday - 1));
+          occurrences.add(weekStart.add(Duration(days: weekday - 1)));
         }
 
         for (final date in occurrences) {
