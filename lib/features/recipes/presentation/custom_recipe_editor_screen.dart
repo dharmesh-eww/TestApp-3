@@ -43,7 +43,7 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
     _carbs = TextEditingController(text: '${recipe?.carbsGrams ?? 0}');
     _fat = TextEditingController(text: '${recipe?.fatGrams ?? 0}');
     _ingredients = TextEditingController(text: recipe == null ? '' : recipe.ingredients.map((item) => '${item.name}|${item.amount ?? ''}|${item.unit}').join('\n'));
-    _steps = TextEditingController(text: recipe?.steps.join('\n') ?? '');
+    _steps = TextEditingController(text: recipe == null ? '' : recipe.instructions.map((step) => [step.text, step.durationMinutes?.toString() ?? '', if (step.image != null) step.image!].join(' | ')).join('\n'));
     if (recipe != null) {
       _allergens.addAll(recipe.verifiedAllergens);
       _allergensReviewed = recipe.allergensVerified;
