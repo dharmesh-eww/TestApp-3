@@ -68,7 +68,7 @@ class Recipe {
   final List<String> seasons;
   final List<RecipeStep> stepDetails;
 
-  bool get hasNutritionData => proteinGrams > 0 || carbsGrams > 0 || fatGrams > 0 || (fiberGrams ?? 0) > 0 || vitamins.isNotEmpty;
+  bool get hasNutritionData => calories > 0 || proteinGrams > 0 || carbsGrams > 0 || fatGrams > 0 || (fiberGrams ?? 0) > 0 || vitamins.isNotEmpty;
 
   factory Recipe.fromJson(Map<String, dynamic> json, {String localeCode = 'en'}) {
     final prep = _asInt(json['prep_minutes'] ?? json['preparation_time_minutes'] ?? json['preparation_time']);
