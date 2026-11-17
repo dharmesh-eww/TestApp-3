@@ -433,20 +433,6 @@ class LanguageSelectionScreen extends StatelessWidget {
           ),
           Card(
             child: RadioListTile<String>(
-              key: const Key('language-option-arabic'),
-              value: 'ar',
-              groupValue: locale.languageCode,
-              title: const Text('العربية'),
-              secondary: const Text('AR'),
-              onChanged: (value) {
-                if (value == null) return;
-                onLocaleChanged(const Locale('ar'));
-                Navigator.pop(context);
-              },
-            ),
-          ),
-          Card(
-            child: RadioListTile<String>(
               key: const Key('language-option-hindi'),
               value: 'hi',
               groupValue: locale.languageCode,
@@ -469,6 +455,20 @@ class LanguageSelectionScreen extends StatelessWidget {
               onChanged: (value) {
                 if (value == null) return;
                 onLocaleChanged(const Locale('gu'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-arabic'),
+              value: 'ar',
+              groupValue: locale.languageCode,
+              title: const Text('العربية'),
+              secondary: const Text('AR'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('ar'));
                 Navigator.pop(context);
               },
             ),
