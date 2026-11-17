@@ -14,36 +14,36 @@ class RecipeYoutubeEmbed extends StatefulWidget {
 }
 
 class _RecipeYoutubeEmbedState extends State<RecipeYoutubeEmbed> {
-  late final YoutubePlayerController _controller;
-  late final bool _hasVideoId;
+  YoutubePlayerController? _controller;
 
   @override
   void initState() {
     super.initState();
     final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
-    _hasVideoId = videoId != null;
-    _controller = YoutubePlayerController(
-      initialVideoId: videoId ?? '',
-      flags: const YoutubePlayerFlags(autoPlay: false, mute: false, enableCaption: true),
-    );
+    if (videoId != null) {
+      _controller = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: const YoutubePlayerFlags(autoPlay: false, mute: false, enableCaption: true),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_hasVideoId) {
+    if (_controller == null) {
       return _VideoUnavailable(title: widget.title);
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: YoutubePlayerBuilder(
         player: YoutubePlayer(
-          controller: _controller,
+          controller: _controller!,
           aspectRatio: 16 / 9,
           showVideoProgressIndicator: true,
           progressIndicatorColor: AppTheme.terracotta,
@@ -64,28 +64,30 @@ class RecipeVideoScreen extends StatefulWidget {
 }
 
 class _RecipeVideoScreenState extends State<RecipeVideoScreen> {
-  late final YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
   late final String? _videoId;
 
   @override
   void initState() {
     super.initState();
     _videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
-    _controller = YoutubePlayerController(
-      initialVideoId: _videoId ?? '',
-      flags: const YoutubePlayerFlags(autoPlay: true, mute: false, enableCaption: true),
-    );
+    if (_videoId != null) {
+      _controller = YoutubePlayerController(
+        initialVideoId: _videoId!,
+        flags: const YoutubePlayerFlags(autoPlay: true, mute: false, enableCaption: true),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_videoId == null) {
+    if (_videoId == null || _controller == null) {
       return Scaffold(
         appBar: AppBar(title: Text(widget.recipeTitle)),
         body: _VideoUnavailable(title: widget.recipeTitle),
@@ -93,7 +95,7 @@ class _RecipeVideoScreenState extends State<RecipeVideoScreen> {
     }
     return YoutubePlayerBuilder(
       player: YoutubePlayer(
-        controller: _controller,
+        controller: _controller!,
         aspectRatio: 16 / 9,
         showVideoProgressIndicator: true,
         progressIndicatorColor: AppTheme.terracotta,
