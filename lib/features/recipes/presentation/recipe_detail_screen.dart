@@ -153,9 +153,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             if (recipe.proteinGrams > 0 || recipe.carbsGrams > 0 || recipe.fatGrams > 0) ...[
               const SizedBox(height: 10),
               Wrap(spacing: 8, runSpacing: 6, children: [
-                _MetaPill(icon: Icons.fitness_center, text: 'P ${recipe.proteinGrams.round()} g'),
-                _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
-                _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
+                if (recipe.proteinGrams > 0) _MetaPill(icon: Icons.fitness_center, text: 'P ${recipe.proteinGrams.round()} g'),
+                if (recipe.carbsGrams > 0) _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
+                if (recipe.fatGrams > 0) _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
               ]),
             ],
             if (recipe.fiberGrams != null || recipe.vitamins.isNotEmpty || recipe.healthBenefits.isNotEmpty || recipe.seasons.isNotEmpty) ...[
