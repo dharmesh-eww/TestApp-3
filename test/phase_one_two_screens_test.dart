@@ -12,6 +12,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Meal calendar'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Prep ahead'), 250);
     expect(find.text('Prep ahead'), findsOneWidget);
     expect(find.text('Nothing planned'), findsWidgets);
   });
