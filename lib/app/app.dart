@@ -144,7 +144,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
             _ => ThemeMode.system,
           },
           locale: _locale,
-          supportedLocales: const [Locale('en'), Locale('ar')],
+          supportedLocales: const [Locale('en'), Locale('ar'), Locale('hi'), Locale('gu')],
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
