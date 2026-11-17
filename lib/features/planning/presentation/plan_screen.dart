@@ -378,6 +378,7 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
     final catalog = RecipeCatalogScope.of(context);
     final filtered = RecipeCatalog.search(catalog, query: _search.text, categoryId: _category,
       cuisineId: _cuisine, difficulty: _difficulty,
+      allergies: PlannerScope.of(context).allergies,
       foodType: _foodType == 'all' ? null : FoodType.values.firstWhere((value) => value.name == _foodType));
     final categories = ['all', 'breakfast', 'lunch', 'dinner', 'snacks'];
     final activeFilters = (_difficulty != 'all' ? 1 : 0) + (_foodType != 'all' ? 1 : 0) + (_cuisine != 'all' ? 1 : 0);
