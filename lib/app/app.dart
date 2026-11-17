@@ -757,61 +757,155 @@ class _PlanScreenState extends State<PlanScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: AppTheme.paper,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                appStrings(sheetContext).label('Plan ${slot.label.toLowerCase()}', 'خطط ${appStrings(sheetContext).mealSlot(slot.name)}'),
-                style: Theme.of(sheetContext).textTheme.headlineMedium,
-              ),
-              Text(
-                '${appStrings(sheetContext).weekday(day)} · ${appStrings(sheetContext).label('Choose a recipe', 'اختر وصفة')}',
-                style: TextStyle(color: AppTheme.muted),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: MediaQuery.of(sheetContext).size.height * .52,
-                child: ListView(
-                  children: RecipeCatalogScope.of(sheetContext).map((recipe) {
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(recipe.title),
-                      subtitle: Text(
-                        '${recipe.minutes} min · ${recipe.category} · serves ${recipe.servings}',
-                      ),
-                      trailing: Icon(
-                        Icons.add_circle_outline,
-                        color: AppTheme.terracotta,
-                      ),
-                      onTap: () {
-                        PlannerScope.of(context).assignMeal(
-                          day: day,
-                          slot: slot,
-                          recipeId: recipe.id,
-                          servings: recipe.servings,
-                        );
-                        PlannerScope.refresh(context);
-                        Navigator.pop(sheetContext);
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
-          ),
-        ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (_) => _PlanRecipePicker(
+        day: day,
+        slot: slot,
+        onSelected: (recipe) {
+          PlannerScope.of(context).assignMeal(day: day, slot: slot, recipeId: recipe.id, servings: recipe.servings);
+          PlannerScope.refresh(context);
+        },
       ),
     );
   }
 }
+class _PlanRecipePicker extends StatefulWidget {
+  const _PlanRecipePicker({required this.day, required this.slot, required this.onSelected});
+  final String day;
+  final MealSlot slot;
+  final ValueChanged<Recipe> onSelected;
+  @override
+  State<_PlanRecipePicker> createState() => _PlanRecipePickerState();
+}
+
+class _PlanRecipePickerState extends State<_PlanRecipePicker> {
+  final TextEditingController _search = TextEditingController();
+  String _category = 'all', _difficulty = 'all', _foodType = 'all', _cuisine = 'all';
+  @override
+  void dispose() { _search.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    final catalog = RecipeCatalogScope.of(context);
+    final filtered = RecipeCatalog.search(catalog, query: _search.text, categoryId: _category,
+      cuisineId: _cuisine, difficulty: _difficulty,
+      foodType: _foodType == 'all' ? null : FoodType.values.firstWhere((value) => value.name == _foodType));
+    final categories = ['all', 'breakfast', 'lunch', 'dinner', 'snacks'];
+    final activeFilters = (_difficulty != 'all' ? 1 : 0) + (_foodType != 'all' ? 1 : 0) + (_cuisine != 'all' ? 1 : 0);
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * .88,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Center(child: Container(width: 38, height: 4, decoration: BoxDecoration(color: AppTheme.line, borderRadius: BorderRadius.circular(4)))),
+          const SizedBox(height: 16),
+          Row(children: [
+            Expanded(child: Text(appStrings(context).label('Choose a recipe', 'اختر وصفة'), style: Theme.of(context).textTheme.headlineMedium)),
+            Text('${filtered.length} ${appStrings(context).label('recipes', 'وصفات')}', style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+          ]),
+          const SizedBox(height: 4),
+          Text('${appStrings(context).weekday(widget.day)} · ${appStrings(context).mealSlot(widget.slot.name)}', style: TextStyle(color: AppTheme.muted)),
+          const SizedBox(height: 14),
+          TextField(
+            key: const Key('plan-recipe-search'), controller: _search, onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(
+              hintText: appStrings(context).label('Search recipes or ingredients', 'ابحث عن وصفات أو مكونات'),
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _search.text.isEmpty ? null : IconButton(
+                tooltip: appStrings(context).label('Clear search', 'مسح البحث'),
+                onPressed: () { _search.clear(); setState(() {}); }, icon: const Icon(Icons.close)),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
+            for (final category in categories)
+              Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: ChoiceChip(
+                label: Text(category == 'all' ? appStrings(context).label('All', 'الكل') : appStrings(context).category(category)),
+                selected: _category == category, onSelected: (_) => setState(() => _category = category),
+                selectedColor: AppTheme.terracotta.withOpacity(.16),
+                side: BorderSide(color: _category == category ? AppTheme.terracotta : AppTheme.line),
+              )),
+          ])),
+          const SizedBox(height: 8),
+          ExpansionTile(
+            tilePadding: EdgeInsets.zero, childrenPadding: const EdgeInsets.only(bottom: 8),
+            leading: const Icon(Icons.tune, color: AppTheme.olive),
+            title: Text(appStrings(context).label('Filters', 'الفلاتر')),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              if (activeFilters > 0) Text('$activeFilters active', style: TextStyle(color: AppTheme.terracotta, fontSize: 11)),
+              const Icon(Icons.expand_more),
+            ]),
+            children: [
+              Align(alignment: AlignmentDirectional.centerStart, child: Text(appStrings(context).label('Cuisine', 'نوع المطبخ'), style: Theme.of(context).textTheme.titleSmall)),
+              Wrap(spacing: 7, children: [
+                for (final option in const [('all','All'),('indian','Indian'),('italian','Italian'),('chinese','Chinese'),('mexican','Mexican'),('korean','Korean'),('american','American'),('thai','Thai'),('japanese','Japanese')])
+                  ChoiceChip(label: Text(option.$2), selected: _cuisine == option.$1, onSelected: (_) => setState(() => _cuisine = option.$1)),
+              ]),
+              const SizedBox(height: 8),
+              Align(alignment: AlignmentDirectional.centerStart, child: Text(appStrings(context).label('Food type', 'نوع الطعام'), style: Theme.of(context).textTheme.titleSmall)),
+              Wrap(spacing: 7, children: [
+                for (final option in const [('all','All'),('vegetarian','Vegetarian'),('vegan','Vegan'),('eggetarian','Eggetarian'),('nonVegetarian','Non-vegetarian'),('pescatarian','Pescatarian')])
+                  ChoiceChip(label: Text(option.$2), selected: _foodType == option.$1, onSelected: (_) => setState(() => _foodType = option.$1)),
+              ]),
+              const SizedBox(height: 8),
+              Align(alignment: AlignmentDirectional.centerStart, child: Text(appStrings(context).label('Difficulty', 'مستوى الصعوبة'), style: Theme.of(context).textTheme.titleSmall)),
+              Wrap(spacing: 7, children: [
+                for (final option in const [('all','Any'),('easy','Easy'),('medium','Medium'),('hard','Hard')])
+                  ChoiceChip(label: Text(option.$2), selected: _difficulty == option.$1, onSelected: (_) => setState(() => _difficulty = option.$1)),
+              ]),
+              Align(alignment: AlignmentDirectional.centerEnd, child: TextButton(
+                onPressed: () => setState(() { _cuisine = 'all'; _foodType = 'all'; _difficulty = 'all'; }),
+                child: Text(appStrings(context).label('Clear filters', 'مسح الفلاتر')))),
+            ],
+          ),
+          const Divider(height: 1),
+          const SizedBox(height: 8),
+          Expanded(child: filtered.isEmpty
+            ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.search_off_rounded, size: 38, color: AppTheme.olive), const SizedBox(height: 8),
+                Text(appStrings(context).label('No recipes found', 'لم يتم العثور على وصفات'), style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
+                Text(appStrings(context).label('Try another search or adjust your filters.', 'جرّب بحثًا آخر أو غيّر الفلاتر.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+              ]))
+            : ListView.separated(
+                itemCount: filtered.length, separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final recipe = filtered[index];
+                  return Material(
+                    color: AppTheme.card, borderRadius: BorderRadius.circular(15),
+                    child: InkWell(
+                      key: Key('plan-select-recipe-${recipe.id}'), borderRadius: BorderRadius.circular(15),
+                      onTap: () { widget.onSelected(recipe); Navigator.pop(context); },
+                      child: Padding(padding: const EdgeInsets.all(9), child: Row(children: [
+                        ClipRRect(borderRadius: BorderRadius.circular(11), child: CachedNetworkImage(
+                          imageUrl: recipe.image, width: 82, height: 82, fit: BoxFit.cover,
+                          placeholder: (_, __) => Container(width: 82, height: 82, color: AppTheme.line, child: const Icon(Icons.restaurant)),
+                          errorWidget: (_, __, ___) => Container(width: 82, height: 82, color: AppTheme.line, child: const Icon(Icons.restaurant)))),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(recipe.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 5),
+                          Text(recipe.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
+                          const SizedBox(height: 7),
+                          Wrap(spacing: 9, children: [
+                            Text('${recipe.minutes} min', style: TextStyle(color: AppTheme.terracotta, fontSize: 11, fontWeight: FontWeight.w700)),
+                            Text(recipe.difficulty, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
+                            Text('${recipe.servings} servings', style: TextStyle(color: AppTheme.muted, fontSize: 11)),
+                          ]),
+                        ])),
+                        const Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
+                      ])),
+                    ),
+                  );
+                },
+              )),
+        ]),
+      ),
+    );
+  }
+}
+
 class _MealSlotCard extends StatelessWidget {
   const _MealSlotCard({super.key, required this.day,required this.slot,required this.meal,required this.onAdd,required this.onRemove,required this.onMove});
   final String day;final MealSlot slot;final PlannedMeal? meal;final VoidCallback onAdd,onRemove,onMove;
