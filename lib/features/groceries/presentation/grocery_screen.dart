@@ -5,6 +5,7 @@ import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/features/planning/domain/planner_state.dart';
+import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/groceries/presentation/grocery_lists_screen.dart';
 
 class GroceryScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
       ])),
       const SizedBox(height:8),
       Card(child: ListTile(
-        leading: const Icon(Icons.payments_outlined, color: AppTheme.olive),
+        leading: Icon(Icons.payments_outlined, color: AppTheme.olive),
         title: Text(appStrings(context).label('Estimated total', 'الإجمالي التقديري')),
         subtitle: Text(state.groceryBudget == null ? appStrings(context).label('No budget set', 'لم يتم تحديد ميزانية') : appStrings(context).label('Budget: ${state.groceryBudget!.toStringAsFixed(2)}', 'الميزانية: ${state.groceryBudget!.toStringAsFixed(2)}')),
         trailing: Text(estimatedTotal.toStringAsFixed(2), style: TextStyle(fontWeight: FontWeight.w800, color: state.groceryBudget != null && estimatedTotal > state.groceryBudget! ? Colors.red : AppTheme.ink)),
