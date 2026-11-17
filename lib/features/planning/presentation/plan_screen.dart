@@ -459,6 +459,7 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
                 Text(appStrings(context).label('Try another search or adjust your filters.', 'جرّب بحثًا آخر أو غيّر الفلاتر.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
               ]))
             : ListView.separated(
+                key: const Key('plan-recipe-picker-list'),
                 itemCount: filtered.length, separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final recipe = filtered[index];
