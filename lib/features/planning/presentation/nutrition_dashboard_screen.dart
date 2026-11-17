@@ -131,7 +131,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
           else
             for (final recipe in planned)
               Card(child: ListTile(
-                leading: const Icon(Icons.restaurant_menu, color: AppTheme.olive),
+                leading: Icon(Icons.restaurant_menu, color: AppTheme.olive),
                 title: Text(recipe.title),
                 subtitle: Text('${recipe.calories} kcal · ${recipe.totalMinutes} min'),
               )),
