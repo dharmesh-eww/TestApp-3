@@ -22,10 +22,10 @@ class RecipeCatalogLoader {
   static const assetPath = 'assets/data/recipes.json';
   static const supportedSchemaVersion = 1;
 
-  static Future<RecipeCatalogDocument> load({AssetBundle? bundle}) async =>
-      decode(await (bundle ?? rootBundle).loadString(assetPath));
+  static Future<RecipeCatalogDocument> load({AssetBundle? bundle, String localeCode = 'en'}) async =>
+      decode(await (bundle ?? rootBundle).loadString(assetPath), localeCode: localeCode);
 
-  static RecipeCatalogDocument decode(String source) {
+  static RecipeCatalogDocument decode(String source, {String localeCode = 'en'}) {
     Object? decoded;
     try {
       decoded = jsonDecode(source);
@@ -81,7 +81,7 @@ class RecipeCatalogLoader {
           throw CatalogLoadException('invalid_ingredient', 'Ingredient $j in recipe "$id" needs a name.');
         }
       }
-      final recipe = Recipe.fromJson(map);
+      final recipe = Recipe.fromJson(map, localeCode: localeCode);
       if (recipe.steps.isEmpty) throw CatalogLoadException('invalid_recipe_steps', 'Recipe "$id" must contain at least one non-empty instruction.');
       recipes.add(recipe);
     }
