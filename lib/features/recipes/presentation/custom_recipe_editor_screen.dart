@@ -103,7 +103,7 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
           const SizedBox(height: 18),
           Text(strings.label('COOKING INSTRUCTIONS', 'تعليمات الطهي'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
-          TextField(controller: _steps, minLines: 4, maxLines: 10, decoration: InputDecoration(hintText: strings.label('One step per line', 'خطوة واحدة في كل سطر'))),
+          TextField(controller: _steps, minLines: 4, maxLines: 10, decoration: InputDecoration(hintText: strings.label('One step per line: instruction | timer minutes | optional image URL', 'خطوة واحدة في كل سطر: التعليمات | دقائق المؤقت | رابط صورة اختياري'))),
           const SizedBox(height: 18),
           Text(strings.label('ALLERGEN REVIEW', 'مراجعة مسببات الحساسية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800)),
           Text(strings.label('Select allergens present, then confirm you reviewed every ingredient. This is your own review, not a certified safety check.', 'حدد مسببات الحساسية الموجودة، ثم أكد أنك راجعت كل مكوّن. هذه مراجعتك الشخصية وليست فحص سلامة معتمدًا.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
@@ -152,8 +152,17 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
     final protein = double.tryParse(_protein.text.trim()) ?? 0;
     final carbs = double.tryParse(_carbs.text.trim()) ?? 0;
     final fat = double.tryParse(_fat.text.trim()) ?? 0;
-    final steps = _steps.text.split('\n').map((value) => value.trim()).where((value) => value.isNotEmpty).toList();
-    if (title.isEmpty || servings < 1 || prep < 0 || cook < 0 || calories < 0 || steps.isEmpty) {
+    final rawSteps = _steps.text.split('\n').map((value) => value.trim()).where((value) => value.isNotEmpty).toList();
+    final stepDetails = <RecipeStep>[];
+    for (var index = 0; index < rawSteps.length; index++) {
+      final parts = rawSteps[index].split('|').map((part) => part.trim()).toList();
+      final text = parts.first;
+      final duration = parts.length > 1 && parts[1].isNotEmpty ? int.tryParse(parts[1]) : null;
+      final image = parts.length > 2 && parts[2].isNotEmpty ? parts[2] : null;
+      if (text.isNotEmpty) stepDetails.add(RecipeStep(step: index + 1, text: text, durationMinutes: duration, image: image));
+    }
+    final steps = stepDetails.map((step) => step.text).toList();
+    if (title.isEmpty || servings < 1 || prep < 0 || cook < 0 || calories < 0 || protein < 0 || carbs < 0 || fat < 0 || steps.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Add a name, valid servings and at least one instruction.', 'أدخل اسمًا وعدد حصص صالحًا وتعليمات واحدة على الأقل.'))));
       return;
     }
@@ -174,6 +183,7 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
       return;
     }
     final previous = widget.recipe;
+    final category = _category.text.trim().isEmpty ? 'Other' : _category.text.trim();
     final recipe = Recipe(
       id: previous?.id ?? 'custom-${DateTime.now().microsecondsSinceEpoch}',
       title: title,
@@ -183,8 +193,8 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
       prepMinutes: prep,
       cookMinutes: cook,
       difficulty: previous?.difficulty ?? 'Easy',
-      category: _category.text.trim().isEmpty ? 'Other' : _category.text.trim(),
-      categoryIds: [_category.text.trim().toLowerCase().replaceAll(' ', '_')],
+      category: category,
+      categoryIds: [category.toLowerCase().replaceAll(' ', '_')],
       cuisineIds: previous?.cuisineIds ?? const [],
       foodType: previous?.foodType ?? FoodType.vegetarian,
       dietaryTags: previous?.dietaryTags ?? const [],
@@ -195,7 +205,7 @@ class _CustomRecipeEditorScreenState extends State<CustomRecipeEditorScreen> {
       servings: servings,
       ingredients: ingredients,
       steps: steps,
-      stepDetails: [for (var i = 0; i < steps.length; i++) RecipeStep(step: i + 1, text: steps[i])],
+      stepDetails: stepDetails,
       tags: previous?.tags ?? const [],
       isPublished: true,
       allergensVerified: _allergensReviewed,
