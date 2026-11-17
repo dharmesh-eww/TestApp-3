@@ -123,17 +123,27 @@ class CookingTimerReceiver : BroadcastReceiver() {
     @Suppress("DEPRECATION")
     override fun onReceive(context: Context, intent: Intent) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "gather_cooking_timers"
+        val channelId = "gather_smart_reminders"
         if (Build.VERSION.SDK_INT >= 26) manager.createNotificationChannel(
-            NotificationChannel(channelId, "Cooking timers", NotificationManager.IMPORTANCE_HIGH)
+            NotificationChannel(channelId, "Gather reminders", NotificationManager.IMPORTANCE_HIGH)
         )
         val notification = if (Build.VERSION.SDK_INT >= 26) android.app.Notification.Builder(context, channelId)
             else android.app.Notification.Builder(context)
-        notification.setSmallIcon(android.R.drawable.ic_popup_reminder)
-            .setContentTitle(intent.getStringExtra("title") ?: "Cooking timer finished")
-            .setContentText(intent.getStringExtra("body") ?: "Your timer is complete.")
-            .setAutoCancel(true)
         val notificationId = intent.getIntExtra("notification_id", 0)
+        notification.setSmallIcon(android.R.drawable.ic_popup_reminder)
+            .setContentTitle(intent.getStringExtra("title") ?: "Gather reminder")
+            .setContentText(intent.getStringExtra("body") ?: "You have a planned kitchen task.")
+            .setAutoCancel(true)
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+        if (launchIntent != null) {
+            val contentIntent = PendingIntent.getActivity(
+                context,
+                notificationId,
+                launchIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            notification.setContentIntent(contentIntent)
+        }
         manager.notify(notificationId, notification.build())
         context.getSharedPreferences("GatherReminderSchedules", Context.MODE_PRIVATE)
             .edit().remove(notificationId.toString()).apply()
