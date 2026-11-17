@@ -29,7 +29,7 @@ class CustomRecipesScreen extends StatelessWidget {
                 final recipe = custom[index];
                 return Card(
                   child: ListTile(
-                    leading: const CircleAvatar(backgroundColor: AppTheme.card, child: Icon(Icons.menu_book_outlined, color: AppTheme.olive)),
+                    leading: CircleAvatar(backgroundColor: AppTheme.card, child: Icon(Icons.menu_book_outlined, color: AppTheme.olive)),
                     title: Text(recipe.title),
                     subtitle: Text('${recipe.totalMinutes} min · ${recipe.ingredients.length} ingredients'),
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe))),
