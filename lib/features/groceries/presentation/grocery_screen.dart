@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:testapp_3/app/planner_scope.dart';
@@ -6,13 +7,22 @@ import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/features/planning/domain/planner_state.dart';
 import 'package:testapp_3/features/groceries/presentation/grocery_lists_screen.dart';
 
-class GroceryScreen extends StatelessWidget {
+class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
+  @override State<GroceryScreen> createState() => _GroceryScreenState();
+}
+
+class _GroceryScreenState extends State<GroceryScreen> {
+  bool _groupByStore = false;
   @override Widget build(BuildContext context){
     final state=PlannerScope.of(context),entries=state.buildGroceryList(RecipeCatalogScope.of(context));
     final checked=entries.where((item)=>item.isChecked).length;
     final grouped = <String, List<GroceryItem>>{};
-    for (final item in entries) { grouped.putIfAbsent(_groceryAisle(item.name), () => []).add(item); }
+    for (final item in entries) {
+      final group = _groupByStore ? (state.groceryStores[item.key] ?? 'No store assigned') : _groceryAisle(item.name);
+      grouped.putIfAbsent(group, () => []).add(item);
+    }
+    final estimatedTotal = entries.fold<double>(0, (sum, item) => sum + (state.groceryPrices[item.key] ?? 0));
     return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
       Text(appStrings(context).label('THE MARKET LIST', 'قائمة المشتريات'),style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
       Text(appStrings(context).label('Good things\\nto pick up.', 'أشياء جيدة\\nلشرائها.'),style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
@@ -21,8 +31,18 @@ class GroceryScreen extends StatelessWidget {
       Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
         OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:Icon(Icons.add),label:Text(appStrings(context).label('Add item', 'إضافة عنصر'))),
         OutlinedButton.icon(onPressed:()=>Navigator.push(context, MaterialPageRoute(builder: (_) => const GroceryListsScreen())),icon:Icon(Icons.list_alt),label:Text(appStrings(context).label('Shopping lists', 'قوائم التسوق'))),
+        OutlinedButton.icon(onPressed:()=>setState(()=>_groupByStore=!_groupByStore),icon:const Icon(Icons.storefront_outlined),label:Text(_groupByStore ? appStrings(context).label('Group by aisle', 'التجميع حسب القسم') : appStrings(context).label('Group by store', 'التجميع حسب المتجر'))),
+        OutlinedButton.icon(onPressed:()=>_editBudget(context),icon:const Icon(Icons.account_balance_wallet_outlined),label:Text(appStrings(context).label('Budget', 'الميزانية'))),
+        OutlinedButton.icon(onPressed:()=>_copyList(context, entries),icon:const Icon(Icons.copy_outlined),label:Text(appStrings(context).label('Copy list', 'نسخ القائمة'))),
         if(entries.any((item)=>item.isCustom && item.isChecked)) TextButton(onPressed:(){ state.clearCheckedCustomGroceryItems(); PlannerScope.refresh(context); },child:Text(appStrings(context).label('Clear checked custom items', 'مسح العناصر المخصصة المحددة'))),
       ])),
+      const SizedBox(height:8),
+      Card(child: ListTile(
+        leading: const Icon(Icons.payments_outlined, color: AppTheme.olive),
+        title: Text(appStrings(context).label('Estimated total', 'الإجمالي التقديري')),
+        subtitle: Text(state.groceryBudget == null ? appStrings(context).label('No budget set', 'لم يتم تحديد ميزانية') : appStrings(context).label('Budget: ${state.groceryBudget!.toStringAsFixed(2)}', 'الميزانية: ${state.groceryBudget!.toStringAsFixed(2)}')),
+        trailing: Text(estimatedTotal.toStringAsFixed(2), style: TextStyle(fontWeight: FontWeight.w800, color: state.groceryBudget != null && estimatedTotal > state.groceryBudget! ? Colors.red : AppTheme.ink)),
+      )),
       const SizedBox(height:12),
       if(entries.isEmpty)Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(color:AppTheme.card,borderRadius:BorderRadius.circular(18),border:Border.all(color:AppTheme.line)),child:Column(children:[Icon(Icons.shopping_basket_outlined,size:36,color:AppTheme.olive),SizedBox(height:10),Text(appStrings(context).label('Your list is waiting', 'قائمتك بانتظارك'),style:TextStyle(fontWeight:FontWeight.w700,color:AppTheme.ink)),SizedBox(height:5),Text(appStrings(context).label('Add meals to your weekly plan or add ingredients from a recipe.', 'أضف وجبات إلى خطتك الأسبوعية أو أضف مكونات من وصفة.'),textAlign:TextAlign.center,style:TextStyle(color:AppTheme.muted))]))
       else for (final aisle in grouped.entries) ...[
@@ -59,8 +79,15 @@ class GroceryScreen extends StatelessWidget {
                       : appStrings(context).label('Non-quantified · check pantry before shopping', 'كمية غير محددة · تحقق من المخزن قبل التسوق'),
                     style: TextStyle(color: AppTheme.muted, fontSize: 11),
                   ),
+                  if (state.groceryPrices[item.key] != null || state.groceryStores[item.key] != null)
+                    Text('${state.groceryPrices[item.key]?.toStringAsFixed(2) ?? '—'} · ${state.groceryStores[item.key] ?? 'No store'}', style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
                 ],
               )),
+              IconButton(
+                tooltip: appStrings(context).label('Set price and store', 'تحديد السعر والمتجر'),
+                onPressed: () => _editItemPrice(context, item),
+                icon: const Icon(Icons.price_change_outlined, size: 18, color: AppTheme.olive),
+              ),
               if (item.isCustom) IconButton(tooltip: appStrings(context).label('Remove custom grocery item', 'إزالة عنصر مخصص'), onPressed: () { state.removeCustomGroceryItem(item.key); PlannerScope.refresh(context); }, icon: Icon(Icons.close, size: 18)),
               IconButton(
                 tooltip: appStrings(context).label('Edit grocery item', 'تعديل عنصر المشتريات'),
@@ -88,6 +115,56 @@ class GroceryScreen extends StatelessWidget {
         ])),
     ]);
   }
+  Future<void> _editBudget(BuildContext context) async {
+    final controller = TextEditingController(text: PlannerScope.of(context).groceryBudget?.toString() ?? '');
+    final value = await showDialog<double?>(context: context, builder: (dialogContext) => AlertDialog(
+      title: Text(appStrings(context).label('Shopping budget', 'ميزانية التسوق')),
+      content: TextField(controller: controller, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(context).label('Budget amount', 'مبلغ الميزانية'))),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext, null), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
+        TextButton(onPressed: () => Navigator.pop(dialogContext, -1), child: Text(appStrings(context).label('Clear', 'مسح'))),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, double.tryParse(controller.text.trim())), child: Text(appStrings(context).label('Save', 'حفظ'))),
+      ],
+    ));
+    controller.dispose();
+    if (!context.mounted || value == null) return;
+    final state = PlannerScope.of(context);
+    state.groceryBudget = value < 0 ? null : value;
+    PlannerScope.refresh(context);
+  }
+
+  Future<void> _editItemPrice(BuildContext context, GroceryItem item) async {
+    final state = PlannerScope.of(context);
+    final price = TextEditingController(text: state.groceryPrices[item.key]?.toString() ?? '');
+    final store = TextEditingController(text: state.groceryStores[item.key] ?? '');
+    final saved = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
+      title: Text(appStrings(context).label('Price and store', 'السعر والمتجر')),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextField(controller: price, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(context).label('Item total price', 'السعر الإجمالي للعنصر'))),
+        TextField(controller: store, decoration: InputDecoration(labelText: appStrings(context).label('Store / shop', 'المتجر / المحل'))),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Save', 'حفظ'))),
+      ],
+    ));
+    if (saved == true && context.mounted) {
+      final parsed = price.text.trim().isEmpty ? null : double.tryParse(price.text.trim());
+      if (parsed == null || parsed >= 0) state.setGroceryPrice(item.key, parsed);
+      state.setGroceryStore(item.key, store.text);
+      PlannerScope.refresh(context);
+    }
+    price.dispose();
+    store.dispose();
+  }
+
+  Future<void> _copyList(BuildContext context, List<GroceryItem> entries) async {
+    final state = PlannerScope.of(context);
+    final lines = entries.map((item) => '- ${item.name}: ${item.isQuantified ? '${_formatAmount(item.toBuyAmount)} ${item.unit}' : 'check quantity'}${state.groceryStores[item.key] == null ? '' : ' · ${state.groceryStores[item.key]}'}').join('\n');
+    await Clipboard.setData(ClipboardData(text: 'Gather shopping list\n$lines'));
+    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Shopping list copied.', 'تم نسخ قائمة التسوق.'))));
+  }
+
   void _showCustomGroceryEditor(BuildContext context) {
     final name = TextEditingController();
     final amount = TextEditingController(text: '1');
