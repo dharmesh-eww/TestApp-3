@@ -272,14 +272,14 @@ class CookingHistoryScreen extends StatelessWidget {
 }
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key, required this.locale, required this.onLocaleChanged});
+  const SettingsScreen({super.key, required this.onLocaleChanged});
 
-  final Locale locale;
   final ValueChanged<Locale> onLocaleChanged;
 
   @override
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
+    final currentLocale = Localizations.localeOf(context);
     return Scaffold(
       appBar: AppBar(title: Text(appStrings(context).label('Settings', 'الإعدادات'))),
       body: ListView(padding: const EdgeInsets.all(20), children: [
@@ -288,13 +288,13 @@ class SettingsScreen extends StatelessWidget {
             key: const Key('open-language-selection'),
             leading: const Icon(Icons.language),
             title: Text(appStrings(context).label('Language', 'اللغة')),
-            subtitle: Text(locale.languageCode == 'ar' ? 'العربية' : 'English'),
+            subtitle: Text(currentLocale.languageCode == 'ar' ? 'العربية' : 'English'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => LanguageSelectionScreen(
-                  locale: locale,
+                  locale: currentLocale,
                   onLocaleChanged: onLocaleChanged,
                 ),
               ),
