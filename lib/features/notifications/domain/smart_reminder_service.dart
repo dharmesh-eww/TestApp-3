@@ -9,6 +9,8 @@ class SmartReminderService {
 
   static String? _lastFingerprint;
 
+  static void invalidate() => _lastFingerprint = null;
+
   static Future<void> sync(PlannerState state, Iterable<Recipe> catalog) async {
     final recipesById = {for (final recipe in catalog) recipe.id: recipe};
     final fingerprint = _fingerprint(state, recipesById);
