@@ -52,7 +52,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
             Expanded(child: Text(strings.label('Planned nutrition', 'التغذية المخططة'), style: Theme.of(context).textTheme.titleLarge)),
             TextButton.icon(
               onPressed: () async {
-                final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime.now().subtract(const Duration(days: 365)), lastDate: DateTime.now().add(const Duration(days: 365))),
+                final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime.now().subtract(const Duration(days: 365)), lastDate: DateTime.now().add(const Duration(days: 365)));
                 if (picked != null) setState(() => _date = DateUtils.dateOnly(picked));
               },
               icon: const Icon(Icons.calendar_month_outlined, size: 18),
