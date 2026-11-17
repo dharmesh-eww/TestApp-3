@@ -110,6 +110,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
                   RotatedBox(
                     quarterTurns: 3,
                     child: SizedBox(
+                      width: 44,
                       height: 7,
                       child: LinearProgressIndicator(
                         value: state.dailyCalorieTarget <= 0 ? 0 : (weekCalories[index] / state.dailyCalorieTarget).clamp(0.0, 1.0).toDouble(),
