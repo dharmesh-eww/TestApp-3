@@ -54,7 +54,10 @@ class IngredientMatcher {
     Set<String> excluded = const {},
     Map<String, ({double amount, String unit})> availableQuantities = const {},
   }) {
-    final normalizedAvailable = available.map(_normalize).where((v) => v.isNotEmpty).toSet();
+    final normalizedAvailable = {
+      ...available.map(_normalize).where((v) => v.isNotEmpty),
+      ...availableQuantities.keys.map(_normalize).where((v) => v.isNotEmpty),
+    };
     final normalizedExcluded = excluded.map(_normalize).where((v) => v.isNotEmpty).toSet();
     final results = <IngredientMatch>[];
     for (final recipe in recipes.where((item) => item.isPublished)) {
