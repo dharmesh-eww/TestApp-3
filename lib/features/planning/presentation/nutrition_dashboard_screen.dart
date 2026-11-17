@@ -44,6 +44,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
       fat += recipe.fatGrams * factor;
       planned.add(recipe);
     }
+    const weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     final weekStart = _date.subtract(Duration(days: _date.weekday - 1));
     final weekCalories = List.generate(7, (index) => _caloriesForDate(state, catalog, weekStart.add(Duration(days: index))));
     final weeklyTotal = weekCalories.fold<double>(0, (sum, value) => sum + value);
@@ -104,7 +105,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
               Expanded(child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: Column(children: [
-                  Text(const ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index], style: TextStyle(color: AppTheme.muted, fontSize: 10)),
+                  Text(weekdayInitials[index], style: TextStyle(color: AppTheme.muted, fontSize: 10)),
                   const SizedBox(height: 5),
                   RotatedBox(
                     quarterTurns: 3,
