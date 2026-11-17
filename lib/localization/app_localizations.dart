@@ -464,6 +464,12 @@ class AppLocalizations {
       };
       return values[locale.languageCode]?[slot] ?? slot;
     }
+    if (isHindi) {
+      return const {'breakfast': 'नाश्ता', 'lunch': 'दोपहर का भोजन', 'dinner': 'रात का भोजन', 'snack': 'हल्का नाश्ता'}[slot] ?? slot;
+    }
+    if (isGujarati) {
+      return const {'breakfast': 'નાસ્તો', 'lunch': 'બપોરનું ભોજન', 'dinner': 'રાત્રિભોજન', 'snack': 'હળવો નાસ્તો'}[slot] ?? slot;
+    }
     if (!isArabic) {
       return switch (slot) {
         'breakfast' => 'Breakfast',
