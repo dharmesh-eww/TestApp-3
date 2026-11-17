@@ -3,6 +3,9 @@ import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/kitchen/presentation/language_selection_screen.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
+import 'package:testapp_3/features/cooking/domain/cooking_assist_service.dart';
+import 'package:testapp_3/features/widgets/data/gather_home_widget_service.dart';
+import 'package:testapp_3/app/recipe_catalog_scope.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.onLocaleChanged});
@@ -157,12 +160,38 @@ class SettingsScreen extends StatelessWidget {
             items: const [15, 30, 60, 120].map((value) => DropdownMenuItem(value: value, child: Text('${value} min'))).toList(),
             onChanged: (value) { if (value == null) return; state.mealReminderMinutes = value; PlannerScope.refresh(context); },
           ),
+        OutlinedButton.icon(
+          onPressed: () async {
+            final granted = await CookingAssistService.requestNotificationPermission();
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(granted
+              ? appStrings(context).label('Notification permission is available.', 'إذن الإشعارات متاح.')
+              : appStrings(context).label('Allow notifications in your Android settings if the prompt does not appear.', 'اسمح بالإشعارات من إعدادات أندرويد إذا لم يظهر الطلب.'))));
+          },
+          icon: const Icon(Icons.notifications_active_outlined),
+          label: Text(appStrings(context).label('Enable notifications', 'تفعيل الإشعارات')),
+        ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(appStrings(context).label('Pantry expiry reminders', 'تذكيرات انتهاء صلاحية المخزن')),
           subtitle: Text(appStrings(context).label('Remind me on the day an item is due to expire.', 'ذكرني في يوم انتهاء صلاحية العنصر.')),
           value: state.pantryExpiryRemindersEnabled,
           onChanged: (value) { state.pantryExpiryRemindersEnabled = value; PlannerScope.refresh(context); },
+        ),
+        const SizedBox(height: 22),
+        Text(appStrings(context).label('HOME SCREEN WIDGET', 'أداة الشاشة الرئيسية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+        const SizedBox(height: 6),
+        Text(appStrings(context).label('Add the Gather widget from your Android launcher’s widget picker. It shows the meals planned for today and refreshes when your plan changes.', 'أضف أداة Gather من قائمة الأدوات في مشغل أندرويد. تعرض وجبات اليوم وتتحدث عند تغيير خطتك.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            onPressed: () async {
+              await GatherHomeWidgetService.sync(state, RecipeCatalogScope.of(context));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Widget refreshed.', 'تم تحديث الأداة.'))));
+            },
+            icon: const Icon(Icons.widgets_outlined),
+            label: Text(appStrings(context).label('Refresh widget data', 'تحديث بيانات الأداة')),
+          ),
         ),
         const SizedBox(height: 16),
         Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.'), style: TextStyle(color: AppTheme.muted)),
