@@ -13,6 +13,7 @@ void main() {
     expect(find.text('Monday'), findsOneWidget);
     await tester.tap(find.byKey(const Key('add-Monday-breakfast')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Overnight berry oats').last);
     await tester.tap(find.text('Overnight berry oats').last);
     await tester.pumpAndSettle();
 
