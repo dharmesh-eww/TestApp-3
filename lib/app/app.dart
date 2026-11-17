@@ -20,6 +20,8 @@ import 'app_dependencies.dart';
 import 'planner_scope.dart';
 import 'recipe_catalog_scope.dart';
 import 'app_tab_navigation.dart';
+import '../features/notifications/domain/smart_reminder_service.dart';
+import '../features/widgets/data/gather_home_widget_service.dart';
 
 class RecipePlannerApp extends StatefulWidget {
   const RecipePlannerApp({super.key, this.repository, this.showOnboarding = false});
@@ -79,6 +81,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
       if (cookingSnapshot != null && mounted) {
         dependencies.cookingSession.restoreFromJson(cookingSnapshot);
       }
+      await _syncPlatformIntegrations();
     } on CatalogLoadException {
       // Keep the in-code catalog active if the bundled document is invalid.
     } catch (_) {
@@ -90,6 +93,20 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     setState(() {});
     final store = widget.repository;
     if (store != null) unawaited(store.savePlannerState(dependencies.plannerState).catchError((_) {}));
+    unawaited(_syncPlatformIntegrations());
+  }
+
+  Future<void> _syncPlatformIntegrations() async {
+    final state = dependencies.plannerState;
+    final catalog = [..._catalogRecipes, ...state.customRecipes.values];
+    try {
+      await SmartReminderService.sync(state, catalog);
+      await GatherHomeWidgetService.sync(state, catalog);
+      final store = widget.repository;
+      if (store != null) await store.savePlannerState(state);
+    } catch (_) {
+      // Native integrations are optional; core planning remains usable.
+    }
   }
 
   void _onCookingChanged() {
