@@ -296,6 +296,7 @@ class PlannerState {
     groceryEdits.clear();
     _manualAmounts.clear();
     _manualNames.clear();
+    _manualUnquantifiedIngredients.clear();
     customGroceryItems.clear();
     groceryLists.clear();
     groceryListNames.clear();
