@@ -271,15 +271,37 @@ class CookingHistoryScreen extends StatelessWidget {
   }
 }
 
-class PlannerSettingsScreen extends StatelessWidget {
-  const PlannerSettingsScreen({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key, required this.locale, required this.onLocaleChanged});
+
+  final Locale locale;
+  final ValueChanged<Locale> onLocaleChanged;
 
   @override
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(appStrings(context).label('Kitchen settings', 'إعدادات المطبخ'))),
+      appBar: AppBar(title: Text(appStrings(context).label('Settings', 'الإعدادات'))),
       body: ListView(padding: const EdgeInsets.all(20), children: [
+        Card(
+          child: ListTile(
+            key: const Key('open-language-selection'),
+            leading: const Icon(Icons.language),
+            title: Text(appStrings(context).label('Language', 'اللغة')),
+            subtitle: Text(locale.languageCode == 'ar' ? 'العربية' : 'English'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LanguageSelectionScreen(
+                  locale: locale,
+                  onLocaleChanged: onLocaleChanged,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
         Text(appStrings(context).label('MEASUREMENTS', 'وحدات القياس'), style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: AppTheme.terracotta, letterSpacing: 1.3, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
@@ -362,6 +384,69 @@ class PlannerSettingsScreen extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Personal data cleared from this device.', 'تم مسح البيانات الشخصية من هذا الجهاز.'))));
           }),
       ]),
+    );
+  }
+}
+
+
+class LanguageSelectionScreen extends StatelessWidget {
+  const LanguageSelectionScreen({
+    super.key,
+    required this.locale,
+    required this.onLocaleChanged,
+  });
+
+  final Locale locale;
+  final ValueChanged<Locale> onLocaleChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(appStrings(context).label('Language', 'اللغة')),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            appStrings(context).label('CHOOSE YOUR LANGUAGE', 'اختر لغتك'),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppTheme.terracotta,
+              letterSpacing: 1.3,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-english'),
+              value: 'en',
+              groupValue: locale.languageCode,
+              title: const Text('English'),
+              secondary: const Text('EN'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('en'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Card(
+            child: RadioListTile<String>(
+              key: const Key('language-option-arabic'),
+              value: 'ar',
+              groupValue: locale.languageCode,
+              title: const Text('العربية'),
+              secondary: const Text('AR'),
+              onChanged: (value) {
+                if (value == null) return;
+                onLocaleChanged(const Locale('ar'));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
