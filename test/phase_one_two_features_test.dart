@@ -107,7 +107,7 @@ void main() {
       allergies: const {'milk'},
     );
 
-    expect(results.map((recipe) => recipe.id), ['verified-safe']);
+    expect(results.map((recipe) => recipe.id).toList(), ['verified-safe']);
   });
 
   test('pantry quantity matching leaves insufficient quantities in the missing list', () {
