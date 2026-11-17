@@ -272,39 +272,32 @@ FoodType _foodTypeFromJson(dynamic value) {
 }
 
 String _localizedField(dynamic value, dynamic translations, String key, String localeCode) {
-  String? fromMap(dynamic source) {
+  String? localizedFrom(dynamic source) {
     if (source is! Map) return null;
-    final localized = source[localeCode];
-    if (localized is String && localized.trim().isNotEmpty) return localized;
-    final english = source['en'];
-    if (english is String && english.trim().isNotEmpty) return english;
+
+    final localeValue = source[localeCode];
+    if (localeValue is String && localeValue.trim().isNotEmpty) return localeValue;
+    if (localeValue is Map && localeValue[key] is String) {
+      final translated = localeValue[key] as String;
+      if (translated.trim().isNotEmpty) return translated;
+    }
+
+    final englishValue = source['en'];
+    if (englishValue is String && englishValue.trim().isNotEmpty) return englishValue;
+    if (englishValue is Map && englishValue[key] is String) {
+      final translated = englishValue[key] as String;
+      if (translated.trim().isNotEmpty) return translated;
+    }
+    if (englishValue is Map && englishValue['localized_$key'] is String) {
+      final translated = englishValue['localized_$key'] as String;
+      if (translated.trim().isNotEmpty) return translated;
+    }
     return null;
   }
 
-  final translated = fromMap(translations);
-  if (translated != null) {
-    final localeEntry = translations is Map ? translations[localeCode] : null;
-    if (localeEntry is Map && localeEntry[key] is String) {
-      return (localeEntry[key] as String);
-    }
-    final englishEntry = translations is Map ? translations['en'] : null;
-    if (englishEntry is Map && englishEntry[key] is String) {
-      return englishEntry[key] as String;
-    }
-  }
-  final direct = fromMap(value);
-  if (direct != null) return direct;
-  if (value is String) return value;
-  if (translations is Map) {
-    final localeEntry = translations[localeCode];
-    if (localeEntry is Map && localeEntry[key] is String) return localeEntry[key] as String;
-    final englishEntry = translations['en'];
-    if (englishEntry is Map && englishEntry[key] is String) return englishEntry[key] as String;
-    if (englishEntry is Map && englishEntry['localized_$key'] is String) {
-      return englishEntry['localized_$key'] as String;
-    }
-  }
-  return '';
+  return localizedFrom(translations) ??
+      localizedFrom(value) ??
+      (value is String ? value : '');
 }
 
 String _titleCase(String value) => value.isEmpty
