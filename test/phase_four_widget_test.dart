@@ -16,7 +16,10 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Overnight berry oats').last,
       180,
-      scrollable: find.byKey(const Key('plan-recipe-picker-list')),
+      scrollable: find.descendant(
+        of: find.byKey(const Key('plan-recipe-picker-list')),
+        matching: find.byType(Scrollable),
+      ),
     );
     await tester.tap(find.text('Overnight berry oats').last);
     await tester.pumpAndSettle();
