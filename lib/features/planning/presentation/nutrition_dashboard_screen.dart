@@ -25,7 +25,14 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     final planned = <Recipe>[];
     final dateMeals = state.mealsFor(_dateKey);
     final weekdayNames = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    final mealsForSelectedDate = dateMeals.isNotEmpty ? dateMeals : state.mealsFor(weekdayNames[_date.weekday - 1]);
+    final today = DateUtils.dateOnly(DateTime.now());
+    final currentWeekStart = today.subtract(Duration(days: today.weekday - 1));
+    final selectedWeekStart = _date.subtract(Duration(days: _date.weekday - 1));
+    final mealsForSelectedDate = dateMeals.isNotEmpty
+        ? dateMeals
+        : DateUtils.isSameDay(currentWeekStart, selectedWeekStart)
+            ? state.mealsFor(weekdayNames[_date.weekday - 1])
+            : const [];
     for (final meal in mealsForSelectedDate) {
       final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
       if (recipe == null) continue;
@@ -137,7 +144,14 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     final key = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     final datedMeals = state.mealsFor(key);
     final weekdays = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    final meals = datedMeals.isNotEmpty ? datedMeals : state.mealsFor(weekdays[date.weekday - 1]);
+    final today = DateUtils.dateOnly(DateTime.now());
+    final currentWeekStart = today.subtract(Duration(days: today.weekday - 1));
+    final selectedWeekStart = date.subtract(Duration(days: date.weekday - 1));
+    final meals = datedMeals.isNotEmpty
+        ? datedMeals
+        : DateUtils.isSameDay(currentWeekStart, selectedWeekStart)
+            ? state.mealsFor(weekdays[date.weekday - 1])
+            : const [];
     var total = 0.0;
     for (final meal in meals) {
       final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
