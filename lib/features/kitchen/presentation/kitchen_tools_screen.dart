@@ -363,6 +363,30 @@ class SettingsScreen extends StatelessWidget {
         for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
           CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(appStrings(context).dietaryTag(option.key)), value: state.preferredDietaryTags.contains(option.key),
             onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
+        const SizedBox(height: 12),
+        Text(appStrings(context).label('Preferred cuisines', 'المطابخ المفضلة'), style: Theme.of(context).textTheme.titleMedium),
+        Text(appStrings(context).label('Discover will prioritize recipes from the cuisines you select.', 'سيعرض قسم الاكتشاف الوصفات من المطابخ التي تختارها.'), style: TextStyle(color: AppTheme.muted)),
+        for (final option in const {
+          'indian': 'Indian', 'north_indian': 'North Indian', 'south_indian': 'South Indian',
+          'gujarati': 'Gujarati', 'chinese': 'Chinese', 'japanese': 'Japanese',
+          'italian': 'Italian', 'korean': 'Korean', 'mexican': 'Mexican',
+          'american': 'American', 'thai': 'Thai', 'mediterranean': 'Mediterranean',
+          'vietnamese': 'Vietnamese', 'greek': 'Greek', 'french': 'French',
+          'spanish': 'Spanish', 'middle_eastern': 'Middle Eastern',
+        }.entries)
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(appStrings(context).label(option.value, option.value)),
+            value: state.preferredCuisines.contains(option.key),
+            onChanged: (selected) {
+              if (selected == true) {
+                state.preferredCuisines.add(option.key);
+              } else {
+                state.preferredCuisines.remove(option.key);
+              }
+              PlannerScope.refresh(context);
+            },
+          ),
         const SizedBox(height: 16),
         Text(appStrings(context).label('Conversions are shown only within compatible dimensions. Mass is never converted to volume without ingredient-specific density.', 'تُعرض التحويلات بين الوحدات المتوافقة فقط. لا يتم تحويل الكتلة إلى حجم دون معرفة كثافة المكوّن.'), style: TextStyle(color: AppTheme.muted)),
         const SizedBox(height: 28),
