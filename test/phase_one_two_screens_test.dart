@@ -16,7 +16,7 @@ void main() {
     await tester.scrollUntilVisible(find.byKey(const Key('meal-prep-heading')), 250, scrollable: find.descendant(
         of: find.byKey(const Key('meal-calendar-scroll')),
         matching: find.byType(Scrollable),
-      ));
+      ).first);
     expect(find.byKey(const Key('meal-prep-heading')), findsOneWidget);
   });
 
