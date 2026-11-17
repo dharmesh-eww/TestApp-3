@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import '../core/theme/app_theme.dart';
 import '../features/recipes/domain/recipe.dart';
 import '../features/recipes/domain/recipe_catalog.dart';
@@ -189,7 +190,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
                 }),
         ),
       ),
-    ));
+    );
   }
 }
 
