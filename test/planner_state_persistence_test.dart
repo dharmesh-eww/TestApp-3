@@ -89,6 +89,11 @@ test('reset personal data clears local user state without changing catalog', () 
       ..allergies.add('peanuts')
       ..groceryBudget = 100
       ..mealPrepChecks['2026-11-18|Onions'] = true;
+    state.saveCustomRecipe(Recipe(
+      id: 'custom-reset-test', title: 'Reset test', subtitle: '', image: '', minutes: 1,
+      difficulty: 'Easy', category: 'Other', calories: 0, servings: 1,
+      ingredients: const [], steps: const ['Cook.'],
+    ));
     state.clearPersonalData();
     expect(state.favorites, isEmpty);
     expect(state.recentlyViewed, isEmpty);
