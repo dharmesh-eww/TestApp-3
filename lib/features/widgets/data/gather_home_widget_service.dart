@@ -15,6 +15,8 @@ class GatherHomeWidgetService {
   static Future<void> sync(PlannerState state, Iterable<Recipe> catalog) async {
     final now = DateTime.now();
     final recipesById = {for (final recipe in catalog) recipe.id: recipe};
+    final today = DateTime(now.year, now.month, now.day);
+    final currentWeekStart = today.subtract(Duration(days: today.weekday - 1));
     final mealsByDate = <String, String>{};
 
     for (var offset = 0; offset <= 92; offset++) {
@@ -24,7 +26,10 @@ class GatherHomeWidgetService {
       final weekdayKey = const [
         'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
       ][date.weekday - 1];
-      final templateMeals = state.mealsFor(weekdayKey);
+      final dateWeekStart = date.subtract(Duration(days: date.weekday - 1));
+      final templateMeals = DateUtils.isSameDay(currentWeekStart, dateWeekStart)
+          ? state.mealsFor(weekdayKey)
+          : const [];
       final meals = [
         ...templateMeals.where((template) =>
             !datedMeals.any((dated) => dated.slot == template.slot)),
@@ -35,10 +40,11 @@ class GatherHomeWidgetService {
       for (final meal in meals) {
         final recipe = recipesById[meal.recipeId];
         if (recipe == null) continue;
-        final allergyBlocked = state.allergies.isNotEmpty &&
+        final blockedAllergens = state.allergies.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
+        final allergyBlocked = blockedAllergens.isNotEmpty &&
             (!recipe.allergensVerified ||
                 recipe.verifiedAllergens.any((value) =>
-                    state.allergies.contains(value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' '))));
+                    blockedAllergens.contains(value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' '))));
         final slot = meal.slot.name;
         final label = '${slot[0].toUpperCase()}${slot.substring(1)}';
         lines.add('${allergyBlocked ? '⚠ ' : ''}$label · ${recipe.title}');
