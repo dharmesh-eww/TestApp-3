@@ -98,7 +98,7 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
         const SizedBox(height: 12),
         Text(appStrings(context).label('Preferred cuisines', 'المطابخ المفضلة'), style: Theme.of(context).textTheme.titleMedium),
-        Text(appStrings(context).label('Discover will prioritize recipes from the cuisines you select.', 'سيعرض قسم الاكتشاف الوصفات من المطابخ التي تختارها.'), style: TextStyle(color: AppTheme.muted)),
+        Text(appStrings(context).label('Discover will filter to recipes from the cuisines you select.', 'سيعرض قسم الاكتشاف الوصفات من المطابخ التي تختارها.'), style: TextStyle(color: AppTheme.muted)),
         for (final option in const {
           'indian': 'Indian', 'north_indian': 'North Indian', 'south_indian': 'South Indian',
           'gujarati': 'Gujarati', 'chinese': 'Chinese', 'japanese': 'Japanese',
