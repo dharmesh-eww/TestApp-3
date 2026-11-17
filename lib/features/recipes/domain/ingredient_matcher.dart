@@ -109,6 +109,6 @@ class IngredientMatcher {
   static String _normalize(String value) => value
       .trim()
       .toLowerCase()
-      .replaceAll(RegExp(r'[.,;:!?()\[\]{}"“”‘’/\\|]+'), ' ')
+      .replaceAll(RegExp(r'[.,;:!?()_\-\[\]{}"“”‘’/\\|]+'), ' ')
       .trim();
 }
