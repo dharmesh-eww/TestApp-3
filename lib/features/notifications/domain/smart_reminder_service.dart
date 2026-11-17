@@ -7,20 +7,28 @@ import 'package:testapp_3/features/recipes/domain/recipe.dart';
 class SmartReminderService {
   SmartReminderService._();
 
+  static String? _lastFingerprint;
+
   static Future<void> sync(PlannerState state, Iterable<Recipe> catalog) async {
+    final recipesById = {for (final recipe in catalog) recipe.id: recipe};
+    final fingerprint = _fingerprint(state, recipesById);
+    if (fingerprint == _lastFingerprint) return;
+
     final previous = state.activeReminderKeys.toList(growable: false);
     for (final key in previous) {
       await CookingAssistService.cancelTimerNotification(key);
     }
     state.activeReminderKeys.clear();
 
-    if (!state.mealRemindersEnabled && !state.pantryExpiryRemindersEnabled) return;
+    if (!state.mealRemindersEnabled && !state.pantryExpiryRemindersEnabled) {
+      _lastFingerprint = fingerprint;
+      return;
+    }
     await CookingAssistService.requestNotificationPermission();
 
     final now = DateTime.now();
     final mealEnd = now.add(const Duration(days: 92));
     final pantryEnd = now.add(const Duration(days: 365));
-    final recipesById = {for (final recipe in catalog) recipe.id: recipe};
 
     if (state.mealRemindersEnabled) {
       const weekdayNumbers = {
@@ -92,5 +100,30 @@ class SmartReminderService {
         state.activeReminderKeys.add(key);
       }
     }
+    _lastFingerprint = fingerprint;
+  }
+
+  static String _fingerprint(PlannerState state, Map<String, Recipe> recipesById) {
+    final buffer = StringBuffer()
+      ..write(state.mealRemindersEnabled)
+      ..write('|')
+      ..write(state.pantryExpiryRemindersEnabled)
+      ..write('|')
+      ..write(state.mealReminderMinutes)
+      ..write('|')
+      ..write(state.allergies.toList()..sort());
+    final days = state.mealPlan.keys.toList()..sort();
+    for (final day in days) {
+      final meals = state.mealPlan[day]!.values.toList()..sort((a, b) => a.slot.name.compareTo(b.slot.name));
+      for (final meal in meals) {
+        buffer.write('|$day:${meal.slot.name}:${meal.recipeId}:${recipesById[meal.recipeId]?.title ?? ''}');
+      }
+    }
+    final pantryIds = state.pantry.keys.toList()..sort();
+    for (final id in pantryIds) {
+      final expiry = state.pantryExpiryDates[id];
+      buffer.write('|$id:${state.pantry[id]?.name ?? ''}:${expiry?.toIso8601String() ?? ''}');
+    }
+    return buffer.toString();
   }
 }
