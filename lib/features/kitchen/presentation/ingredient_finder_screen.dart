@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
+import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/recipes/domain/ingredient_matcher.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
@@ -16,10 +17,16 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
   final Set<String> _available = {};
   final Set<String> _excluded = {};
   bool _excludeMode = false;
+  bool _usePantry = true;
 
   @override
   Widget build(BuildContext context) {
     final recipes = RecipeCatalogScope.of(context);
+    final planner = PlannerScope.of(context);
+    final availableNames = <String>{..._available, if (_usePantry) ...planner.pantry.values.map((item) => item.name)};
+    final availableQuantities = <String, ({double amount, String unit})>{
+      if (_usePantry) for (final item in planner.pantry.values) item.name: (amount: item.amount, unit: item.unit),
+    };
     final ingredients = <String, String>{};
     for (final recipe in recipes) {
       for (final ingredient in recipe.ingredients) {
@@ -27,7 +34,7 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
         ingredients[id] = ingredient.name;
       }
     }
-    final results = IngredientMatcher.rank(recipes, available: _available, excluded: _excluded);
+    final results = IngredientMatcher.rank(recipes, available: availableNames, excluded: _excluded, availableQuantities: availableQuantities);
     return Scaffold(
       appBar: AppBar(title: Text(appStrings(context).label('Cook with what you have', 'اطبخ بالمكونات المتوفرة لديك'))),
       body: ListView(
@@ -39,7 +46,15 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
           Text(appStrings(context).label('What’s in your kitchen?', 'ماذا يوجد في مطبخك؟'), style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
           Text(appStrings(context).label('Choose ingredients you have, or switch to ingredients you want to avoid. Matches show what is still missing.', 'اختر المكونات المتوفرة لديك أو المكونات التي تريد تجنبها. تعرض النتائج المكونات الناقصة.'), style: TextStyle(color: AppTheme.muted)),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(appStrings(context).label('Use my pantry inventory', 'استخدم مخزون مخزني')),
+            subtitle: Text(appStrings(context).label('Only count quantities you have recorded. Insufficient amounts stay in the missing list.', 'احتسب الكميات المسجلة فقط. ستظل الكميات غير الكافية ضمن قائمة النواقص.')),
+            value: _usePantry,
+            onChanged: (value) => setState(() => _usePantry = value),
+          ),
+          const SizedBox(height: 8),
           SegmentedButton<bool>(
             segments: [
               ButtonSegment(value: false, label: Text(appStrings(context).label('I have', 'متوفر لدي')), icon: Icon(Icons.check_circle_outline)),
@@ -68,7 +83,7 @@ class _IngredientFinderScreenState extends State<IngredientFinderScreen> {
             Text(appStrings(context).label('${results.length} found', 'تم العثور على ${results.length}'), style: TextStyle(color: AppTheme.muted)),
           ]),
           const SizedBox(height: 10),
-          if (_available.isEmpty)
+          if (availableNames.isEmpty)
             Text(appStrings(context).label('Select at least one ingredient to see match percentages.', 'اختر مكونًا واحدًا على الأقل لعرض نسبة التطابق.'),
                 style: TextStyle(color: AppTheme.muted)),
           for (final match in results)
