@@ -111,7 +111,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
                     child: SizedBox(
                       height: 7,
                       child: LinearProgressIndicator(
-                        value: state.dailyCalorieTarget <= 0 ? 0 : (weekCalories[index] / state.dailyCalorieTarget).clamp(0.0, 1.0),
+                        value: state.dailyCalorieTarget <= 0 ? 0 : (weekCalories[index] / state.dailyCalorieTarget).clamp(0.0, 1.0).toDouble(),
                         backgroundColor: AppTheme.line,
                         color: AppTheme.terracotta,
                       ),
@@ -164,7 +164,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
   }
 
   Widget _goalCard({required String title, required double value, required double target, required String unit, required IconData icon}) {
-    final progress = target <= 0 ? 0.0 : (value / target).clamp(0.0, 1.0);
+    final progress = target <= 0 ? 0.0 : (value / target).clamp(0.0, 1.0).toDouble();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
