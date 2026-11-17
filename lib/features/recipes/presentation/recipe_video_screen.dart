@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
+import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 /// Inline YouTube player shown only when a recipe has a valid video URL.
@@ -14,11 +15,13 @@ class RecipeYoutubeEmbed extends StatefulWidget {
 
 class _RecipeYoutubeEmbedState extends State<RecipeYoutubeEmbed> {
   late final YoutubePlayerController _controller;
+  late final bool _hasVideoId;
 
   @override
   void initState() {
     super.initState();
     final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
+    _hasVideoId = videoId != null;
     _controller = YoutubePlayerController(
       initialVideoId: videoId ?? '',
       flags: const YoutubePlayerFlags(autoPlay: false, mute: false, enableCaption: true),
@@ -33,7 +36,7 @@ class _RecipeYoutubeEmbedState extends State<RecipeYoutubeEmbed> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller.initialVideoId.isEmpty) {
+    if (!_hasVideoId) {
       return _VideoUnavailable(title: widget.title);
     }
     return ClipRRect(
@@ -132,7 +135,7 @@ class _VideoUnavailable extends StatelessWidget {
       children: [
         const Icon(Icons.video_library_outlined, size: 36, color: AppTheme.muted),
         const SizedBox(height: 8),
-        Text('Video unavailable', style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
+        Text(appStrings(context).recipeLabel('Video unavailable'), style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
         Text(title, textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted)),
       ],
     ),

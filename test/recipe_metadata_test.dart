@@ -51,6 +51,32 @@ void main() {
       expect(recipe.hasNutritionData, isFalse);
     });
 
+    test('reads an optional YouTube video URL and ignores invalid URLs', () {
+      final recipe = Recipe.fromJson({
+        'id': 'video-recipe',
+        'title': 'Video recipe',
+        'description': '',
+        'image': '',
+        'servings': 1,
+        'youtube_video_url': 'https://www.youtube.com/watch?v=LDR6Kas6zyU',
+        'ingredients': [],
+        'instructions': ['Cook it'],
+      });
+      expect(recipe.youtubeVideoUrl, 'https://www.youtube.com/watch?v=LDR6Kas6zyU');
+
+      final invalid = Recipe.fromJson({
+        'id': 'invalid-video-recipe',
+        'title': 'No video',
+        'description': '',
+        'image': '',
+        'servings': 1,
+        'youtube_video_url': 'https://example.com/watch?v=123',
+        'ingredients': [],
+        'instructions': ['Cook it'],
+      });
+      expect(invalid.youtubeVideoUrl, isNull);
+    });
+
     test('filters by season and by nutrition data availability', () {
       final seasonal = Recipe.fromJson({
         'id': 'winter-soup',
