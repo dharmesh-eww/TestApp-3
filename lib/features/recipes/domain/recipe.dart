@@ -57,7 +57,7 @@ class Recipe {
   final bool allergensVerified;
   final List<String> verifiedAllergens;
 
-  factory Recipe.fromJson(Map<String, dynamic> json) {
+  factory Recipe.fromJson(Map<String, dynamic> json, {String localeCode = 'en'}) {
     final prep = _asInt(json['prep_minutes'] ?? json['preparation_time_minutes'] ?? json['preparation_time']);
     final cook = _asInt(json['cook_minutes'] ?? json['cooking_time_minutes'] ?? json['cooking_time']);
     final legacyMinutes = _asInt(json['minutes'], prep + cook);
@@ -69,7 +69,7 @@ class Recipe {
     final localized = json['translations'] ?? json['localized'];
     final ingredients = (json['ingredients'] as List? ?? const [])
         .whereType<Map>()
-        .map((item) => Ingredient.fromJson(Map<String, dynamic>.from(item)))
+        .map((item) => Ingredient.fromJson(Map<String, dynamic>.from(item), localeCode: localeCode))
         .toList();
     final rawSteps = json['instructions'] as List? ?? json['steps'] as List? ?? const [];
     final steps = rawSteps.map((item) {
@@ -77,7 +77,8 @@ class Recipe {
       if (item is Map) {
         final localizedInstruction = item['localized_instruction'];
         if (localizedInstruction is Map) {
-          return (localizedInstruction['en'] ?? '').toString();
+          return (localizedInstruction[localeCode] ?? localizedInstruction['en'] ??
+              item['text'] ?? item['instruction'] ?? '').toString();
         }
         return (item['text'] ?? item['instruction'] ?? '').toString();
       }
@@ -87,8 +88,8 @@ class Recipe {
     return Recipe(
       id: (json['id'] ?? '').toString(),
       slug: (json['slug'] ?? '').toString(),
-      title: _localizedField(json['title'], localized, 'title'),
-      subtitle: _localizedField(json['description'] ?? json['subtitle'], localized, 'description'),
+      title: _localizedField(json['title'], localized, 'title', localeCode),
+      subtitle: _localizedField(json['description'] ?? json['subtitle'], localized, 'description', localeCode),
       image: (json['image'] ?? json['thumbnail'] ?? '').toString(),
       minutes: prep + cook == 0 ? legacyMinutes : prep + cook,
       prepMinutes: prep,
@@ -170,7 +171,7 @@ class Ingredient {
   final String group;
   final String? preparationNote;
 
-  factory Ingredient.fromJson(Map<String, dynamic> json) {
+  factory Ingredient.fromJson(Map<String, dynamic> json, {String localeCode = 'en'}) {
     final quantity = json['quantity'];
     final quantityMap = quantity is Map ? quantity : const <String, dynamic>{};
     final rawAmount = quantityMap['amount'] ?? json['amount'];
@@ -181,7 +182,8 @@ class Ingredient {
       _ => IngredientAmountType.quantity,
     };
     return Ingredient(
-      (json['display_name'] ?? json['name'] ?? json['ingredient_id'] ?? '').toString(),
+      _localizedField(json['display_name'] ?? json['name'] ?? json['ingredient_id'] ?? '',
+        json['translations'] ?? json['localized'], 'name', localeCode),
       rawAmount is num ? rawAmount.toDouble() : double.tryParse('$rawAmount'),
       (quantityMap['unit'] ?? json['unit_id'] ?? json['unit'] ?? '').toString(),
       id: (json['ingredient_id'] ?? json['id'] ?? '').toString(),
@@ -269,13 +271,37 @@ FoodType _foodTypeFromJson(dynamic value) {
   }
 }
 
-String _localizedField(dynamic value, dynamic translations, String key) {
+String _localizedField(dynamic value, dynamic translations, String key, String localeCode) {
+  String? fromMap(dynamic source) {
+    if (source is! Map) return null;
+    final localized = source[localeCode];
+    if (localized is String && localized.trim().isNotEmpty) return localized;
+    final english = source['en'];
+    if (english is String && english.trim().isNotEmpty) return english;
+    return null;
+  }
+
+  final translated = fromMap(translations);
+  if (translated != null) {
+    final localeEntry = translations is Map ? translations[localeCode] : null;
+    if (localeEntry is Map && localeEntry[key] is String) {
+      return (localeEntry[key] as String);
+    }
+    final englishEntry = translations is Map ? translations['en'] : null;
+    if (englishEntry is Map && englishEntry[key] is String) {
+      return englishEntry[key] as String;
+    }
+  }
+  final direct = fromMap(value);
+  if (direct != null) return direct;
   if (value is String) return value;
   if (translations is Map) {
-    final english = translations['en'];
-    if (english is Map && english[key] is String) return english[key] as String;
-    if (english is Map && english['localized_$key'] is String) {
-      return english['localized_$key'] as String;
+    final localeEntry = translations[localeCode];
+    if (localeEntry is Map && localeEntry[key] is String) return localeEntry[key] as String;
+    final englishEntry = translations['en'];
+    if (englishEntry is Map && englishEntry[key] is String) return englishEntry[key] as String;
+    if (englishEntry is Map && englishEntry['localized_$key'] is String) {
+      return englishEntry['localized_$key'] as String;
     }
   }
   return '';
