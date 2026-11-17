@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:testapp_3/core/navigation/animated_page_route.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
+import 'package:testapp_3/features/recipes/domain/ingredient_substitution_service.dart';
+import 'package:testapp_3/features/recipes/presentation/custom_recipe_editor_screen.dart';
 import 'package:testapp_3/features/cooking/presentation/cooking_mode_screen.dart';
 import 'package:testapp_3/features/planning/presentation/plan_screen.dart';
 
@@ -73,6 +75,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: favorite ? AppTheme.terracotta : AppTheme.ink),
               style: IconButton.styleFrom(backgroundColor: AppTheme.card),
             ),
+            if (widget.recipe.id.startsWith('custom-'))
+              IconButton(
+                tooltip: appStrings(context).label('Edit recipe', 'تعديل الوصفة'),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CustomRecipeEditorScreen(recipe: widget.recipe))),
+                icon: const Icon(Icons.edit_outlined),
+                style: IconButton.styleFrom(backgroundColor: AppTheme.card),
+              ),
             IconButton(
               tooltip: appStrings(context).label('Copy recipe', 'نسخ الوصفة'),
               onPressed: () async {
@@ -106,6 +115,12 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               const SizedBox(width: 8),
               _MetaPill(icon: Icons.local_fire_department_outlined, text: '${recipe.calories} kcal'),
             ]),
+            const SizedBox(height: 10),
+            Wrap(spacing: 8, runSpacing: 6, children: [
+              _MetaPill(icon: Icons.fitness_center, text: 'P ${recipe.proteinGrams.round()} g'),
+              _MetaPill(icon: Icons.grain, text: 'C ${recipe.carbsGrams.round()} g'),
+              _MetaPill(icon: Icons.water_drop_outlined, text: 'F ${recipe.fatGrams.round()} g'),
+            ]),
             const SizedBox(height: 26),
             Row(children: [
               Expanded(child: Text(appStrings(context).label('Ingredients', 'المكونات'), style: Theme.of(context).textTheme.headlineMedium)),
@@ -123,6 +138,15 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 Text(item.display(servings, recipe.servings, measurementSystem: state.measurementSystem), style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w600)),
               ]),
             )),
+            const SizedBox(height: 8),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: () => _showSubstitutions(context, recipe),
+                icon: const Icon(Icons.swap_horiz),
+                label: Text(appStrings(context).label('Ingredient substitutions', 'بدائل المكونات')),
+              ),
+            ),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
@@ -177,5 +201,37 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
         )),
       ]),
     );
+  Future<void> _showSubstitutions(BuildContext context, Recipe recipe) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SizedBox(
+            height: MediaQuery.of(sheetContext).size.height * .65,
+            child: ListView(
+              children: [
+                Text(appStrings(context).label('Ingredient substitutions', 'بدائل المكونات'), style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(appStrings(context).label('Suggestions may change flavour or texture. Check all labels and allergy warnings before using a substitute.', 'قد تغير الاقتراحات النكهة أو القوام. تحقق من الملصقات وتحذيرات الحساسية قبل استخدام أي بديل.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+                const SizedBox(height: 14),
+                for (final ingredient in recipe.ingredients) ...[
+                  Text(ingredient.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 4),
+                  if (IngredientSubstitutionService.alternativesFor(ingredient.name).isEmpty)
+                    Text(appStrings(context).label('No curated suggestion available.', 'لا يوجد اقتراح بديل متاح.'), style: TextStyle(color: AppTheme.muted, fontSize: 12))
+                  else
+                    for (final alternative in IngredientSubstitutionService.alternativesFor(ingredient.name))
+                      Padding(padding: const EdgeInsets.only(bottom: 4), child: Text('• $alternative')),
+                  const Divider(height: 18),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
   }
 }
