@@ -248,6 +248,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
         )),
       ]),
     );
+  }
+
   Future<void> _showSubstitutions(BuildContext context, Recipe recipe) async {
     await showModalBottomSheet<void>(
       context: context,
@@ -279,6 +281,5 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
         ),
       ),
     );
-  }
   }
 }
