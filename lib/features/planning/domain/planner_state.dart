@@ -23,6 +23,7 @@ class PlannerState {
   final Map<String, double> groceryPrices = {};
   final Map<String, String> groceryStores = {};
   final Map<String, bool> mealPrepChecks = {};
+  final Set<String> activeReminderKeys = {};
   int dailyCalorieTarget = 2000;
   double dailyProteinTargetGrams = 100;
   double? groceryBudget;
@@ -77,6 +78,7 @@ class PlannerState {
     'grocery_prices': groceryPrices,
     'grocery_stores': groceryStores,
     'meal_prep_checks': mealPrepChecks,
+    'active_reminder_keys': activeReminderKeys.toList()..sort(),
     'grocery_budget': groceryBudget,
     'nutrition_goals': {
       'daily_calories': dailyCalorieTarget,
@@ -141,6 +143,7 @@ class PlannerState {
     groceryPrices.clear();
     groceryStores.clear();
     mealPrepChecks.clear();
+    activeReminderKeys.clear();
     dailyCalorieTarget = 2000;
     dailyProteinTargetGrams = 100;
     groceryBudget = null;
@@ -305,6 +308,8 @@ class PlannerState {
     _restoreStringStringMap(json['recipe_notes'], recipeNotes);
     _restoreStringDoubleMap(json['grocery_prices'], groceryPrices);
     _restoreStringStringMap(json['grocery_stores'], groceryStores);
+    final rawReminderKeys = json['active_reminder_keys'];
+    if (rawReminderKeys is List) activeReminderKeys.addAll(rawReminderKeys.whereType<String>());
     final rawPrepChecks = json['meal_prep_checks'];
     if (rawPrepChecks is Map) {
       for (final entry in rawPrepChecks.entries) {
