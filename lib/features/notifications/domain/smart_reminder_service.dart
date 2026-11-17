@@ -38,13 +38,13 @@ class SmartReminderService {
           final fireAt = plannedAt.subtract(Duration(minutes: state.mealReminderMinutes));
           if (!fireAt.isAfter(now) || fireAt.isAfter(end)) continue;
           final key = 'meal:${entry.key}:${meal.slot.name}:${meal.recipeId}';
-          final scheduled = await CookingAssistService.scheduleTimerNotification(
+          await CookingAssistService.scheduleTimerNotification(
             id: key,
             title: 'Meal coming up',
             body: '${recipe.title} is planned for ${meal.slot.name}.',
             fireAt: fireAt,
           );
-          if (scheduled) state.activeReminderKeys.add(key);
+          state.activeReminderKeys.add(key);
         }
       }
     }
@@ -56,13 +56,13 @@ class SmartReminderService {
         final fireAt = DateTime(expiry.year, expiry.month, expiry.day, 9);
         if (!fireAt.isAfter(now) || fireAt.isAfter(end)) continue;
         final key = 'pantry:${item.id}:${expiry.year}-${expiry.month}-${expiry.day}';
-        final scheduled = await CookingAssistService.scheduleTimerNotification(
+        await CookingAssistService.scheduleTimerNotification(
           id: key,
           title: 'Pantry expiry reminder',
           body: '${item.name} is due to expire today.',
           fireAt: fireAt,
         );
-        if (scheduled) state.activeReminderKeys.add(key);
+        state.activeReminderKeys.add(key);
       }
     }
   }
