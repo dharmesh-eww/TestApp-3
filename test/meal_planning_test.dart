@@ -93,6 +93,21 @@ void main() {
       expect(pasta.unit, 'g');
     });
 
+    test('adds non-quantified recipe ingredients without inventing amounts', () {
+      const recipe = Recipe(
+        id: 'seasoned-manual', title: 'Seasoned', subtitle: '', image: '', minutes: 1,
+        difficulty: 'Easy', category: 'Dinner', calories: 0, servings: 2,
+        ingredients: [Ingredient('Salt', null, '', amountType: IngredientAmountType.toTaste)],
+        steps: [],
+      );
+      final state = PlannerState()..addIngredients(recipe, 2);
+
+      final salt = state.buildGroceryList(const []).single;
+      expect(salt.name, 'Salt');
+      expect(salt.isQuantified, isFalse);
+      expect(salt.amount, 0);
+    });
+
     test('persists dated meal plans using ISO calendar dates', () {
       final state = PlannerState();
       state.assignMeal(
