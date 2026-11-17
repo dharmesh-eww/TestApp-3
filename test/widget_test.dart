@@ -78,19 +78,24 @@ void main() {
     final hindiOption = find.byKey(const Key('language-option-hindi'));
     final gujaratiOption = find.byKey(const Key('language-option-gujarati'));
     final arabicOption = find.byKey(const Key('language-option-arabic'));
-    expect(englishOption, findsOneWidget);
-    expect(hindiOption, findsOneWidget);
-    expect(gujaratiOption, findsOneWidget);
-    expect(arabicOption, findsOneWidget);
-    expect(tester.getTopLeft(englishOption).dy, lessThan(tester.getTopLeft(hindiOption).dy));
-    expect(tester.getTopLeft(hindiOption).dy, lessThan(tester.getTopLeft(gujaratiOption).dy));
-    expect(tester.getTopLeft(gujaratiOption).dy, lessThan(tester.getTopLeft(arabicOption).dy));
+    final japaneseOption = find.byKey(const Key('language-option-japanese'));
+    final portugueseOption = find.byKey(const Key('language-option-portuguese'));
+    final indonesianOption = find.byKey(const Key('language-option-indonesian'));
+    final spanishOption = find.byKey(const Key('language-option-spanish'));
+    final chineseOption = find.byKey(const Key('language-option-chinese'));
+    final orderedOptions = [englishOption, hindiOption, gujaratiOption, arabicOption, japaneseOption, portugueseOption, indonesianOption, spanishOption, chineseOption];
+    for (final option in orderedOptions) {
+      expect(option, findsOneWidget);
+    }
+    for (var i = 0; i < orderedOptions.length - 1; i++) {
+      expect(tester.getTopLeft(orderedOptions[i]).dy, lessThan(tester.getTopLeft(orderedOptions[i + 1]).dy));
+    }
 
-    await tester.tap(arabicOption);
+    await tester.tap(japaneseOption);
     await tester.pumpAndSettle();
 
-    expect(find.text('الإعدادات'), findsOneWidget);
-    expect(find.text('اللغة'), findsOneWidget);
+    expect(find.text('設定'), findsOneWidget);
+    expect(find.text('言語'), findsOneWidget);
     expect(find.byKey(const Key('locale-toggle')), findsNothing);
   });
 
