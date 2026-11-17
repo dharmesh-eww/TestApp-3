@@ -28,11 +28,12 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     final today = DateUtils.dateOnly(DateTime.now());
     final currentWeekStart = today.subtract(Duration(days: today.weekday - 1));
     final selectedWeekStart = _date.subtract(Duration(days: _date.weekday - 1));
-    final mealsForSelectedDate = dateMeals.isNotEmpty
-        ? dateMeals
-        : DateUtils.isSameDay(currentWeekStart, selectedWeekStart)
-            ? state.mealsFor(weekdayNames[_date.weekday - 1])
-            : const [];
+    final isCurrentWeek = DateUtils.isSameDay(currentWeekStart, selectedWeekStart);
+    final templateMeals = isCurrentWeek ? state.mealsFor(weekdayNames[_date.weekday - 1]) : const [];
+    final mealsForSelectedDate = [
+      ...templateMeals.where((template) => !dateMeals.any((dated) => dated.slot == template.slot)),
+      ...dateMeals,
+    ];
     for (final meal in mealsForSelectedDate) {
       final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
       if (recipe == null) continue;
@@ -147,11 +148,12 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     final today = DateUtils.dateOnly(DateTime.now());
     final currentWeekStart = today.subtract(Duration(days: today.weekday - 1));
     final selectedWeekStart = date.subtract(Duration(days: date.weekday - 1));
-    final meals = datedMeals.isNotEmpty
-        ? datedMeals
-        : DateUtils.isSameDay(currentWeekStart, selectedWeekStart)
-            ? state.mealsFor(weekdays[date.weekday - 1])
-            : const [];
+    final isCurrentWeek = DateUtils.isSameDay(currentWeekStart, selectedWeekStart);
+    final templateMeals = isCurrentWeek ? state.mealsFor(weekdays[date.weekday - 1]) : const [];
+    final meals = [
+      ...templateMeals.where((template) => !datedMeals.any((dated) => dated.slot == template.slot)),
+      ...datedMeals,
+    ];
     var total = 0.0;
     for (final meal in meals) {
       final recipe = catalog.where((item) => item.id == meal.recipeId).firstOrNull;
