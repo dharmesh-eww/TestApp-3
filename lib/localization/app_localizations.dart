@@ -526,14 +526,54 @@ class AppLocalizations {
   String get groceries => switch (locale.languageCode) { 'ar' => 'المشتريات', 'hi' => 'किराने का सामान', 'gu' => 'કરિયાણું', 'ja' => '買い物リスト', 'pt' => 'Compras', 'id' => 'Belanja', 'es' => 'Compras', 'zh' => '购物清单', _ => 'Groceries' };
   String get kitchen => switch (locale.languageCode) { 'ar' => 'المطبخ', 'hi' => 'रसोई', 'gu' => 'રસોડું', 'ja' => 'キッチン', 'pt' => 'Cozinha', 'id' => 'Dapur', 'es' => 'Cocina', 'zh' => '厨房', _ => 'Kitchen' };
   String get language => switch (locale.languageCode) { 'ar' => 'تغيير اللغة', 'hi' => 'भाषा बदलें', 'gu' => 'ભાષા બદલો', 'ja' => '言語を変更', 'pt' => 'Alterar idioma', 'id' => 'Ubah bahasa', 'es' => 'Cambiar idioma', 'zh' => '更改语言', _ => 'Change language' };
-  String get recipeShelf => isArabic ? 'رف الوصفات' : 'THE RECIPE SHELF';
-  String get findFavourite => isArabic ? 'اعثر على\nمفضلتك القادمة.' : 'Find your next\nfavourite.';
-  String get searchHint => isArabic ? 'ابحث عن وصفة أو مكوّن' : 'Search recipes or ingredients';
-  String get emptyShelf => isArabic ? 'لا توجد وصفات هنا' : 'Nothing on this shelf';
-  String get emptyShelfHint => isArabic ? 'جرّب مكوّناً آخر أو امسح عوامل التصفية.' : 'Try another ingredient or clear your filters.';
-  String get weekEyebrow => isArabic ? 'أسبوع بطعم جميل' : 'A WEEK THAT TASTES GOOD';
-  String get mealPlanner => isArabic ? 'مخطط\nوجباتك.' : 'Your meal\nplanner.';
-  String get weekDescription => isArabic ? 'سبعة أيام وأربع وجبات يومياً. خطط أسبوعك بطريقتك.' : 'Seven days, four gentle prompts a day. Make the week your own.';
+  String get recipeShelf => switch (locale.languageCode) {
+    'ar' => 'رف الوصفات', 'ja' => 'レシピ棚', 'pt' => 'A ESTANTE DE RECEITAS',
+    'id' => 'RAK RESEP', 'es' => 'EL ESTANTE DE RECETAS', 'zh' => '食谱架',
+    _ => 'THE RECIPE SHELF'
+  };
+  String get findFavourite => switch (locale.languageCode) {
+    'ar' => 'اعثر على\nمفضلتك القادمة.', 'ja' => '次のお気に入りを\n見つけましょう。',
+    'pt' => 'Encontre sua próxima\nreceita favorita.', 'id' => 'Temukan resep\nfavorit Anda berikutnya.',
+    'es' => 'Encuentra tu próxima\nreceta favorita.', 'zh' => '发现你的\n下一道心头好。',
+    _ => 'Find your next\nfavourite.'
+  };
+  String get searchHint => switch (locale.languageCode) {
+    'ar' => 'ابحث عن وصفة أو مكوّن', 'ja' => 'レシピや材料を検索',
+    'pt' => 'Buscar receitas ou ingredientes', 'id' => 'Cari resep atau bahan',
+    'es' => 'Buscar recetas o ingredientes', 'zh' => '搜索食谱或食材',
+    _ => 'Search recipes or ingredients'
+  };
+  String get emptyShelf => switch (locale.languageCode) {
+    'ar' => 'لا توجد وصفات هنا', 'ja' => 'レシピがありません', 'pt' => 'Nenhuma receita aqui',
+    'id' => 'Belum ada resep', 'es' => 'No hay recetas aquí', 'zh' => '这里还没有食谱',
+    _ => 'Nothing on this shelf'
+  };
+  String get emptyShelfHint => switch (locale.languageCode) {
+    'ar' => 'جرّب مكوّناً آخر أو امسح عوامل التصفية.', 'ja' => '別の材料を試すか、フィルターを解除してください。',
+    'pt' => 'Tente outro ingrediente ou limpe os filtros.', 'id' => 'Coba bahan lain atau hapus filter.',
+    'es' => 'Prueba otro ingrediente o borra los filtros.', 'zh' => '试试其他食材，或清除筛选条件。',
+    _ => 'Try another ingredient or clear your filters.'
+  };
+  String get weekEyebrow => switch (locale.languageCode) {
+    'ar' => 'أسبوع بطعم جميل', 'ja' => 'おいしい一週間に', 'pt' => 'UMA SEMANA CHEIA DE SABOR',
+    'id' => 'PEKAN YANG LEZAT', 'es' => 'UNA SEMANA LLENA DE SABOR', 'zh' => '开启美味一周',
+    _ => 'A WEEK THAT TASTES GOOD'
+  };
+  String get mealPlanner => switch (locale.languageCode) {
+    'ar' => 'مخطط\nوجباتك.', 'ja' => 'あなたの\n献立プランナー。',
+    'pt' => 'Seu planejador\nde refeições.', 'id' => 'Perencana\nmenu Anda.',
+    'es' => 'Tu planificador\nde comidas.', 'zh' => '你的\n每周膳食计划。',
+    _ => 'Your meal\nplanner.'
+  };
+  String get weekDescription => switch (locale.languageCode) {
+    'ar' => 'سبعة أيام وأربع وجبات يومياً. خطط أسبوعك بطريقتك.',
+    'ja' => '7日間、毎日4回の食事。自分らしく一週間を計画しましょう。',
+    'pt' => 'Sete dias e quatro refeições por dia. Planeje sua semana do seu jeito.',
+    'id' => 'Tujuh hari dan empat waktu makan setiap hari. Atur minggu Anda sendiri.',
+    'es' => 'Siete días y cuatro comidas al día. Organiza tu semana a tu manera.',
+    'zh' => '七天，每天四餐。按照自己的节奏安排一周。',
+    _ => 'Seven days, four gentle prompts a day. Make the week your own.'
+  };
 
   String category(String id, String fallback) {
     if (isHindi) return const {'all':'सभी व्यंजन','breakfast':'नाश्ता','lunch':'दोपहर का भोजन','dinner':'रात का भोजन','snacks':'हल्के नाश्ते'}[id] ?? fallback;
