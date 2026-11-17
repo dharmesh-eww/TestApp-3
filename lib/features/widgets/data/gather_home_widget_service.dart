@@ -20,7 +20,9 @@ class GatherHomeWidgetService {
     for (final meal in meals) {
       final recipe = recipesById[meal.recipeId];
       if (recipe == null) continue;
-      lines.add('${meal.slot.name[0].toUpperCase()}${meal.slot.name.substring(1)} · ${recipe.title}');
+      final allergyBlocked = state.allergies.isNotEmpty &&
+          (!recipe.allergensVerified || recipe.verifiedAllergens.any((value) => state.allergies.contains(value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' '))));
+      lines.add('${allergyBlocked ? '⚠ ' : ''}${meal.slot.name[0].toUpperCase()}${meal.slot.name.substring(1)} · ${recipe.title}');
     }
     try {
       await HomeWidget.saveWidgetData<String>('today_title', 'Today in Gather');
