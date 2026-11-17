@@ -180,8 +180,12 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int selected = 0;
-  final pages = const [
-    TodayScreen(), DiscoverScreen(), PlanScreen(), GroceryScreen(), KitchenScreen(),
+  List<Widget> get pages => [
+    const TodayScreen(),
+    const DiscoverScreen(),
+    const PlanScreen(),
+    const GroceryScreen(),
+    KitchenScreen(locale: widget.locale, onLocaleChanged: widget.onLocaleChanged),
   ];
 
   void selectTab(int index) {
@@ -195,26 +199,6 @@ class _AppShellState extends State<AppShell> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(end: 12, top: 4),
-                child: Semantics(
-                  button: true,
-                  label: appStrings(context).language,
-                  child: TextButton.icon(
-                    key: const Key('locale-toggle'),
-                    onPressed: () => widget.onLocaleChanged(
-                      widget.locale.languageCode == 'en'
-                          ? const Locale('ar')
-                          : const Locale('en'),
-                    ),
-                    icon: Icon(Icons.language, size: 18),
-                    label: Text(widget.locale.languageCode == 'en' ? 'العربية' : 'English'),
-                  ),
-                ),
-              ),
-            ),
             Expanded(
               child: AnimatedSwitcher(
                 duration: PlannerScope.of(context).reduceMotion ? Duration.zero : AppMotion.page,
@@ -1079,7 +1063,10 @@ String _formatAmount(double value)=>value==value.roundToDouble()?value.toInt().t
 
 
 class KitchenScreen extends StatelessWidget {
-  const KitchenScreen({super.key});
+  const KitchenScreen({super.key, required this.locale, required this.onLocaleChanged});
+
+  final Locale locale;
+  final ValueChanged<Locale> onLocaleChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -1108,7 +1095,7 @@ class KitchenScreen extends StatelessWidget {
             icon: Icon(Icons.history), label: Text(appStrings(context).label('Cooking history', 'سجل الطهي')),
           ),
           OutlinedButton.icon(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PlannerSettingsScreen())),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen(locale: locale, onLocaleChanged: onLocaleChanged))),
             icon: Icon(Icons.tune), label: Text(appStrings(context).label('Settings', 'الإعدادات')),
           ),
         ]),
