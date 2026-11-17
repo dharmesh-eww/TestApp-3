@@ -139,8 +139,10 @@ class RecipeCatalog {
     String query = '',
     String categoryId = 'all',
     String cuisineId = 'all',
+    Set<String> cuisineIds = const {},
     FoodType? foodType,
     String difficulty = 'all',
+    int? minMinutes,
     int? maxMinutes,
     Set<String> dietaryTags = const {},
     RecipeSort sort = RecipeSort.recommended,
@@ -150,10 +152,13 @@ class RecipeCatalog {
       final matchesCategory = categoryId == 'all' ||
           recipe.categoryIds.contains(categoryId) ||
           recipe.category.toLowerCase() == categoryId.toLowerCase();
-      final matchesCuisine = cuisineId == 'all' || recipe.cuisineIds.contains(cuisineId);
+      final matchesCuisine = cuisineIds.isNotEmpty
+          ? recipe.cuisineIds.any(cuisineIds.contains)
+          : cuisineId == 'all' || recipe.cuisineIds.contains(cuisineId);
       final matchesFoodType = foodType == null || recipe.foodType == foodType;
       final matchesDifficulty = difficulty == 'all' || recipe.difficulty.toLowerCase() == difficulty.toLowerCase();
-      final matchesTime = maxMinutes == null || recipe.totalMinutes <= maxMinutes;
+      final matchesTime = (minMinutes == null || recipe.totalMinutes >= minMinutes) &&
+          (maxMinutes == null || recipe.totalMinutes <= maxMinutes);
       final matchesDiet = dietaryTags.isEmpty || dietaryTags.every(recipe.dietaryTags.contains);
       return recipe.isPublished && matchesCategory && matchesCuisine && matchesFoodType &&
           matchesDifficulty && matchesTime && matchesDiet && recipe.matches(normalized);
