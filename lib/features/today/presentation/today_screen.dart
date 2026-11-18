@@ -59,7 +59,7 @@ class _TodayScreenState extends State<TodayScreen> {
             const SizedBox(height: 7),
             Text(strings.label('A little more joy\\nin the kitchen.', 'مزيد من البهجة\\nفي مطبخك.'), style: TextStyle(fontFamily: 'Georgia', fontSize: 31, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
           ])),
-          const CircleAvatar(radius: 24, backgroundColor: Color(0xFFE9E4D8), child: Icon(Icons.spa_outlined, color: AppTheme.olive)),
+          CircleAvatar(radius: 24, backgroundColor: const Color(0xFFE9E4D8), child: Icon(Icons.spa_outlined, color: AppTheme.olive)),
         ]),
         const SizedBox(height: 24),
         SectionHeading(title: strings.label('Today’s inspiration', 'إلهام اليوم'), action: strings.label('See all', 'عرض الكل'), onTap: () => goToAppTab(context, 1)),
