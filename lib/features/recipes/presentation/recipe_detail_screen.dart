@@ -311,6 +311,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               ),
             ),
             const SizedBox(height: 26),
+            _buildCookingTips(context, recipe),
+            const SizedBox(height: 26),
             Text(appStrings(context).label('Let’s make it', 'هيا نبدأ التحضير'), style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 14),
             ...List.generate(recipe.steps.length, (index) => Padding(
@@ -324,6 +326,108 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           ]),
         )),
       ]),
+    );
+  }
+
+
+  Widget _buildCookingTips(BuildContext context, Recipe recipe) {
+    final ingredientNames = recipe.ingredients.map((item) => item.name.toLowerCase()).join(' ');
+    final instructions = recipe.steps.join(' ').toLowerCase();
+    final tips = <(String, String)>[
+      (
+        appStrings(context).label('Prep before you cook', 'حضّر المكونات قبل الطهي'),
+        appStrings(context).label(
+          'Read all the steps first, then wash, chop and measure the ingredients. Keep them within reach so you can focus on cooking.',
+          'اقرأ جميع الخطوات أولًا، ثم اغسل المكونات وقطّعها وقِس كمياتها. ضعها بالقرب منك لتتمكن من التركيز على الطهي.',
+        ),
+      ),
+      if (ingredientNames.contains('garlic') || ingredientNames.contains('onion'))
+        (
+          appStrings(context).label('Build flavour gently', 'ابدأ ببناء النكهة بهدوء'),
+          appStrings(context).label(
+            'Cook the onion until softened before adding garlic. Stir the garlic briefly and avoid letting it brown too much, which can make it taste bitter.',
+            'اطهِ البصل حتى يلين قبل إضافة الثوم. قلّب الثوم لفترة قصيرة وتجنب تحميره كثيرًا حتى لا يصبح مذاقه مُرًا.',
+          ),
+        ),
+      if (ingredientNames.contains('chicken') || ingredientNames.contains('salmon') || ingredientNames.contains('fish') || ingredientNames.contains('beef'))
+        (
+          appStrings(context).label('Give protein room to cook', 'اترك مساحة كافية للبروتين أثناء الطهي'),
+          appStrings(context).label(
+            'Avoid overcrowding the pan. Cook in batches if needed so the surface browns instead of steaming, and check that it is safely cooked through.',
+            'تجنب ازدحام المقلاة. اطهِ المكونات على دفعات عند الحاجة حتى تتحمر بدلًا من أن تتبخر، وتأكد من نضجها بأمان.',
+          ),
+        ),
+      if (ingredientNames.contains('rice') || ingredientNames.contains('pasta') || ingredientNames.contains('noodle'))
+        (
+          appStrings(context).label('Watch your grains', 'انتبه إلى نضج الحبوب والمعكرونة'),
+          appStrings(context).label(
+            'Check the rice, pasta or noodles a little before the suggested cooking time. Drain or rest them as appropriate so they keep their texture.',
+            'تحقق من الأرز أو المعكرونة أو النودلز قبل موعد النضج المتوقع بقليل. صفِّها أو اتركها لترتاح حسب الحاجة للحفاظ على قوامها.',
+          ),
+        ),
+      if (ingredientNames.contains('lemon') || ingredientNames.contains('lime') || ingredientNames.contains('vinegar'))
+        (
+          appStrings(context).label('Balance with acidity', 'وازن النكهة بالحموضة'),
+          appStrings(context).label(
+            'Add citrus juice or vinegar gradually, then taste. A little acidity near the end can brighten rich or savoury flavours.',
+            'أضف عصير الحمضيات أو الخل تدريجيًا ثم تذوق. يمكن لكمية صغيرة من الحموضة في النهاية أن تُبرز النكهات الغنية والمالحة.',
+          ),
+        ),
+      if (instructions.contains('simmer') || instructions.contains('sauce') || ingredientNames.contains('coconut milk'))
+        (
+          appStrings(context).label('Keep sauces under control', 'تحكم في قوام الصلصة'),
+          appStrings(context).label(
+            'Once the sauce is simmering, lower the heat and stir from time to time. A gentle simmer helps flavours come together without scorching.',
+            'بعد بدء غليان الصلصة بهدوء، خفّض الحرارة وقلّب من حين لآخر. يساعد الغليان الخفيف على امتزاج النكهات دون احتراق.',
+          ),
+        ),
+      (
+        appStrings(context).label('Taste and adjust at the end', 'تذوق واضبط النكهة في النهاية'),
+        appStrings(context).label(
+          'Taste before serving. Adjust salt, pepper and herbs a little at a time so the main ingredients remain the star.',
+          'تذوق الطعام قبل التقديم. اضبط الملح والفلفل والأعشاب تدريجيًا حتى تبقى المكونات الأساسية هي الأبرز.',
+        ),
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(appStrings(context).label('Cook’s tips', 'نصائح الطهي'), style: Theme.of(context).textTheme.headlineMedium),
+        const SizedBox(height: 6),
+        Text(
+          appStrings(context).label('A few helpful pointers for this recipe', 'إرشادات مفيدة لتحضير هذه الوصفة'),
+          style: TextStyle(color: AppTheme.muted, fontSize: 12),
+        ),
+        const SizedBox(height: 12),
+        ...tips.map((tip) => Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 9),
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppTheme.line),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.lightbulb_outline_rounded, color: AppTheme.terracotta, size: 19),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(tip.$1, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w800, fontSize: 13)),
+                    const SizedBox(height: 4),
+                    Text(tip.$2, style: TextStyle(color: AppTheme.muted, height: 1.4, fontSize: 12)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )),
+      ],
     );
   }
 
