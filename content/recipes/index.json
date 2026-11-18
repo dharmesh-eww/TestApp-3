@@ -113,7 +113,8 @@
           "step": 4,
           "text": "Finish with parmesan, torn basil, black pepper and a little olive oil."
         }
-      ]
+      ],
+      "youtube_video_url": "https://www.youtube.com/watch?v=LDR6Kas6zyU"
     },
     {
       "id": "roasted-bowl",
@@ -385,7 +386,8 @@
           "step": 4,
           "text": "Serve hot with toasted sourdough and fresh herbs."
         }
-      ]
+      ],
+      "youtube_video_url": "https://www.youtube.com/watch?v=MkULY-TuRz0"
     },
     {
       "id": "gujarati-dhokla",
@@ -457,6 +459,4726 @@
         {
           "step": 3,
           "text": "Steam until cooked through and finish with a light tempering."
+        }
+      ]
+    },
+    {
+      "id": "masala-oats",
+      "slug": "masala-oats",
+      "title": "Masala oats",
+      "description": "A delicious homemade masala oats made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 180,
+      "tags": [
+        "indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "rolled_oats",
+          "display_name": "Rolled Oats",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "mixed_vegetables",
+          "display_name": "Mixed Vegetables",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "cumin",
+          "display_name": "Cumin",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the rolled oats, onion, tomato. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with mixed vegetables, cumin until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the masala oats warm."
+        }
+      ]
+    },
+    {
+      "id": "kanda-poha",
+      "slug": "kanda-poha",
+      "title": "Kanda poha",
+      "description": "A delicious homemade kanda poha made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 217,
+      "tags": [
+        "indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "flattened_rice",
+          "display_name": "Flattened Rice",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "peanuts",
+          "display_name": "Peanuts",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "mustard_seeds",
+          "display_name": "Mustard Seeds",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "curry_leaves",
+          "display_name": "Curry Leaves",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the flattened rice, onion, peanuts. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with mustard seeds, curry leaves until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the kanda poha warm."
+        }
+      ]
+    },
+    {
+      "id": "besan-chilla",
+      "slug": "besan-chilla",
+      "title": "Besan chilla",
+      "description": "A delicious homemade besan chilla made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 254,
+      "tags": [
+        "indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "gram_flour",
+          "display_name": "Gram Flour",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "coriander",
+          "display_name": "Coriander",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "carom_seeds",
+          "display_name": "Carom Seeds",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the gram flour, onion, tomato. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with coriander, carom seeds until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the besan chilla warm."
+        }
+      ]
+    },
+    {
+      "id": "aloo-paratha",
+      "slug": "aloo-paratha",
+      "title": "Aloo paratha",
+      "description": "A delicious homemade aloo paratha made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 291,
+      "tags": [
+        "indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "whole_wheat_flour",
+          "display_name": "Whole Wheat Flour",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "potatoes",
+          "display_name": "Potatoes",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "coriander",
+          "display_name": "Coriander",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "cumin",
+          "display_name": "Cumin",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "ghee",
+          "display_name": "Ghee",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the whole wheat flour, potatoes, coriander. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with cumin, ghee until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the aloo paratha warm."
+        }
+      ]
+    },
+    {
+      "id": "idli-sambar",
+      "slug": "idli-sambar",
+      "title": "Idli with sambar",
+      "description": "A delicious homemade idli with sambar made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "south_indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 8,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 328,
+      "tags": [
+        "south indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "idli_batter",
+          "display_name": "Idli Batter",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "toor_dal",
+          "display_name": "Toor Dal",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "mixed_vegetables",
+          "display_name": "Mixed Vegetables",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "tamarind",
+          "display_name": "Tamarind",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "sambar_powder",
+          "display_name": "Sambar Powder",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the idli batter, toor dal, mixed vegetables. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with tamarind, sambar powder until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the idli with sambar warm."
+        }
+      ]
+    },
+    {
+      "id": "rava-upma",
+      "slug": "rava-upma",
+      "title": "Vegetable rava upma",
+      "description": "A delicious homemade vegetable rava upma made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "south_indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 11,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 365,
+      "tags": [
+        "south indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "semolina",
+          "display_name": "Semolina",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "carrot",
+          "display_name": "Carrot",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "peas",
+          "display_name": "Peas",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "cashews",
+          "display_name": "Cashews",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the semolina, onion, carrot. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with peas, cashews until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the vegetable rava upma warm."
+        }
+      ]
+    },
+    {
+      "id": "masala-dosa",
+      "slug": "masala-dosa",
+      "title": "Crispy masala dosa",
+      "description": "A delicious homemade crispy masala dosa made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "south_indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 402,
+      "tags": [
+        "south indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "dosa_batter",
+          "display_name": "Dosa Batter",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "potatoes",
+          "display_name": "Potatoes",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "mustard_seeds",
+          "display_name": "Mustard Seeds",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "curry_leaves",
+          "display_name": "Curry Leaves",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the dosa batter, potatoes, onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with mustard seeds, curry leaves until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the crispy masala dosa warm."
+        }
+      ]
+    },
+    {
+      "id": "banana-pancakes",
+      "slug": "banana-pancakes",
+      "title": "Banana oat pancakes",
+      "description": "A delicious homemade banana oat pancakes made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 439,
+      "tags": [
+        "global",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "banana",
+          "display_name": "Banana",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "rolled_oats",
+          "display_name": "Rolled Oats",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "egg",
+          "display_name": "Egg",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "milk",
+          "display_name": "Milk",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "baking_powder",
+          "display_name": "Baking Powder",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the banana, rolled oats, egg. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with milk, baking powder until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the banana oat pancakes warm."
+        }
+      ]
+    },
+    {
+      "id": "avocado-toast",
+      "slug": "avocado-toast",
+      "title": "Avocado tomato toast",
+      "description": "A delicious homemade avocado tomato toast made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 8,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 476,
+      "tags": [
+        "global",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "sourdough",
+          "display_name": "Sourdough",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "avocado",
+          "display_name": "Avocado",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "lemon",
+          "display_name": "Lemon",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "olive_oil",
+          "display_name": "Olive Oil",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the sourdough, avocado, tomato. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with lemon, olive oil until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the avocado tomato toast warm."
+        }
+      ]
+    },
+    {
+      "id": "paneer-bhurji",
+      "slug": "paneer-bhurji",
+      "title": "Paneer bhurji",
+      "description": "A delicious homemade paneer bhurji made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 183,
+      "tags": [
+        "indian",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "paneer",
+          "display_name": "Paneer",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "ginger",
+          "display_name": "Ginger",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "garam_masala",
+          "display_name": "Garam Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the paneer, onion, tomato. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with ginger, garam masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the paneer bhurji warm."
+        }
+      ]
+    },
+    {
+      "id": "apple-muffins",
+      "slug": "apple-muffins",
+      "title": "Apple cinnamon oat muffins",
+      "description": "A delicious homemade apple cinnamon oat muffins made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 220,
+      "tags": [
+        "global",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "rolled_oats",
+          "display_name": "Rolled Oats",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "apple",
+          "display_name": "Apple",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "egg",
+          "display_name": "Egg",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "milk",
+          "display_name": "Milk",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "cinnamon",
+          "display_name": "Cinnamon",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the rolled oats, apple, egg. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with milk, cinnamon until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the apple cinnamon oat muffins warm."
+        }
+      ]
+    },
+    {
+      "id": "shakshuka",
+      "slug": "shakshuka",
+      "title": "Classic shakshuka",
+      "description": "A delicious homemade classic shakshuka made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "breakfast"
+      ],
+      "cuisine_ids": [
+        "middle_eastern"
+      ],
+      "food_type": "eggetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 257,
+      "tags": [
+        "middle eastern",
+        "breakfast",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "eggs",
+          "display_name": "Eggs",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "bell_pepper",
+          "display_name": "Bell Pepper",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "paprika",
+          "display_name": "Paprika",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the eggs, tomatoes, bell pepper. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with onion, paprika until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the classic shakshuka warm."
+        }
+      ]
+    },
+    {
+      "id": "chickpea-salad",
+      "slug": "chickpea-salad",
+      "title": "Mediterranean chickpea salad",
+      "description": "A delicious homemade mediterranean chickpea salad made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "mediterranean"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 8,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 294,
+      "tags": [
+        "mediterranean",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "chickpeas",
+          "display_name": "Chickpeas",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cucumber",
+          "display_name": "Cucumber",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "red_onion",
+          "display_name": "Red Onion",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "parsley",
+          "display_name": "Parsley",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the chickpeas, cucumber, tomatoes. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with red onion, parsley until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the mediterranean chickpea salad warm."
+        }
+      ]
+    },
+    {
+      "id": "rajma",
+      "slug": "rajma",
+      "title": "Punjabi rajma",
+      "description": "A delicious homemade punjabi rajma made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 331,
+      "tags": [
+        "indian",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "kidney_beans",
+          "display_name": "Kidney Beans",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "ginger_garlic",
+          "display_name": "Ginger Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "rajma_masala",
+          "display_name": "Rajma Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the kidney beans, onion, tomatoes. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with ginger garlic, rajma masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the punjabi rajma warm."
+        }
+      ]
+    },
+    {
+      "id": "chole",
+      "slug": "chole",
+      "title": "Amritsari chole",
+      "description": "A delicious homemade amritsari chole made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 368,
+      "tags": [
+        "indian",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "chickpeas",
+          "display_name": "Chickpeas",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "ginger",
+          "display_name": "Ginger",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "chole_masala",
+          "display_name": "Chole Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the chickpeas, onion, tomatoes. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with ginger, chole masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the amritsari chole warm."
+        }
+      ]
+    },
+    {
+      "id": "veg-pulao",
+      "slug": "veg-pulao",
+      "title": "Vegetable pulao",
+      "description": "A delicious homemade vegetable pulao made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 405,
+      "tags": [
+        "indian",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "basmati_rice",
+          "display_name": "Basmati Rice",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "mixed_vegetables",
+          "display_name": "Mixed Vegetables",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "peas",
+          "display_name": "Peas",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "garam_masala",
+          "display_name": "Garam Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the basmati rice, mixed vegetables, onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with peas, garam masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the vegetable pulao warm."
+        }
+      ]
+    },
+    {
+      "id": "caprese-sandwich",
+      "slug": "caprese-sandwich",
+      "title": "Caprese pesto sandwich",
+      "description": "A delicious homemade caprese pesto sandwich made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "italian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 442,
+      "tags": [
+        "italian",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "ciabatta",
+          "display_name": "Ciabatta",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "mozzarella",
+          "display_name": "Mozzarella",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "basil_pesto",
+          "display_name": "Basil Pesto",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "fresh_basil",
+          "display_name": "Fresh Basil",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the ciabatta, mozzarella, tomato. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with basil pesto, fresh basil until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the caprese pesto sandwich warm."
+        }
+      ]
+    },
+    {
+      "id": "red-lentil-soup",
+      "slug": "red-lentil-soup",
+      "title": "Red lentil soup",
+      "description": "A delicious homemade red lentil soup made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "middle_eastern"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 479,
+      "tags": [
+        "middle eastern",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "red_lentils",
+          "display_name": "Red Lentils",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "carrot",
+          "display_name": "Carrot",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "garlic",
+          "display_name": "Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "vegetable_stock",
+          "display_name": "Vegetable Stock",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the red lentils, onion, carrot. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with garlic, vegetable stock until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the red lentil soup warm."
+        }
+      ]
+    },
+    {
+      "id": "quinoa-bowl",
+      "slug": "quinoa-bowl",
+      "title": "Green goddess quinoa bowl",
+      "description": "A delicious homemade green goddess quinoa bowl made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 186,
+      "tags": [
+        "global",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "quinoa",
+          "display_name": "Quinoa",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cucumber",
+          "display_name": "Cucumber",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "avocado",
+          "display_name": "Avocado",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "spinach",
+          "display_name": "Spinach",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "greek_yogurt",
+          "display_name": "Greek Yogurt",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the quinoa, cucumber, avocado. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with spinach, greek yogurt until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the green goddess quinoa bowl warm."
+        }
+      ]
+    },
+    {
+      "id": "tuna-wrap",
+      "slug": "tuna-wrap",
+      "title": "Lemon tuna wraps",
+      "description": "A delicious homemade lemon tuna wraps made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "pescatarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 223,
+      "tags": [
+        "global",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "tuna",
+          "display_name": "Tuna",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "whole_wheat_wraps",
+          "display_name": "Whole Wheat Wraps",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "greek_yogurt",
+          "display_name": "Greek Yogurt",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "celery",
+          "display_name": "Celery",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "lettuce",
+          "display_name": "Lettuce",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the tuna, whole wheat wraps, greek yogurt. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with celery, lettuce until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the lemon tuna wraps warm."
+        }
+      ]
+    },
+    {
+      "id": "palak-dal",
+      "slug": "palak-dal",
+      "title": "Palak moong dal",
+      "description": "A delicious homemade palak moong dal made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 260,
+      "tags": [
+        "indian",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "moong_dal",
+          "display_name": "Moong Dal",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "spinach",
+          "display_name": "Spinach",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "garlic",
+          "display_name": "Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "cumin",
+          "display_name": "Cumin",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the moong dal, spinach, tomato. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with garlic, cumin until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the palak moong dal warm."
+        }
+      ]
+    },
+    {
+      "id": "falafel-wrap",
+      "slug": "falafel-wrap",
+      "title": "Greek falafel wrap",
+      "description": "A delicious homemade greek falafel wrap made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "mediterranean"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 297,
+      "tags": [
+        "mediterranean",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "falafel",
+          "display_name": "Falafel",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "pita",
+          "display_name": "Pita",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cucumber",
+          "display_name": "Cucumber",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "greek_yogurt",
+          "display_name": "Greek Yogurt",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the falafel, pita, cucumber. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with tomato, greek yogurt until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the greek falafel wrap warm."
+        }
+      ]
+    },
+    {
+      "id": "lemon-rice",
+      "slug": "lemon-rice",
+      "title": "South Indian lemon rice",
+      "description": "A delicious homemade south indian lemon rice made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "south_indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 334,
+      "tags": [
+        "south indian",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "cooked_rice",
+          "display_name": "Cooked Rice",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "lemon",
+          "display_name": "Lemon",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "peanuts",
+          "display_name": "Peanuts",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "mustard_seeds",
+          "display_name": "Mustard Seeds",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "curry_leaves",
+          "display_name": "Curry Leaves",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the cooked rice, lemon, peanuts. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with mustard seeds, curry leaves until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the south indian lemon rice warm."
+        }
+      ]
+    },
+    {
+      "id": "burrito-bowl",
+      "slug": "burrito-bowl",
+      "title": "Black bean burrito bowl",
+      "description": "A delicious homemade black bean burrito bowl made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "mexican"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 371,
+      "tags": [
+        "mexican",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "brown_rice",
+          "display_name": "Brown Rice",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "black_beans",
+          "display_name": "Black Beans",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "corn",
+          "display_name": "Corn",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "avocado",
+          "display_name": "Avocado",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "lime",
+          "display_name": "Lime",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the brown rice, black beans, corn. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with avocado, lime until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the black bean burrito bowl warm."
+        }
+      ]
+    },
+    {
+      "id": "mushroom-risotto",
+      "slug": "mushroom-risotto",
+      "title": "Creamy mushroom risotto",
+      "description": "A delicious homemade creamy mushroom risotto made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "italian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 8,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 408,
+      "tags": [
+        "italian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "arborio_rice",
+          "display_name": "Arborio Rice",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "mushrooms",
+          "display_name": "Mushrooms",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "vegetable_stock",
+          "display_name": "Vegetable Stock",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "parmesan",
+          "display_name": "Parmesan",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the arborio rice, mushrooms, onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with vegetable stock, parmesan until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the creamy mushroom risotto warm."
+        }
+      ]
+    },
+    {
+      "id": "chicken-curry",
+      "slug": "chicken-curry",
+      "title": "Homestyle chicken curry",
+      "description": "A delicious homemade homestyle chicken curry made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "non_vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 11,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 445,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "chicken",
+          "display_name": "Chicken",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "ginger_garlic",
+          "display_name": "Ginger Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "garam_masala",
+          "display_name": "Garam Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the chicken, onion, tomatoes. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with ginger garlic, garam masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the homestyle chicken curry warm."
+        }
+      ]
+    },
+    {
+      "id": "paneer-tikka",
+      "slug": "paneer-tikka",
+      "title": "Tandoori paneer tikka",
+      "description": "A delicious homemade tandoori paneer tikka made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 482,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "paneer",
+          "display_name": "Paneer",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "bell_pepper",
+          "display_name": "Bell Pepper",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "greek_yogurt",
+          "display_name": "Greek Yogurt",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "tikka_masala",
+          "display_name": "Tikka Masala",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "red_onion",
+          "display_name": "Red Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the paneer, bell pepper, greek yogurt. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with tikka masala, red onion until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the tandoori paneer tikka warm."
+        }
+      ]
+    },
+    {
+      "id": "thai-green-curry",
+      "slug": "thai-green-curry",
+      "title": "Thai green vegetable curry",
+      "description": "A delicious homemade thai green vegetable curry made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "thai"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 189,
+      "tags": [
+        "thai",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "green_curry_paste",
+          "display_name": "Green Curry Paste",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "coconut_milk",
+          "display_name": "Coconut Milk",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "broccoli",
+          "display_name": "Broccoli",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "bell_pepper",
+          "display_name": "Bell Pepper",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "zucchini",
+          "display_name": "Zucchini",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the green curry paste, coconut milk, broccoli. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with bell pepper, zucchini until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the thai green vegetable curry warm."
+        }
+      ]
+    },
+    {
+      "id": "honey-salmon",
+      "slug": "honey-salmon",
+      "title": "Honey garlic salmon",
+      "description": "A delicious homemade honey garlic salmon made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "pescatarian",
+      "difficulty": "medium",
+      "prep_minutes": 8,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 226,
+      "tags": [
+        "global",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "salmon",
+          "display_name": "Salmon",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "honey",
+          "display_name": "Honey",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "soy_sauce",
+          "display_name": "Soy Sauce",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "garlic",
+          "display_name": "Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "broccoli",
+          "display_name": "Broccoli",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the salmon, honey, soy sauce. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with garlic, broccoli until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the honey garlic salmon warm."
+        }
+      ]
+    },
+    {
+      "id": "chicken-fajitas",
+      "slug": "chicken-fajitas",
+      "title": "Skillet chicken fajitas",
+      "description": "A delicious homemade skillet chicken fajitas made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "mexican"
+      ],
+      "food_type": "non_vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 263,
+      "tags": [
+        "mexican",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "chicken",
+          "display_name": "Chicken",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "bell_peppers",
+          "display_name": "Bell Peppers",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "fajita_seasoning",
+          "display_name": "Fajita Seasoning",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "tortillas",
+          "display_name": "Tortillas",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the chicken, bell peppers, onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with fajita seasoning, tortillas until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the skillet chicken fajitas warm."
+        }
+      ]
+    },
+    {
+      "id": "egg-fried-rice",
+      "slug": "egg-fried-rice",
+      "title": "Vegetable egg fried rice",
+      "description": "A delicious homemade vegetable egg fried rice made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "asian"
+      ],
+      "food_type": "eggetarian",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 300,
+      "tags": [
+        "asian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "cooked_rice",
+          "display_name": "Cooked Rice",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "eggs",
+          "display_name": "Eggs",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "peas",
+          "display_name": "Peas",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "carrot",
+          "display_name": "Carrot",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "soy_sauce",
+          "display_name": "Soy Sauce",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the cooked rice, eggs, peas. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with carrot, soy sauce until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the vegetable egg fried rice warm."
+        }
+      ]
+    },
+    {
+      "id": "baked-ziti",
+      "slug": "baked-ziti",
+      "title": "Baked tomato mozzarella pasta",
+      "description": "A delicious homemade baked tomato mozzarella pasta made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "italian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 337,
+      "tags": [
+        "italian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "ziti_pasta",
+          "display_name": "Ziti Pasta",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato_passata",
+          "display_name": "Tomato Passata",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "mozzarella",
+          "display_name": "Mozzarella",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "parmesan",
+          "display_name": "Parmesan",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "oregano",
+          "display_name": "Oregano",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the ziti pasta, tomato passata, mozzarella. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with parmesan, oregano until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the baked tomato mozzarella pasta warm."
+        }
+      ]
+    },
+    {
+      "id": "stuffed-peppers",
+      "slug": "stuffed-peppers",
+      "title": "Quinoa stuffed peppers",
+      "description": "A delicious homemade quinoa stuffed peppers made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 8,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 374,
+      "tags": [
+        "global",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "bell_peppers",
+          "display_name": "Bell Peppers",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "quinoa",
+          "display_name": "Quinoa",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "black_beans",
+          "display_name": "Black Beans",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "corn",
+          "display_name": "Corn",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the bell peppers, quinoa, black beans. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with corn, tomato until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the quinoa stuffed peppers warm."
+        }
+      ]
+    },
+    {
+      "id": "matar-paneer",
+      "slug": "matar-paneer",
+      "title": "Matar paneer",
+      "description": "A delicious homemade matar paneer made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 411,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "paneer",
+          "display_name": "Paneer",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "green_peas",
+          "display_name": "Green Peas",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "garam_masala",
+          "display_name": "Garam Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the paneer, green peas, onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with tomatoes, garam masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the matar paneer warm."
+        }
+      ]
+    },
+    {
+      "id": "vegetable-korma",
+      "slug": "vegetable-korma",
+      "title": "Creamy vegetable korma",
+      "description": "A delicious homemade creamy vegetable korma made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 448,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "mixed_vegetables",
+          "display_name": "Mixed Vegetables",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cashews",
+          "display_name": "Cashews",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "coconut_milk",
+          "display_name": "Coconut Milk",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "ginger",
+          "display_name": "Ginger",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the mixed vegetables, onion, cashews. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with coconut milk, ginger until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the creamy vegetable korma warm."
+        }
+      ]
+    },
+    {
+      "id": "dal-tadka",
+      "slug": "dal-tadka",
+      "title": "Restaurant-style dal tadka",
+      "description": "A delicious homemade restaurant-style dal tadka made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 485,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "toor_dal",
+          "display_name": "Toor Dal",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cumin",
+          "display_name": "Cumin",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "garlic",
+          "display_name": "Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "dried_red_chilli",
+          "display_name": "Dried Red Chilli",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the toor dal, tomato, cumin. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with garlic, dried red chilli until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the restaurant-style dal tadka warm."
+        }
+      ]
+    },
+    {
+      "id": "pav-bhaji",
+      "slug": "pav-bhaji",
+      "title": "Mumbai pav bhaji",
+      "description": "A delicious homemade mumbai pav bhaji made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 192,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "potatoes",
+          "display_name": "Potatoes",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cauliflower",
+          "display_name": "Cauliflower",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "peas",
+          "display_name": "Peas",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "pav_bhaji_masala",
+          "display_name": "Pav Bhaji Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the potatoes, cauliflower, peas. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with tomatoes, pav bhaji masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the mumbai pav bhaji warm."
+        }
+      ]
+    },
+    {
+      "id": "garlic-noodles",
+      "slug": "garlic-noodles",
+      "title": "Garlic vegetable noodles",
+      "description": "A delicious homemade garlic vegetable noodles made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "asian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 229,
+      "tags": [
+        "asian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "wheat_noodles",
+          "display_name": "Wheat Noodles",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cabbage",
+          "display_name": "Cabbage",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "carrot",
+          "display_name": "Carrot",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "bell_pepper",
+          "display_name": "Bell Pepper",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "soy_sauce",
+          "display_name": "Soy Sauce",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the wheat noodles, cabbage, carrot. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with bell pepper, soy sauce until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the garlic vegetable noodles warm."
+        }
+      ]
+    },
+    {
+      "id": "ratatouille",
+      "slug": "ratatouille",
+      "title": "Provençal ratatouille",
+      "description": "A delicious homemade provençal ratatouille made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "french"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 266,
+      "tags": [
+        "french",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "eggplant",
+          "display_name": "Eggplant",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "zucchini",
+          "display_name": "Zucchini",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "bell_pepper",
+          "display_name": "Bell Pepper",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "thyme",
+          "display_name": "Thyme",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the eggplant, zucchini, bell pepper. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with tomatoes, thyme until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the provençal ratatouille warm."
+        }
+      ]
+    },
+    {
+      "id": "teriyaki-chicken",
+      "slug": "teriyaki-chicken",
+      "title": "Chicken teriyaki rice bowl",
+      "description": "A delicious homemade chicken teriyaki rice bowl made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "japanese"
+      ],
+      "food_type": "non_vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 303,
+      "tags": [
+        "japanese",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "chicken_thighs",
+          "display_name": "Chicken Thighs",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "soy_sauce",
+          "display_name": "Soy Sauce",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "honey",
+          "display_name": "Honey",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "jasmine_rice",
+          "display_name": "Jasmine Rice",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "ginger",
+          "display_name": "Ginger",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the chicken thighs, soy sauce, honey. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with jasmine rice, ginger until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the chicken teriyaki rice bowl warm."
+        }
+      ]
+    },
+    {
+      "id": "tofu-stir-fry",
+      "slug": "tofu-stir-fry",
+      "title": "Sesame tofu stir-fry",
+      "description": "A delicious homemade sesame tofu stir-fry made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "asian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 340,
+      "tags": [
+        "asian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "firm_tofu",
+          "display_name": "Firm Tofu",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "broccoli",
+          "display_name": "Broccoli",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "soy_sauce",
+          "display_name": "Soy Sauce",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "sesame_oil",
+          "display_name": "Sesame Oil",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "ginger",
+          "display_name": "Ginger",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the firm tofu, broccoli, soy sauce. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with sesame oil, ginger until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the sesame tofu stir-fry warm."
+        }
+      ]
+    },
+    {
+      "id": "pumpkin-curry",
+      "slug": "pumpkin-curry",
+      "title": "Coconut pumpkin curry",
+      "description": "A delicious homemade coconut pumpkin curry made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 11,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 377,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "pumpkin",
+          "display_name": "Pumpkin",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "coconut_milk",
+          "display_name": "Coconut Milk",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "curry_powder",
+          "display_name": "Curry Powder",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the pumpkin, coconut milk, onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with tomato, curry powder until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the coconut pumpkin curry warm."
+        }
+      ]
+    },
+    {
+      "id": "khichdi",
+      "slug": "khichdi",
+      "title": "Moong dal vegetable khichdi",
+      "description": "A delicious homemade moong dal vegetable khichdi made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 22,
+      "servings": 2,
+      "calories_kcal": 414,
+      "tags": [
+        "indian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "rice",
+          "display_name": "Rice",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "moong_dal",
+          "display_name": "Moong Dal",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "carrot",
+          "display_name": "Carrot",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "peas",
+          "display_name": "Peas",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "turmeric",
+          "display_name": "Turmeric",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the rice, moong dal, carrot. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with peas, turmeric until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the moong dal vegetable khichdi warm."
+        }
+      ]
+    },
+    {
+      "id": "pesto-pasta",
+      "slug": "pesto-pasta",
+      "title": "Spinach pesto pasta",
+      "description": "A delicious homemade spinach pesto pasta made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "italian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 27,
+      "servings": 2,
+      "calories_kcal": 451,
+      "tags": [
+        "italian",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "pasta",
+          "display_name": "Pasta",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "spinach",
+          "display_name": "Spinach",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "basil",
+          "display_name": "Basil",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "parmesan",
+          "display_name": "Parmesan",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "walnuts",
+          "display_name": "Walnuts",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the pasta, spinach, basil. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with parmesan, walnuts until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the spinach pesto pasta warm."
+        }
+      ]
+    },
+    {
+      "id": "fish-tacos",
+      "slug": "fish-tacos",
+      "title": "Crispy fish tacos",
+      "description": "A delicious homemade crispy fish tacos made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "dinner"
+      ],
+      "cuisine_ids": [
+        "mexican"
+      ],
+      "food_type": "pescatarian",
+      "difficulty": "medium",
+      "prep_minutes": 8,
+      "cook_minutes": 32,
+      "servings": 2,
+      "calories_kcal": 488,
+      "tags": [
+        "mexican",
+        "dinner",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "white_fish",
+          "display_name": "White Fish",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "corn_tortillas",
+          "display_name": "Corn Tortillas",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cabbage",
+          "display_name": "Cabbage",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "greek_yogurt",
+          "display_name": "Greek Yogurt",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "lime",
+          "display_name": "Lime",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the white fish, corn tortillas, cabbage. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with greek yogurt, lime until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the crispy fish tacos warm."
+        }
+      ]
+    },
+    {
+      "id": "miso-soup",
+      "slug": "miso-soup",
+      "title": "Tofu miso soup",
+      "description": "A delicious homemade tofu miso soup made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "japanese"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 11,
+      "cook_minutes": 12,
+      "servings": 2,
+      "calories_kcal": 195,
+      "tags": [
+        "japanese",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "white_miso_paste",
+          "display_name": "White Miso Paste",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "firm_tofu",
+          "display_name": "Firm Tofu",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "wakame",
+          "display_name": "Wakame",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "spring_onion",
+          "display_name": "Spring Onion",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "soy_sauce",
+          "display_name": "Soy Sauce",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the white miso paste, firm tofu, wakame. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with spring onion, soy sauce until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the tofu miso soup warm."
+        }
+      ]
+    },
+    {
+      "id": "carrot-soup",
+      "slug": "carrot-soup",
+      "title": "Ginger carrot soup",
+      "description": "A delicious homemade ginger carrot soup made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "lunch"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 14,
+      "cook_minutes": 17,
+      "servings": 2,
+      "calories_kcal": 232,
+      "tags": [
+        "global",
+        "lunch",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "carrots",
+          "display_name": "Carrots",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "ginger",
+          "display_name": "Ginger",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "vegetable_stock",
+          "display_name": "Vegetable Stock",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "coconut_milk",
+          "display_name": "Coconut Milk",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the carrots, onion, ginger. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with vegetable stock, coconut milk until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the ginger carrot soup warm."
+        }
+      ]
+    },
+    {
+      "id": "hummus",
+      "slug": "hummus",
+      "title": "Classic lemon hummus",
+      "description": "A delicious homemade classic lemon hummus made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "middle_eastern"
+      ],
+      "food_type": "vegan",
+      "difficulty": "medium",
+      "prep_minutes": 17,
+      "cook_minutes": 10,
+      "servings": 2,
+      "calories_kcal": 269,
+      "tags": [
+        "middle eastern",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "chickpeas",
+          "display_name": "Chickpeas",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tahini",
+          "display_name": "Tahini",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "lemon",
+          "display_name": "Lemon",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "garlic",
+          "display_name": "Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "olive_oil",
+          "display_name": "Olive Oil",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the chickpeas, tahini, lemon. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with garlic, olive oil until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the classic lemon hummus warm."
+        }
+      ]
+    },
+    {
+      "id": "guacamole",
+      "slug": "guacamole",
+      "title": "Fresh tomato guacamole",
+      "description": "A delicious homemade fresh tomato guacamole made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "mexican"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 0,
+      "servings": 2,
+      "calories_kcal": 306,
+      "tags": [
+        "mexican",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "avocado",
+          "display_name": "Avocado",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "red_onion",
+          "display_name": "Red Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "lime",
+          "display_name": "Lime",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "coriander",
+          "display_name": "Coriander",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the avocado, tomato, red onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with lime, coriander until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the fresh tomato guacamole warm."
+        }
+      ]
+    },
+    {
+      "id": "roasted-chickpeas",
+      "slug": "roasted-chickpeas",
+      "title": "Smoky roasted chickpeas",
+      "description": "A delicious homemade smoky roasted chickpeas made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 11,
+      "cook_minutes": 5,
+      "servings": 2,
+      "calories_kcal": 343,
+      "tags": [
+        "global",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "chickpeas",
+          "display_name": "Chickpeas",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "olive_oil",
+          "display_name": "Olive Oil",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "smoked_paprika",
+          "display_name": "Smoked Paprika",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "cumin",
+          "display_name": "Cumin",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "garlic_powder",
+          "display_name": "Garlic Powder",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the chickpeas, olive oil, smoked paprika. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with cumin, garlic powder until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the smoky roasted chickpeas warm."
+        }
+      ]
+    },
+    {
+      "id": "yogurt-parfait",
+      "slug": "yogurt-parfait",
+      "title": "Berry yogurt parfait",
+      "description": "A delicious homemade berry yogurt parfait made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 14,
+      "cook_minutes": 10,
+      "servings": 2,
+      "calories_kcal": 380,
+      "tags": [
+        "global",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "greek_yogurt",
+          "display_name": "Greek Yogurt",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "mixed_berries",
+          "display_name": "Mixed Berries",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "granola",
+          "display_name": "Granola",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "honey",
+          "display_name": "Honey",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "chia_seeds",
+          "display_name": "Chia Seeds",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the greek yogurt, mixed berries, granola. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with honey, chia seeds until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the berry yogurt parfait warm."
+        }
+      ]
+    },
+    {
+      "id": "sweet-potato-fries",
+      "slug": "sweet-potato-fries",
+      "title": "Crispy baked sweet potato fries",
+      "description": "A delicious homemade crispy baked sweet potato fries made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 17,
+      "cook_minutes": 0,
+      "servings": 2,
+      "calories_kcal": 417,
+      "tags": [
+        "global",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "sweet_potatoes",
+          "display_name": "Sweet Potatoes",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "olive_oil",
+          "display_name": "Olive Oil",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "paprika",
+          "display_name": "Paprika",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "cornflour",
+          "display_name": "Cornflour",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "black_pepper",
+          "display_name": "Black Pepper",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the sweet potatoes, olive oil, paprika. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with cornflour, black pepper until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the crispy baked sweet potato fries warm."
+        }
+      ]
+    },
+    {
+      "id": "spinach-pakora",
+      "slug": "spinach-pakora",
+      "title": "Crispy spinach pakora",
+      "description": "A delicious homemade crispy spinach pakora made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 5,
+      "servings": 2,
+      "calories_kcal": 454,
+      "tags": [
+        "indian",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "spinach",
+          "display_name": "Spinach",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "gram_flour",
+          "display_name": "Gram Flour",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "rice_flour",
+          "display_name": "Rice Flour",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "carom_seeds",
+          "display_name": "Carom Seeds",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the spinach, onion, gram flour. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with rice flour, carom seeds until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the crispy spinach pakora warm."
+        }
+      ]
+    },
+    {
+      "id": "cucumber-raita",
+      "slug": "cucumber-raita",
+      "title": "Cucumber mint raita",
+      "description": "A delicious homemade cucumber mint raita made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegetarian",
+      "difficulty": "easy",
+      "prep_minutes": 11,
+      "cook_minutes": 10,
+      "servings": 2,
+      "calories_kcal": 491,
+      "tags": [
+        "indian",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "plain_yogurt",
+          "display_name": "Plain Yogurt",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cucumber",
+          "display_name": "Cucumber",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "mint",
+          "display_name": "Mint",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "roasted_cumin",
+          "display_name": "Roasted Cumin",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "black_salt",
+          "display_name": "Black Salt",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the plain yogurt, cucumber, mint. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with roasted cumin, black salt until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the cucumber mint raita warm."
+        }
+      ]
+    },
+    {
+      "id": "energy-bites",
+      "slug": "energy-bites",
+      "title": "Peanut date energy bites",
+      "description": "A delicious homemade peanut date energy bites made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "global"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 14,
+      "cook_minutes": 0,
+      "servings": 2,
+      "calories_kcal": 198,
+      "tags": [
+        "global",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "dates",
+          "display_name": "Dates",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "rolled_oats",
+          "display_name": "Rolled Oats",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "peanut_butter",
+          "display_name": "Peanut Butter",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "chia_seeds",
+          "display_name": "Chia Seeds",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "cocoa",
+          "display_name": "Cocoa",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the dates, rolled oats, peanut butter. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with chia seeds, cocoa until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the peanut date energy bites warm."
+        }
+      ]
+    },
+    {
+      "id": "corn-chaat",
+      "slug": "corn-chaat",
+      "title": "Masala corn chaat",
+      "description": "A delicious homemade masala corn chaat made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 17,
+      "cook_minutes": 5,
+      "servings": 2,
+      "calories_kcal": 235,
+      "tags": [
+        "indian",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "sweetcorn",
+          "display_name": "Sweetcorn",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "lime",
+          "display_name": "Lime",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "chaat_masala",
+          "display_name": "Chaat Masala",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the sweetcorn, tomato, onion. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with lime, chaat masala until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the masala corn chaat warm."
+        }
+      ]
+    },
+    {
+      "id": "tomato-bruschetta",
+      "slug": "tomato-bruschetta",
+      "title": "Tomato basil bruschetta",
+      "description": "A delicious homemade tomato basil bruschetta made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "italian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 8,
+      "cook_minutes": 10,
+      "servings": 2,
+      "calories_kcal": 272,
+      "tags": [
+        "italian",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "baguette",
+          "display_name": "Baguette",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomatoes",
+          "display_name": "Tomatoes",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "basil",
+          "display_name": "Basil",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "garlic",
+          "display_name": "Garlic",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "olive_oil",
+          "display_name": "Olive Oil",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the baguette, tomatoes, basil. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with garlic, olive oil until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the tomato basil bruschetta warm."
+        }
+      ]
+    },
+    {
+      "id": "sprout-chaat",
+      "slug": "sprout-chaat",
+      "title": "Moong sprout chaat",
+      "description": "A delicious homemade moong sprout chaat made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 11,
+      "cook_minutes": 0,
+      "servings": 2,
+      "calories_kcal": 309,
+      "tags": [
+        "indian",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "moong_sprouts",
+          "display_name": "Moong Sprouts",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "cucumber",
+          "display_name": "Cucumber",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "tomato",
+          "display_name": "Tomato",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "onion",
+          "display_name": "Onion",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "lemon",
+          "display_name": "Lemon",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the moong sprouts, cucumber, tomato. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with onion, lemon until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the moong sprout chaat warm."
+        }
+      ]
+    },
+    {
+      "id": "coconut-ladoo",
+      "slug": "coconut-ladoo",
+      "title": "Coconut date ladoo",
+      "description": "A delicious homemade coconut date ladoo made with everyday ingredients.",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1000",
+      "category_ids": [
+        "snacks"
+      ],
+      "cuisine_ids": [
+        "indian"
+      ],
+      "food_type": "vegan",
+      "difficulty": "easy",
+      "prep_minutes": 14,
+      "cook_minutes": 5,
+      "servings": 2,
+      "calories_kcal": 346,
+      "tags": [
+        "indian",
+        "snacks",
+        "homemade"
+      ],
+      "ingredients": [
+        {
+          "ingredient_id": "desiccated_coconut",
+          "display_name": "Desiccated Coconut",
+          "quantity": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "dates",
+          "display_name": "Dates",
+          "quantity": {
+            "amount": 100,
+            "unit": "g"
+          }
+        },
+        {
+          "ingredient_id": "almonds",
+          "display_name": "Almonds",
+          "quantity": {
+            "amount": 1,
+            "unit": "whole"
+          }
+        },
+        {
+          "ingredient_id": "cardamom",
+          "display_name": "Cardamom",
+          "quantity": {
+            "amount": 2,
+            "unit": "tsp"
+          }
+        },
+        {
+          "ingredient_id": "coconut",
+          "display_name": "Coconut",
+          "quantity": {
+            "amount": 1,
+            "unit": "tbsp"
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": "Prepare the desiccated coconut, dates, almonds. Wash, drain and chop fresh ingredients as needed."
+        },
+        {
+          "step": 2,
+          "text": "Heat a pan over medium heat. Cook the prepared ingredients with cardamom, coconut until tender and aromatic."
+        },
+        {
+          "step": 3,
+          "text": "Combine everything, season to taste and cook until the flavours come together. Serve the coconut date ladoo warm."
         }
       ]
     }
