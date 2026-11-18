@@ -6,8 +6,6 @@ import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/app/app_widgets.dart';
 import 'package:testapp_3/app/app_tab_navigation.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
-import 'package:testapp_3/features/recipes/presentation/recipe_detail_screen.dart';
-import 'package:testapp_3/core/navigation/animated_page_route.dart';
 
 class TodayScreen extends StatefulWidget {
   const TodayScreen({super.key});
