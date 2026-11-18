@@ -135,7 +135,7 @@ class _VideoUnavailable extends StatelessWidget {
     decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(16)),
     child: Column(
       children: [
-        const Icon(Icons.video_library_outlined, size: 36, color: AppTheme.muted),
+        Icon(Icons.video_library_outlined, size: 36, color: AppTheme.muted),
         const SizedBox(height: 8),
         Text(appStrings(context).recipeLabel('Video unavailable'), style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
         Text(title, textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted)),
