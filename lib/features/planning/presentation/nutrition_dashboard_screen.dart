@@ -154,17 +154,17 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
               Card(child: ListTile(
                 leading: Icon(Icons.restaurant_menu, color: AppTheme.olive),
                 title: Text(meal.recipe.title),
-                subtitle: Text('${meal.recipe.calories} kcal · ${meal.servings} planned · ${state.eatenServings(_dateKey, meal.recipe.id)} eaten'),
+                subtitle: Text('${meal.recipe.calories} kcal · ${meal.servings} planned · ${state.eatenServings(_dateKey, meal.recipe.id, slot: meal.slot.name)} eaten'),
                 trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                   IconButton(tooltip: strings.label('Remove one serving', 'إزالة حصة'), visualDensity: VisualDensity.compact,
-                    onPressed: state.eatenServings(_dateKey, meal.recipe.id) <= 0 ? null : () {
-                      state.setEatenServings(_dateKey, meal.recipe.id, state.eatenServings(_dateKey, meal.recipe.id) - 1);
+                    onPressed: state.eatenServings(_dateKey, meal.recipe.id, slot: meal.slot.name) <= 0 ? null : () {
+                      state.setEatenServings(_dateKey, meal.recipe.id, state.eatenServings(_dateKey, meal.recipe.id, slot: meal.slot.name) - 1, slot: meal.slot.name);
                       PlannerScope.refresh(context);
                     }, icon: Icon(Icons.remove_circle_outline)),
-                  Text('${state.eatenServings(_dateKey, meal.recipe.id)}', style: TextStyle(fontWeight: FontWeight.w800)),
+                  Text('${state.eatenServings(_dateKey, meal.recipe.id, slot: meal.slot.name)}', style: TextStyle(fontWeight: FontWeight.w800)),
                   IconButton(tooltip: strings.label('Add one serving', 'إضافة حصة'), visualDensity: VisualDensity.compact,
                     onPressed: () {
-                      state.setEatenServings(_dateKey, meal.recipe.id, state.eatenServings(_dateKey, meal.recipe.id) + 1);
+                      state.setEatenServings(_dateKey, meal.recipe.id, state.eatenServings(_dateKey, meal.recipe.id, slot: meal.slot.name) + 1, slot: meal.slot.name);
                       PlannerScope.refresh(context);
                     }, icon: Icon(Icons.add_circle_outline)),
                 ]),
