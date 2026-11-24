@@ -7,6 +7,7 @@ import 'package:testapp_3/app/app_widgets.dart';
 import 'package:testapp_3/app/app_tab_navigation.dart';
 import 'package:testapp_3/app/gather_visuals.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
+import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 
 class TodayScreen extends StatefulWidget {
   const TodayScreen({super.key});
@@ -25,16 +26,26 @@ class _TodayScreenState extends State<TodayScreen> {
     final strings = appStrings(context);
     if (catalog.isEmpty) return const SizedBox.shrink();
 
+    final tailored = RecipeCatalog.search(
+      catalog,
+      dietaryTags: planner.preferredDietaryTags,
+      preferredCuisines: planner.preferredCuisines,
+      preferredFoodTypes: planner.preferredFoodTypes,
+      preferredMaxCookingMinutes: planner.preferredMaxCookingMinutes,
+      preferredMealTypes: planner.preferredMealTypes,
+      allergies: planner.allergies,
+    );
+    final recommendations = tailored.isEmpty ? catalog.where((recipe) => recipe.isPublished).toList() : tailored;
     final favorites = catalog.where((recipe) => planner.favorites.contains(recipe.id)).toList();
     final viewedIds = planner.recentlyViewed.map((item) => item['recipe_id']).whereType<String>().toSet();
-    final recentlyExplored = catalog.where((recipe) => viewedIds.contains(recipe.id)).toList();
-    final quickMeals = catalog.where((recipe) => recipe.totalMinutes > 0 && recipe.totalMinutes <= 25).toList()
+    final recentlyExplored = recommendations.where((recipe) => viewedIds.contains(recipe.id)).toList();
+    final quickMeals = recommendations.where((recipe) => recipe.totalMinutes > 0 && recipe.totalMinutes <= 25).toList()
       ..sort((a, b) => a.totalMinutes.compareTo(b.totalMinutes));
-    final popular = catalog.where((recipe) => planner.recipeRatings.containsKey(recipe.id)).toList()
+    final popular = recommendations.where((recipe) => planner.recipeRatings.containsKey(recipe.id)).toList()
       ..sort((a, b) => (planner.recipeRatings[b.id] ?? 0).compareTo(planner.recipeRatings[a.id] ?? 0));
-    final topPicks = popular.isNotEmpty ? popular : catalog.where((recipe) => recipe.isPublished).take(8).toList();
-    final veggiePicks = catalog.where((recipe) => recipe.foodType == FoodType.vegan || recipe.foodType == FoodType.vegetarian).take(8).toList();
-    final featured = catalog.first;
+    final topPicks = popular.isNotEmpty ? popular : recommendations.take(8).toList();
+    final veggiePicks = recommendations.where((recipe) => recipe.foodType == FoodType.vegan || recipe.foodType == FoodType.vegetarian).take(8).toList();
+    final featured = recommendations.isNotEmpty ? recommendations.first : catalog.first;
     final ingredientNames = <String>[];
     for (final recipe in catalog) {
       for (final ingredient in recipe.ingredients) {
@@ -85,7 +96,7 @@ class _TodayScreenState extends State<TodayScreen> {
         const SizedBox(height: 26),
         _RecipeShelf(title: strings.label('Plant-powered favourites', 'اختيارات نباتية'), subtitle: strings.label('Fresh ideas packed with goodness', 'أفكار طازجة مليئة بالفائدة'), recipes: veggiePicks, action: strings.label('Explore', 'استكشف'), onAction: () => goToAppTab(context, 1)),
         const SizedBox(height: 26),
-        _RecipeShelf(title: strings.label('A few good ideas', 'بعض الأفكار الجميلة'), recipes: catalog.skip(1).take(10).toList(), action: strings.label('Explore', 'استكشف'), onAction: () => goToAppTab(context, 1)),
+        _RecipeShelf(title: strings.label('A few good ideas', 'بعض الأفكار الجميلة'), recipes: recommendations.skip(1).take(10).toList(), action: strings.label('Explore', 'استكشف'), onAction: () => goToAppTab(context, 1)),
         const SizedBox(height: 28),
         Text(strings.label('What’s in your kitchen?', 'ماذا يوجد في مطبخك؟'), style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontFamily: 'Georgia', fontWeight: FontWeight.bold, color: AppTheme.ink)),
         const SizedBox(height: 5),
