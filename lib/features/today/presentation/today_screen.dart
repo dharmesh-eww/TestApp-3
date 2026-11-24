@@ -35,8 +35,10 @@ class _TodayScreenState extends State<TodayScreen> {
       preferredMealTypes: planner.preferredMealTypes,
       allergies: planner.allergies,
     );
-    final recommendations = tailored.isEmpty ? catalog.where((recipe) => recipe.isPublished).toList() : tailored;
-    final favorites = catalog.where((recipe) => planner.favorites.contains(recipe.id)).toList();
+    final recommendations = tailored.isEmpty
+        ? (planner.allergies.isEmpty ? catalog.where((recipe) => recipe.isPublished).toList() : <Recipe>[])
+        : tailored;
+    final favorites = recommendations.where((recipe) => planner.favorites.contains(recipe.id)).toList();
     final viewedIds = planner.recentlyViewed.map((item) => item['recipe_id']).whereType<String>().toSet();
     final recentlyExplored = recommendations.where((recipe) => viewedIds.contains(recipe.id)).toList();
     final quickMeals = recommendations.where((recipe) => recipe.totalMinutes > 0 && recipe.totalMinutes <= 25).toList()
@@ -45,9 +47,9 @@ class _TodayScreenState extends State<TodayScreen> {
       ..sort((a, b) => (planner.recipeRatings[b.id] ?? 0).compareTo(planner.recipeRatings[a.id] ?? 0));
     final topPicks = popular.isNotEmpty ? popular : recommendations.take(8).toList();
     final veggiePicks = recommendations.where((recipe) => recipe.foodType == FoodType.vegan || recipe.foodType == FoodType.vegetarian).take(8).toList();
-    final featured = recommendations.isNotEmpty ? recommendations.first : catalog.first;
+    final featured = recommendations.isNotEmpty ? recommendations.first : null;
     final ingredientNames = <String>[];
-    for (final recipe in catalog) {
+    for (final recipe in recommendations) {
       for (final ingredient in recipe.ingredients) {
         final name = ingredient.name.trim();
         if (name.isNotEmpty && !ingredientNames.any((item) => item.toLowerCase() == name.toLowerCase())) {
@@ -59,7 +61,7 @@ class _TodayScreenState extends State<TodayScreen> {
     const quickFilterIngredients = ['Tomato', 'Potato', 'Chicken', 'Egg', 'Paneer', 'Spinach', 'Rice', 'Avocado'];
     final filterOptions = quickFilterIngredients.where((name) =>
       ingredientNames.any((item) => item.toLowerCase() == name.toLowerCase())).toList();
-    final ingredientRecipes = _ingredientFilter == null ? <Recipe>[] : catalog.where((recipe) =>
+    final ingredientRecipes = _ingredientFilter == null ? <Recipe>[] : recommendations.where((recipe) =>
       recipe.ingredients.any((ingredient) => ingredient.name.toLowerCase() == _ingredientFilter!.toLowerCase())).toList();
 
     return ListView(
@@ -76,7 +78,10 @@ class _TodayScreenState extends State<TodayScreen> {
         const SizedBox(height: 24),
         SectionHeading(title: strings.label('Today’s inspiration', 'إلهام اليوم'), action: strings.label('See all', 'عرض الكل'), onTap: () => goToAppTab(context, 1)),
         const SizedBox(height: 12),
-        FeaturedRecipe(recipe: featured),
+        if (featured != null)
+          FeaturedRecipe(recipe: featured)
+        else
+          Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.line)), child: Text(strings.label('No recipes match your current allergy exclusions yet. Review your preferences in Settings to broaden your suggestions.', 'لا توجد وصفات تطابق استبعادات الحساسية الحالية. راجع تفضيلاتك في الإعدادات لتوسيع الاقتراحات.'), style: TextStyle(color: AppTheme.muted, fontSize: 12))),
         const SizedBox(height: 26),
         SectionHeading(title: strings.label('Made for your week', 'اختيارات لأسبوعك'), action: strings.label('Open plan', 'افتح الخطة'), onTap: () => goToAppTab(context, 2)),
         const SizedBox(height: 12),
