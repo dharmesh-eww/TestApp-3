@@ -369,35 +369,6 @@ class _GroceryScreenState extends State<GroceryScreen> {
                 ]),
               ),
             ),
-            style: TextStyle(color: AppTheme.muted))
-        else
-          for (final item in state.pantry.values)
-            Container(
-              margin: const EdgeInsets.only(bottom: 7),
-              decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppTheme.line)),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                leading: CircleAvatar(backgroundColor: Color(0xFFE8EBDD),
-                  child: Icon(Icons.inventory_2_outlined, color: AppTheme.olive)),
-                title: Text(item.name, style: TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · Expires ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
-                trailing: Wrap(children: [
-                  IconButton(tooltip: appStrings(context).label('Set expiry date', 'تحديد تاريخ الصلاحية'),
-                    onPressed: () async {
-                      final current = state.pantryExpiryDates[item.id];
-                      final picked = await showDatePicker(context: context,
-                        initialDate: current ?? DateTime.now(),
-                        firstDate: DateTime.now().subtract(const Duration(days: 3650)),
-                        lastDate: DateTime.now().add(const Duration(days: 3650)));
-                      if (picked != null) { state.setPantryExpiry(item.id, picked); PlannerScope.refresh(context); }
-                    }, icon: Icon(Icons.event_outlined)),
-                  IconButton(tooltip: appStrings(context).label('Remove pantry item', 'إزالة عنصر من المخزن'),
-                    onPressed: () { state.removePantryItem(item.id); PlannerScope.refresh(context); },
-                    icon: Icon(Icons.close)),
-                ]),
-              ),
-            ),
       ],
     );
   }
