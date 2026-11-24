@@ -52,14 +52,27 @@ class GroceryListsScreen extends StatelessWidget {
 
   Future<void> _create(BuildContext context, PlannerState state) async {
     final controller = TextEditingController();
-    final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Create a shopping list', 'إنشاء قائمة تسوق')),
-      content: TextField(controller: controller, autofocus: true, decoration: InputDecoration(labelText: appStrings(context).label('List name', 'اسم القائمة'))),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text(appStrings(context).label('Create', 'إنشاء'))),
-      ],
-    ));
+    final name = await showModalBottomSheet<String>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Create a shopping list', 'إنشاء قائمة تسوق'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(controller: controller, autofocus: true,
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('List name', 'اسم القائمة'), prefixIcon: const Icon(Icons.list_alt_rounded))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, controller.text),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Create list', 'إنشاء القائمة')))),
+          ]),
+        ]),
+      ),
+    );
     controller.dispose();
     if (name == null || name.trim().isEmpty || !context.mounted) return;
     state.createGroceryList(name);
@@ -68,14 +81,27 @@ class GroceryListsScreen extends StatelessWidget {
 
   Future<void> _rename(BuildContext context, PlannerState state, String id) async {
     final controller = TextEditingController(text: state.groceryListNames[id]);
-    final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Rename shopping list', 'إعادة تسمية قائمة التسوق')),
-      content: TextField(controller: controller, autofocus: true),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text(appStrings(context).label('Save', 'حفظ'))),
-      ],
-    ));
+    final name = await showModalBottomSheet<String>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Rename shopping list', 'إعادة تسمية قائمة التسوق'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(controller: controller, autofocus: true,
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('List name', 'اسم القائمة'))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, controller.text),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Save changes', 'حفظ التغييرات')))),
+          ]),
+        ]),
+      ),
+    );
     controller.dispose();
     if (name == null || name.trim().isEmpty || !context.mounted) return;
     state.renameGroceryList(id, name);
