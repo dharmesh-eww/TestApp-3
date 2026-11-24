@@ -339,15 +339,31 @@ class _GroceryScreenState extends State<GroceryScreen> {
 
   Future<void> _editBudget(BuildContext context) async {
     final controller = TextEditingController(text: PlannerScope.of(context).groceryBudget?.toString() ?? '');
-    final value = await showDialog<double?>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Shopping budget', 'ميزانية التسوق')),
-      content: TextField(controller: controller, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(context).label('Budget amount', 'مبلغ الميزانية'))),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext, null), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        TextButton(onPressed: () => Navigator.pop(dialogContext, -1), child: Text(appStrings(context).label('Clear', 'مسح'))),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, double.tryParse(controller.text.trim())), child: Text(appStrings(context).label('Save', 'حفظ'))),
-      ],
-    ));
+    final value = await showModalBottomSheet<double?>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Shopping budget', 'ميزانية التسوق'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 6),
+          Text(appStrings(sheetContext).label('Set a spending limit for this list.', 'حدد حد الإنفاق لهذه القائمة.'), style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+          const SizedBox(height: 16),
+          TextField(controller: controller, autofocus: true, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Budget amount', 'مبلغ الميزانية'), prefixIcon: const Icon(Icons.payments_outlined))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext, null), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 8),
+            Expanded(child: TextButton(onPressed: () => Navigator.pop(sheetContext, -1), child: Text(appStrings(sheetContext).label('Clear', 'مسح')))),
+            const SizedBox(width: 8),
+            Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, double.tryParse(controller.text.trim())),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Save', 'حفظ')))),
+          ]),
+        ]),
+      ),
+    );
     controller.dispose();
     if (!context.mounted || value == null) return;
     final state = PlannerScope.of(context);
@@ -359,25 +375,36 @@ class _GroceryScreenState extends State<GroceryScreen> {
     final state = PlannerScope.of(context);
     final price = TextEditingController(text: state.groceryPrices[item.key]?.toString() ?? '');
     final store = TextEditingController(text: state.groceryStores[item.key] ?? '');
-    final saved = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Price and store', 'السعر والمتجر')),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: price, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(context).label('Item total price', 'السعر الإجمالي للعنصر'))),
-        TextField(controller: store, decoration: InputDecoration(labelText: appStrings(context).label('Store / shop', 'المتجر / المحل'))),
-      ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Save', 'حفظ'))),
-      ],
-    ));
+    final saved = await showModalBottomSheet<bool>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Price and store', 'السعر والمتجر'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 5),
+          Text(item.name, style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+          const SizedBox(height: 16),
+          TextField(controller: price, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Item total price', 'السعر الإجمالي للعنصر'), prefixIcon: const Icon(Icons.payments_outlined))),
+          const SizedBox(height: 10),
+          TextField(controller: store, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Store / shop', 'المتجر / المحل'), prefixIcon: const Icon(Icons.storefront_outlined))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext, false), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, true), style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta),
+              child: Text(appStrings(sheetContext).label('Save details', 'حفظ التفاصيل')))),
+          ]),
+        ]),
+      ),
+    );
     if (saved == true && context.mounted) {
       final rawPrice = price.text.trim();
       final parsed = rawPrice.isEmpty ? null : double.tryParse(rawPrice);
-      if (rawPrice.isEmpty) {
-        state.setGroceryPrice(item.key, null);
-      } else if (parsed != null && parsed >= 0) {
-        state.setGroceryPrice(item.key, parsed);
-      }
+      if (rawPrice.isEmpty) state.setGroceryPrice(item.key, null);
+      else if (parsed != null && parsed >= 0) state.setGroceryPrice(item.key, parsed);
       state.setGroceryStore(item.key, store.text);
       PlannerScope.refresh(context);
     }
@@ -392,61 +419,115 @@ class _GroceryScreenState extends State<GroceryScreen> {
     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Shopping list copied.', 'تم نسخ قائمة التسوق.'))));
   }
 
-  void _showCustomGroceryEditor(BuildContext context) {
+  Future<void> _showCustomGroceryEditor(BuildContext context) async {
     final name = TextEditingController();
     final amount = TextEditingController(text: '1');
     final unit = TextEditingController(text: 'item');
-    showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Add a grocery item', 'إضافة عنصر للمشتريات')),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: appStrings(context).label('Item', 'العنصر'))),
-        TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(context).label('Quantity', 'الكمية'))),
-        TextField(controller: unit, decoration: InputDecoration(labelText: appStrings(context).label('Unit', 'الوحدة'))),
-      ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () {
-          final quantity = double.tryParse(amount.text.trim());
-          if (name.text.trim().isEmpty || unit.text.trim().isEmpty || quantity == null || quantity < 0) return;
-          PlannerScope.of(context).addCustomGroceryItem(name: name.text, amount: quantity, unit: unit.text);
-          PlannerScope.refresh(context);
-          Navigator.pop(dialogContext);
-        }, child: Text(appStrings(context).label('Add', 'إضافة'))),
-      ],
-    )).then((_) { name.dispose(); amount.dispose(); unit.dispose(); });
+    await showModalBottomSheet<void>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Add a grocery item', 'إضافة عنصر للمشتريات'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Item', 'العنصر'), prefixIcon: const Icon(Icons.shopping_basket_outlined))),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(sheetContext).label('Quantity', 'الكمية')))),
+            const SizedBox(width: 10),
+            Expanded(child: TextField(controller: unit, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Unit', 'الوحدة')))),
+          ]),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () {
+              final quantity = double.tryParse(amount.text.trim());
+              if (name.text.trim().isEmpty || unit.text.trim().isEmpty || quantity == null || quantity < 0) return;
+              PlannerScope.of(context).addCustomGroceryItem(name: name.text, amount: quantity, unit: unit.text);
+              PlannerScope.refresh(context);
+              Navigator.pop(sheetContext);
+            }, style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Add item', 'إضافة العنصر')))),
+          ]),
+        ]),
+      ),
+    );
+    name.dispose(); amount.dispose(); unit.dispose();
   }
 
-  void _showGroceryEditor(BuildContext context, GroceryItem item) {
+  Future<void> _showGroceryEditor(BuildContext context, GroceryItem item) async {
     final name = TextEditingController(text: item.name);
     final amount = TextEditingController(text: item.isQuantified ? _formatAmount(item.amount) : '');
-    showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Edit grocery item', 'تعديل عنصر المشتريات')),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: name, decoration: InputDecoration(labelText: appStrings(context).label('Ingredient', 'المكوّن'))),
-        if (item.isQuantified) TextField(controller: amount, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: appStrings(context).label('Amount (${item.unit})', 'الكمية (${item.unit})'))),
-      ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () {
-          final parsed = item.isQuantified ? double.tryParse(amount.text.trim()) : item.amount;
-          if (parsed == null || parsed < 0 || name.text.trim().isEmpty) return;
-          PlannerScope.of(context).updateGroceryItem(item.key, name: name.text, amount: parsed);
-          PlannerScope.refresh(context);
-          Navigator.pop(dialogContext);
-        }, child: Text(appStrings(context).label('Save', 'حفظ'))),
-      ],
-    )).then((_) { name.dispose(); amount.dispose(); });
+    await showModalBottomSheet<void>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Edit grocery item', 'تعديل عنصر المشتريات'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(controller: name, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Ingredient', 'المكوّن'))),
+          if (item.isQuantified) ...[
+            const SizedBox(height: 10),
+            TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(labelText: appStrings(sheetContext).label('Amount (${item.unit})', 'الكمية (${item.unit})'))),
+          ],
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () {
+              final parsed = item.isQuantified ? double.tryParse(amount.text.trim()) : item.amount;
+              if (parsed == null || parsed < 0 || name.text.trim().isEmpty) return;
+              PlannerScope.of(context).updateGroceryItem(item.key, name: name.text, amount: parsed);
+              PlannerScope.refresh(context);
+              Navigator.pop(sheetContext);
+            }, style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Save changes', 'حفظ التغييرات')))),
+          ]),
+        ]),
+      ),
+    );
+    name.dispose(); amount.dispose();
   }
 
-  void _showPantryEditor(BuildContext context){
-    final name=TextEditingController(),amount=TextEditingController(text:'1'),unit=TextEditingController(text:'g');
-    showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(title:Text(appStrings(context).label('Add to your pantry', 'إضافة إلى المخزن')),content:Column(mainAxisSize:MainAxisSize.min,children:[
-      TextField(controller:name,decoration:InputDecoration(labelText:appStrings(context).label('Ingredient', 'المكوّن'))),TextField(controller:amount,keyboardType:TextInputType.number,decoration:InputDecoration(labelText:appStrings(context).label('Quantity', 'الكمية'))),TextField(controller:unit,decoration:InputDecoration(labelText:appStrings(context).label('Unit (g, ml, whole…)', 'الوحدة (g، ml، كامل…)'))),
-    ]),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:Text(appStrings(context).label('Cancel', 'إلغاء'))),FilledButton(onPressed:(){
-      final value=double.tryParse(amount.text.trim());if(value==null||value<0||name.text.trim().isEmpty||unit.text.trim().isEmpty)return;
-      PlannerScope.of(context).upsertPantryItem(name:name.text,amount:value,unit:unit.text);PlannerScope.refresh(context);Navigator.pop(dialogContext);
-    },child:Text(appStrings(context).label('Save', 'حفظ')))])).then((_){name.dispose();amount.dispose();unit.dispose();});
+  Future<void> _showPantryEditor(BuildContext context) async {
+    final name = TextEditingController();
+    final amount = TextEditingController(text: '1');
+    final unit = TextEditingController(text: 'g');
+    await showModalBottomSheet<void>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Add to your pantry', 'إضافة إلى المخزن'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Ingredient', 'المكوّن'))),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(sheetContext).label('Quantity', 'الكمية')))),
+            const SizedBox(width: 10),
+            Expanded(child: TextField(controller: unit, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Unit (g, ml, whole…)', 'الوحدة (g، ml، كامل…)')))),
+          ]),
+          const SizedBox(height: 18),
+          SizedBox(width: double.infinity, child: FilledButton(onPressed: () {
+            final value = double.tryParse(amount.text.trim());
+            if (value == null || value < 0 || name.text.trim().isEmpty || unit.text.trim().isEmpty) return;
+            PlannerScope.of(context).upsertPantryItem(name: name.text, amount: value, unit: unit.text);
+            PlannerScope.refresh(context);
+            Navigator.pop(sheetContext);
+          }, style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta),
+            child: Text(appStrings(sheetContext).label('Save pantry item', 'حفظ عنصر المخزن')))),
+        ]),
+      ),
+    );
+    name.dispose(); amount.dispose(); unit.dispose();
   }
+
 }
 String _groceryAisle(String name) {
   final value = name.toLowerCase();
