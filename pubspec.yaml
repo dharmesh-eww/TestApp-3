@@ -19,6 +19,9 @@ dependencies:
   path: ^1.9.1
   sqflite: ^2.4.2
   youtube_player_flutter: ^9.1.3
+  flutter_animate: ^4.5.2
+  flutter_svg: ^2.2.3
+  lottie: ^3.8.2
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +33,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/data/recipes.json
+    - assets/animations/
+    - assets/images/
