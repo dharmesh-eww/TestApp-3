@@ -161,6 +161,30 @@ class SettingsScreen extends StatelessWidget {
             items: const [15, 30, 60, 120].map((value) => DropdownMenuItem(value: value, child: Text('${value} min'))).toList(),
             onChanged: (value) { if (value == null) return; state.mealReminderMinutes = value; PlannerScope.refresh(context); },
           ),
+        if (state.mealRemindersEnabled) ...[
+          const SizedBox(height: 10),
+          Text(appStrings(context).label('Meal times', 'أوقات الوجبات'), style: Theme.of(context).textTheme.titleSmall),
+          Text(appStrings(context).label('Choose when each meal is planned to happen. Your reminder lead time is applied to every meal.', 'اختر وقت كل وجبة، وسيُطبق وقت التذكير المسبق على جميع الوجبات.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+          for (final slot in const [('breakfast', 'Breakfast'), ('lunch', 'Lunch'), ('snack', 'Snack'), ('dinner', 'Dinner')])
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              leading: Icon(Icons.schedule_outlined, color: AppTheme.olive),
+              title: Text(appStrings(context).mealSlot(slot.$1)),
+              trailing: Text(state.mealReminderTimes[slot.$1] ?? '08:00', style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.terracotta)),
+              onTap: () async {
+                final current = (state.mealReminderTimes[slot.$1] ?? '08:00').split(':');
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay(hour: int.tryParse(current[0]) ?? 8, minute: int.tryParse(current[1]) ?? 0),
+                );
+                if (picked == null || !context.mounted) return;
+                state.mealReminderTimes[slot.$1] = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                SmartReminderService.invalidate();
+                PlannerScope.refresh(context);
+              },
+            ),
+        ],
         OutlinedButton.icon(
           onPressed: () async {
             final granted = await CookingAssistService.requestNotificationPermission();
