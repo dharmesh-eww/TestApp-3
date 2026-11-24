@@ -109,7 +109,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ],
               if(_page==4)...[
                 Container(decoration:BoxDecoration(color:AppTheme.card,border:Border.all(color:AppTheme.line),borderRadius:BorderRadius.circular(15)),
-                  child:CheckboxListTile(value:state.allergies.isEmpty,onChanged:(v){setState(()=>state.allergies.clear());PlannerScope.refresh(context);},
+                  child:CheckboxListTile(value:state.allergies.isEmpty,onChanged:(v){if(v==true){setState(()=>state.allergies.clear());PlannerScope.refresh(context);}},
                     title:const Text('No known food allergies'),subtitle:const Text('Choose this if there is nothing you need to avoid.'),controlAffinity:ListTileControlAffinity.leading,activeColor:AppTheme.olive)),
                 const SizedBox(height:14),Text('Or select ingredients you are allergic to',style:Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height:8),_OptionWrap(options:_allergens,selected:state.allergies,onTap:(v)=>_toggle(state.allergies,v)),
