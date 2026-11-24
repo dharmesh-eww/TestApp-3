@@ -56,7 +56,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
           IconButton(
             tooltip: strings.label('Set daily goals', 'تحديد الأهداف اليومية'),
             onPressed: () => _editGoals(context, state),
-            icon: const Icon(Icons.tune),
+            icon: Icon(Icons.tune),
           ),
         ],
       ),
@@ -70,7 +70,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
                 final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime.now().subtract(const Duration(days: 365)), lastDate: DateTime.now().add(const Duration(days: 365)));
                 if (picked != null) setState(() => _date = DateUtils.dateOnly(picked));
               },
-              icon: const Icon(Icons.calendar_month_outlined, size: 18),
+              icon: Icon(Icons.calendar_month_outlined, size: 18),
               label: Text(MaterialLocalizations.of(context).formatShortDate(_date)),
             ),
           ]),
@@ -97,7 +97,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
           const SizedBox(height: 22),
           Row(children: [
             Expanded(child: Text(strings.label('This week', 'هذا الأسبوع'), style: Theme.of(context).textTheme.titleLarge)),
-            Text('${weeklyTotal.round()} kcal', style: const TextStyle(fontWeight: FontWeight.w800, color: AppTheme.terracotta)),
+            Text('${weeklyTotal.round()} kcal', style: TextStyle(fontWeight: FontWeight.w800, color: AppTheme.terracotta)),
           ]),
           const SizedBox(height: 10),
           Row(children: [
@@ -120,7 +120,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  Text(weekCalories[index].round().toString(), style: const TextStyle(fontSize: 9)),
+                  Text(weekCalories[index].round().toString(), style: TextStyle(fontSize: 9)),
                 ]),
               )),
           ]),
@@ -174,7 +174,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
           Row(children: [
             Icon(icon, color: AppTheme.terracotta),
             const SizedBox(width: 8),
-            Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w700))),
+            Expanded(child: Text(title, style: TextStyle(fontWeight: FontWeight.w700))),
             Text('${value.round()} / ${target.round()} $unit', style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700)),
           ]),
           const SizedBox(height: 12),
@@ -190,7 +190,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
       const SizedBox(height: 5),
-      Text('${value.round()} $unit', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+      Text('${value.round()} $unit', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
     ]),
   );
 
@@ -206,11 +206,11 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
-              child: const Icon(Icons.monitor_heart_outlined, color: AppTheme.olive)),
+              child: Icon(Icons.monitor_heart_outlined, color: AppTheme.olive)),
             const SizedBox(width: 11),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(appStrings(sheetContext).label('Daily nutrition goals', 'الأهداف الغذائية اليومية'), style: Theme.of(sheetContext).textTheme.titleLarge),
-              Text(appStrings(sheetContext).label('Adjust your daily targets.', 'اضبط أهدافك اليومية.'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+              Text(appStrings(sheetContext).label('Adjust your daily targets.', 'اضبط أهدافك اليومية.'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
             ])),
           ]),
           const SizedBox(height: 16),
