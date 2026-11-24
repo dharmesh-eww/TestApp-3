@@ -5,6 +5,7 @@ import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/app/app_widgets.dart';
 import 'package:testapp_3/app/app_tab_navigation.dart';
+import 'package:testapp_3/app/gather_visuals.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
 
 class TodayScreen extends StatefulWidget {
@@ -59,7 +60,7 @@ class _TodayScreenState extends State<TodayScreen> {
             const SizedBox(height: 7),
             Text(strings.label('A little more joy\\nin the kitchen.', 'مزيد من البهجة\\nفي مطبخك.'), style: TextStyle(fontFamily: 'Georgia', fontSize: 31, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
           ])),
-          CircleAvatar(radius: 24, backgroundColor: const Color(0xFFE9E4D8), child: Icon(Icons.spa_outlined, color: AppTheme.olive)),
+          GatherVisuals.foodMotion(size: 88),
         ]),
         const SizedBox(height: 24),
         SectionHeading(title: strings.label('Today’s inspiration', 'إلهام اليوم'), action: strings.label('See all', 'عرض الكل'), onTap: () => goToAppTab(context, 1)),
