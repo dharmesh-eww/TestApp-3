@@ -197,17 +197,38 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
   Future<void> _editGoals(BuildContext context, dynamic state) async {
     final calories = TextEditingController(text: '${state.dailyCalorieTarget}');
     final protein = TextEditingController(text: '${state.dailyProteinTargetGrams.round()}');
-    final saved = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Daily nutrition goals', 'الأهداف الغذائية اليومية')),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: calories, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Calories (kcal)')),
-        TextField(controller: protein, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Protein (g)')),
-      ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Save', 'حفظ'))),
-      ],
-    ));
+    final saved = await showModalBottomSheet<bool>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
+              child: const Icon(Icons.monitor_heart_outlined, color: AppTheme.olive)),
+            const SizedBox(width: 11),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(appStrings(sheetContext).label('Daily nutrition goals', 'الأهداف الغذائية اليومية'), style: Theme.of(sheetContext).textTheme.titleLarge),
+              Text(appStrings(sheetContext).label('Adjust your daily targets.', 'اضبط أهدافك اليومية.'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+            ])),
+          ]),
+          const SizedBox(height: 16),
+          TextField(controller: calories, keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Calories (kcal)', prefixIcon: Icon(Icons.local_fire_department_outlined))),
+          const SizedBox(height: 10),
+          TextField(controller: protein, keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(labelText: 'Protein (g)', prefixIcon: Icon(Icons.fitness_center_outlined))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext, false), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, true),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Save goals', 'حفظ الأهداف')))),
+          ]),
+        ]),
+      ),
+    );
     if (saved == true && context.mounted) {
       final calorieValue = int.tryParse(calories.text.trim());
       final proteinValue = double.tryParse(protein.text.trim());
