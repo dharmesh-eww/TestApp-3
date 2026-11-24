@@ -121,24 +121,48 @@ class _PlanScreenState extends State<PlanScreen> {
     final days = state.weekStartsOn == 7
         ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
         : PlanScreen.days;
-    final result = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
-      builder: (dialogContext, setDialogState) => AlertDialog(
-        title: Text(appStrings(context).label('Move planned meal', 'نقل الوجبة المخططة')),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          DropdownButtonFormField<String>(value: targetDay, decoration: InputDecoration(labelText: appStrings(context).label('Day', 'اليوم')),
-            items: days.map((day) => DropdownMenuItem(value: day, child: Text(appStrings(context).weekday(day)))).toList(),
-            onChanged: (value) => setDialogState(() => targetDay = value ?? fromDay)),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<MealSlot>(value: targetSlot, decoration: InputDecoration(labelText: appStrings(context).label('Meal', 'الوجبة')),
-            items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(appStrings(context).mealSlot(slot.name)))).toList(),
-            onChanged: (value) => setDialogState(() => targetSlot = value ?? fromSlot)),
-        ]),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Move', 'نقل'))),
-        ],
+    final result = await showModalBottomSheet<bool>(
+      context: context, isScrollControlled: true, useSafeArea: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, setSheetState) => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Center(child: Container(width: 38, height: 4, decoration: BoxDecoration(color: AppTheme.line, borderRadius: BorderRadius.circular(4)))),
+            const SizedBox(height: 18),
+            Text(appStrings(sheetContext).label('Move planned meal', 'نقل الوجبة المخططة'),
+              style: Theme.of(sheetContext).textTheme.headlineSmall),
+            const SizedBox(height: 5),
+            Text(appStrings(sheetContext).label('Choose a new day and meal slot.', 'اختر يومًا وموعدًا جديدًا للوجبة.'),
+              style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+            const SizedBox(height: 18),
+            DropdownButtonFormField<String>(
+              value: targetDay,
+              decoration: InputDecoration(labelText: appStrings(sheetContext).label('Day', 'اليوم'), prefixIcon: const Icon(Icons.calendar_today_outlined)),
+              items: days.map((day) => DropdownMenuItem(value: day, child: Text(appStrings(sheetContext).weekday(day)))).toList(),
+              onChanged: (value) => setSheetState(() => targetDay = value ?? fromDay),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<MealSlot>(
+              value: targetSlot,
+              decoration: InputDecoration(labelText: appStrings(sheetContext).label('Meal', 'الوجبة'), prefixIcon: const Icon(Icons.restaurant_outlined)),
+              items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(appStrings(sheetContext).mealSlot(slot.name)))).toList(),
+              onChanged: (value) => setSheetState(() => targetSlot = value ?? fromSlot),
+            ),
+            const SizedBox(height: 20),
+            Row(children: [
+              Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext, false),
+                child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+              const SizedBox(width: 10),
+              Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, true),
+                style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta),
+                child: Text(appStrings(sheetContext).label('Move meal', 'نقل الوجبة')))),
+            ]),
+          ]),
+        ),
       ),
-    ));
+    );
     if (result != true || !context.mounted) return;
     final moved = state.moveMeal(fromDay: fromDay, fromSlot: fromSlot, toDay: targetDay, toSlot: targetSlot);
     if (moved) PlannerScope.refresh(context);
@@ -259,98 +283,104 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
   var weekday = today.weekday;
   var monthDay = today.day;
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => StatefulBuilder(
-      builder: (dialogContext, setDialogState) => AlertDialog(
-        title: Text(appStrings(context).label('Plan ${recipe.title}', 'خطط لـ ${recipe.title}')),
-        content: SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_month_outlined),
-              title: Text(appStrings(context).label('Start date', 'تاريخ البدء')),
-              subtitle: Text(MaterialLocalizations.of(context).formatMediumDate(startDate)),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: dialogContext,
-                  initialDate: startDate,
-                  firstDate: today,
-                  lastDate: lastAllowedDate,
-                );
-                if (picked != null) setDialogState(() {
-                  startDate = DateUtils.dateOnly(picked);
-                  weekday = startDate.weekday;
-                  monthDay = startDate.day;
-                });
-              },
-            ),
-            DropdownButtonFormField<MealSlot>(
-              value: slot,
-              decoration: InputDecoration(labelText: appStrings(context).label('Meal', 'الوجبة')),
-              items: MealSlot.values.map((value) => DropdownMenuItem(value: value, child: Text(appStrings(context).mealSlot(value.name)))).toList(),
-              onChanged: (value) => setDialogState(() => slot = value ?? slot),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: frequency,
-              decoration: InputDecoration(labelText: appStrings(context).label('Repeat', 'التكرار')),
-              items: [
-                DropdownMenuItem(value: 'once', child: Text(appStrings(context).label('Just once', 'مرة واحدة'))),
-                DropdownMenuItem(value: 'weekly', child: Text(appStrings(context).label('Every week', 'كل أسبوع'))),
-                DropdownMenuItem(value: 'monthly', child: Text(appStrings(context).label('Every month', 'كل شهر'))),
+  final confirmed = await showModalBottomSheet<bool>(
+    context: context, isScrollControlled: true, useSafeArea: true,
+    backgroundColor: AppTheme.paper,
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
+    builder: (sheetContext) => StatefulBuilder(
+      builder: (sheetContext, setSheetState) => SizedBox(
+        height: MediaQuery.of(sheetContext).size.height * .82,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 18),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Center(child: Container(width: 38, height: 4, decoration: BoxDecoration(color: AppTheme.line, borderRadius: BorderRadius.circular(4)))),
+            const SizedBox(height: 16),
+            Row(children: [
+              Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.terracotta.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
+                child: const Icon(Icons.event_available_outlined, color: AppTheme.terracotta)),
+              const SizedBox(width: 11),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(appStrings(sheetContext).label('Plan this recipe', 'خطط لهذه الوصفة'), style: Theme.of(sheetContext).textTheme.titleLarge),
+                Text(recipe.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+              ])),
+            ]),
+            const SizedBox(height: 14),
+            Expanded(child: ListView(children: [
+              Container(
+                decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(15), border: Border.all(color: AppTheme.line)),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 3),
+                  leading: const Icon(Icons.calendar_month_outlined, color: AppTheme.olive),
+                  title: Text(appStrings(sheetContext).label('Start date', 'تاريخ البدء'), style: const TextStyle(fontWeight: FontWeight.w700)),
+                  subtitle: Text(MaterialLocalizations.of(sheetContext).formatMediumDate(startDate)),
+                  trailing: const Icon(Icons.edit_calendar_outlined),
+                  onTap: () async {
+                    final picked = await showDatePicker(context: sheetContext, initialDate: startDate, firstDate: today, lastDate: lastAllowedDate);
+                    if (picked != null) setSheetState(() { startDate = DateUtils.dateOnly(picked); weekday = startDate.weekday; monthDay = startDate.day; });
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<MealSlot>(
+                value: slot,
+                decoration: InputDecoration(labelText: appStrings(sheetContext).label('Meal', 'الوجبة'), prefixIcon: const Icon(Icons.restaurant_outlined)),
+                items: MealSlot.values.map((value) => DropdownMenuItem(value: value, child: Text(appStrings(sheetContext).mealSlot(value.name)))).toList(),
+                onChanged: (value) => setSheetState(() => slot = value ?? slot),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: frequency,
+                decoration: InputDecoration(labelText: appStrings(sheetContext).label('Repeat', 'التكرار'), prefixIcon: const Icon(Icons.repeat_rounded)),
+                items: [
+                  DropdownMenuItem(value: 'once', child: Text(appStrings(sheetContext).label('Just once', 'مرة واحدة'))),
+                  DropdownMenuItem(value: 'weekly', child: Text(appStrings(sheetContext).label('Every week', 'كل أسبوع'))),
+                  DropdownMenuItem(value: 'monthly', child: Text(appStrings(sheetContext).label('Every month', 'كل شهر'))),
+                ],
+                onChanged: (value) => setSheetState(() => frequency = value ?? 'once'),
+              ),
+              if (frequency == 'weekly') ...[
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  value: weekday,
+                  decoration: InputDecoration(labelText: appStrings(sheetContext).label('Every', 'كل يوم')),
+                  items: List.generate(7, (index) => DropdownMenuItem(value: index + 1, child: Text(appStrings(sheetContext).weekday(weekdays[index])))),
+                  onChanged: (value) => setSheetState(() => weekday = value ?? weekday),
+                ),
               ],
-              onChanged: (value) => setDialogState(() => frequency = value ?? 'once'),
-            ),
-            if (frequency == 'weekly') ...[
+              if (frequency == 'monthly') ...[
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  value: monthDay,
+                  decoration: InputDecoration(labelText: appStrings(sheetContext).label('Day of each month', 'يوم من كل شهر')),
+                  items: List.generate(31, (index) => DropdownMenuItem(value: index + 1, child: Text('${index + 1}'))),
+                  onChanged: (value) => setSheetState(() => monthDay = value ?? monthDay),
+                ),
+                const SizedBox(height: 5),
+                Text(appStrings(sheetContext).label('Months without this date are skipped.', 'يتم تخطي الأشهر التي لا تحتوي على هذا التاريخ.'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+              ],
               const SizedBox(height: 12),
-              DropdownButtonFormField<int>(
-                value: weekday,
-                decoration: InputDecoration(labelText: appStrings(context).label('Every', 'كل يوم')),
-                items: List.generate(7, (index) => DropdownMenuItem(
-                  value: index + 1,
-                  child: Text(appStrings(context).weekday(weekdays[index])),
-                )),
-                onChanged: (value) => setDialogState(() => weekday = value ?? weekday),
-              ),
-            ],
-            if (frequency == 'monthly') ...[
-              const SizedBox(height: 12),
-              DropdownButtonFormField<int>(
-                value: monthDay,
-                decoration: InputDecoration(labelText: appStrings(context).label('Day of each month', 'يوم من كل شهر')),
-                items: List.generate(31, (index) => DropdownMenuItem(value: index + 1, child: Text('${index + 1}'))),
-                onChanged: (value) => setDialogState(() => monthDay = value ?? monthDay),
-              ),
-              const SizedBox(height: 4),
-              Text(appStrings(context).label('Months without this date are skipped.', 'يتم تخطي الأشهر التي لا تحتوي على هذا التاريخ.'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
-            ],
-            const SizedBox(height: 8),
-            Text(
-              appStrings(context).label('Plans can be scheduled from today through ${MaterialLocalizations.of(context).formatMediumDate(lastAllowedDate)}. Past dates are unavailable.', 'يمكن جدولة الخطط من اليوم حتى ${MaterialLocalizations.of(context).formatMediumDate(lastAllowedDate)}. التواريخ السابقة غير متاحة.'),
-              style: TextStyle(color: AppTheme.muted, fontSize: 11),
-            ),
+              Text(appStrings(sheetContext).label('Plans can be scheduled from today through ${MaterialLocalizations.of(sheetContext).formatMediumDate(lastAllowedDate)}. Past dates are unavailable.', 'يمكن جدولة الخطط من اليوم حتى ${MaterialLocalizations.of(sheetContext).formatMediumDate(lastAllowedDate)}. التواريخ السابقة غير متاحة.'),
+                style: const TextStyle(color: AppTheme.muted, fontSize: 11, height: 1.4)),
+            ])),
+            const SizedBox(height: 12),
+            Row(children: [
+              Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext, false),
+                child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+              const SizedBox(width: 10),
+              Expanded(child: FilledButton(
+                key: const Key('confirm-recipe-schedule'),
+                onPressed: () => Navigator.pop(sheetContext, true),
+                style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta),
+                child: Text(appStrings(sheetContext).label('Add to plan', 'إضافة إلى الخطة')),
+              )),
+            ]),
           ]),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-          FilledButton(
-            key: const Key('confirm-recipe-schedule'),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(appStrings(context).label('Add to plan', 'إضافة إلى الخطة')),
-          ),
-        ],
       ),
     ),
   );
   if (confirmed != true || !context.mounted) return;
-  final dates = _scheduledDates(
-    start: startDate,
-    end: lastAllowedDate,
-    frequency: frequency,
-    weekday: weekday,
-    monthDay: monthDay,
-  );
+  final dates = _scheduledDates(start: startDate, end: lastAllowedDate, frequency: frequency, weekday: weekday, monthDay: monthDay);
   final state = PlannerScope.of(context);
   var added = 0;
   for (final date in dates) {
