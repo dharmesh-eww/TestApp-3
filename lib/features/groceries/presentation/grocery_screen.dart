@@ -15,6 +15,8 @@ class GroceryScreen extends StatefulWidget {
 
 class _GroceryScreenState extends State<GroceryScreen> {
   bool _groupByStore = false;
+  String _pantryQuery = '';
+  bool _expiringFirst = false;
   @override
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
@@ -33,6 +35,16 @@ class _GroceryScreenState extends State<GroceryScreen> {
     final estimatedTotal = entries.fold<double>(
       0, (sum, item) => sum + (state.groceryPrices[item.key] ?? 0),
     );
+    final pantryItems = state.pantry.values.where((item) => item.name.toLowerCase().contains(_pantryQuery.toLowerCase())).toList()
+      ..sort((a, b) {
+        if (_expiringFirst) {
+          final aDate = state.pantryExpiryDates[a.id] ?? DateTime(9999);
+          final bDate = state.pantryExpiryDates[b.id] ?? DateTime(9999);
+          final byExpiry = aDate.compareTo(bDate);
+          if (byExpiry != 0) return byExpiry;
+        }
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      });
     final budget = state.groceryBudget;
     final overBudget = budget != null && estimatedTotal > budget;
     final progress = entries.isEmpty ? 0.0 : checked / entries.length;
@@ -302,8 +314,61 @@ class _GroceryScreenState extends State<GroceryScreen> {
               'ستنتهي صلاحية ${state.expiringPantryItems.length} من عناصر المخزن خلال سبعة أيام.'),
               style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w700))),
         const SizedBox(height: 10),
+        if (state.pantry.isNotEmpty) ...[
+          TextField(
+            key: const Key('pantry-search'),
+            onChanged: (value) => setState(() => _pantryQuery = value),
+            decoration: InputDecoration(
+              hintText: appStrings(context).label('Search pantry items', 'ابحث في المخزن'),
+              prefixIcon: Icon(Icons.search),
+              isDense: true,
+              suffixIcon: _pantryQuery.isEmpty ? null : IconButton(onPressed: () => setState(() => _pantryQuery = ''), icon: Icon(Icons.close)),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: TextButton.icon(
+              onPressed: () => setState(() => _expiringFirst = !_expiringFirst),
+              icon: Icon(_expiringFirst ? Icons.sort : Icons.event_available_outlined, size: 17),
+              label: Text(_expiringFirst
+                ? appStrings(context).label('Sorted by expiry', 'مرتبة حسب الصلاحية')
+                : appStrings(context).label('Sort by expiry', 'ترتيب حسب الصلاحية')),
+            ),
+          ),
+        ],
         if (state.pantry.isEmpty)
-          Text(appStrings(context).label('Your pantry is empty for now.', 'مخزنك فارغ حاليًا.'),
+          Text(appStrings(context).label('Your pantry is empty for now.', 'مخزنك فارغ حاليًا.'))
+        else if (pantryItems.isEmpty)
+          Text(appStrings(context).label('No pantry items match your search.', 'لا توجد عناصر تطابق بحثك.'), style: TextStyle(color: AppTheme.muted))
+        else
+          for (final item in pantryItems)
+            Container(
+              margin: const EdgeInsets.only(bottom: 7),
+              decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppTheme.line)),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                leading: CircleAvatar(backgroundColor: Color(0xFFE8EBDD),
+                  child: Icon(Icons.inventory_2_outlined, color: AppTheme.olive)),
+                title: Text(item.name, style: TextStyle(fontWeight: FontWeight.w700)),
+                subtitle: Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · Expires ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
+                trailing: Wrap(children: [
+                  IconButton(tooltip: appStrings(context).label('Set expiry date', 'تحديد تاريخ الصلاحية'),
+                    onPressed: () async {
+                      final current = state.pantryExpiryDates[item.id];
+                      final picked = await showDatePicker(context: context,
+                        initialDate: current ?? DateTime.now(),
+                        firstDate: DateTime.now().subtract(const Duration(days: 3650)),
+                        lastDate: DateTime.now().add(const Duration(days: 3650)));
+                      if (picked != null) { state.setPantryExpiry(item.id, picked); PlannerScope.refresh(context); }
+                    }, icon: Icon(Icons.event_outlined)),
+                  IconButton(tooltip: appStrings(context).label('Remove pantry item', 'إزالة عنصر من المخزن'),
+                    onPressed: () { state.removePantryItem(item.id); PlannerScope.refresh(context); },
+                    icon: Icon(Icons.close)),
+                ]),
+              ),
+            ),
             style: TextStyle(color: AppTheme.muted))
         else
           for (final item in state.pantry.values)
