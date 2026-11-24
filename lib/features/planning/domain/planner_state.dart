@@ -331,6 +331,7 @@ class PlannerState {
         }
       }
     }
+    final rawReminderKeys = json['active_reminder_keys'];
     if (rawReminderKeys is List) activeReminderKeys.addAll(rawReminderKeys.whereType<String>());
     final rawPrepChecks = json['meal_prep_checks'];
     if (rawPrepChecks is Map) {
