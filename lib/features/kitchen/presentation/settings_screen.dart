@@ -185,6 +185,26 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
         ],
+        if (state.mealRemindersEnabled || state.pantryExpiryRemindersEnabled) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(13), border: Border.all(color: AppTheme.line)),
+            child: Row(children: [
+              Icon(Icons.notifications_active_outlined, color: AppTheme.olive),
+              const SizedBox(width: 9),
+              Expanded(child: Text(appStrings(context).label('${state.activeReminderKeys.length} reminders currently scheduled on this device', '${state.activeReminderKeys.length} تذكير مجدول حاليًا على هذا الجهاز'), style: TextStyle(fontSize: 12))),
+              TextButton(
+                onPressed: () async {
+                  SmartReminderService.invalidate();
+                  await SmartReminderService.sync(state, RecipeCatalogScope.of(context), force: true);
+                  if (context.mounted) PlannerScope.refresh(context);
+                },
+                child: Text(appStrings(context).label('Refresh', 'تحديث')),
+              ),
+            ]),
+          ),
+        ],
         OutlinedButton.icon(
           onPressed: () async {
             final granted = await CookingAssistService.requestNotificationPermission();
