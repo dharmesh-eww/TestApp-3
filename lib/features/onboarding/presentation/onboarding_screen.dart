@@ -121,7 +121,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const SizedBox(height:22),Text('Your usual cooking time',style:Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height:5),Text('We’ll prioritise recipes that fit your schedule.',style:TextStyle(color:AppTheme.muted,fontSize:12)),
                 const SizedBox(height:10),Wrap(spacing:8,runSpacing:8,children:[
-                  for(final minutes in const [15,30,45,60])ChoiceChip(label:Text('Under $minutes min'),selected:state.preferredMaxCookingMinutes==minutes,
+                  for(final minutes in const [15,30,45,60])ChoiceChip(label:Text('Up to $minutes min'),selected:state.preferredMaxCookingMinutes==minutes,
                     onSelected:(_){setState(()=>state.preferredMaxCookingMinutes=minutes);PlannerScope.refresh(context);},selectedColor:AppTheme.terracotta.withOpacity(.16)),
                 ]),
                 TextButton(onPressed:(){setState(()=>state.preferredMaxCookingMinutes=null);PlannerScope.refresh(context);},child:const Text('No time preference')),
