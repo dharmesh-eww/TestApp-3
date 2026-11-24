@@ -13,12 +13,14 @@ import 'package:testapp_3/app/gather_visuals.dart';
 import 'package:testapp_3/features/recipes/presentation/favorites_screen.dart';
 
 class _DiscoveryFilterBar extends StatelessWidget {
-  const _DiscoveryFilterBar({required this.cuisineIds, required this.foodTypeId, required this.difficulty, required this.minMinutes, required this.maxMinutes, required this.cuisines, required this.onChanged});
+  const _DiscoveryFilterBar({required this.cuisineIds, required this.foodTypeId, required this.difficulty, required this.minMinutes, required this.maxMinutes, required this.seasonId, required this.nutritionOnly, required this.cuisines, required this.onChanged});
   final Set<String> cuisineIds;
   final String foodTypeId, difficulty;
   final int minMinutes, maxMinutes;
+  final String seasonId;
+  final bool nutritionOnly;
   final List<String> cuisines;
-  final void Function(Set<String>, String, String, int, int) onChanged;
+  final void Function(Set<String>, String, String, int, int, String, bool) onChanged;
 
   static const cuisineLabels = <String, String>{
     'indian':'Indian', 'north_indian':'North Indian', 'south_indian':'South Indian',
@@ -33,7 +35,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final active = cuisineIds.length + (foodTypeId != 'all' ? 1 : 0) +
-        (difficulty != 'all' ? 1 : 0) + ((minMinutes > 0 || maxMinutes < 180) ? 1 : 0);
+        (difficulty != 'all' ? 1 : 0) + ((minMinutes > 0 || maxMinutes < 180) ? 1 : 0) + (seasonId != 'all' ? 1 : 0) + (nutritionOnly ? 1 : 0);
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: OutlinedButton.icon(
@@ -45,6 +47,8 @@ class _DiscoveryFilterBar extends StatelessWidget {
           var foodType = foodTypeId;
           var level = difficulty;
           var timeRange = RangeValues(minMinutes.toDouble(), maxMinutes.toDouble());
+          var season = seasonId;
+          var nutrition = nutritionOnly;
           final options = <String>{...cuisineLabels.keys, ...cuisines}.toList()
             ..sort((x,y) => (cuisineLabels[x] ?? x).compareTo(cuisineLabels[y] ?? y));
           await showModalBottomSheet<void>(
@@ -61,7 +65,7 @@ class _DiscoveryFilterBar extends StatelessWidget {
                     Row(children: [
                       Expanded(child: Text(appStrings(sheetContext).label('Recipe filters','فلاتر الوصفات'), style: Theme.of(sheetContext).textTheme.headlineMedium)),
                       TextButton(onPressed: () => setSheetState(() {
-                        selectedCuisines.clear(); foodType = 'all'; level = 'all'; timeRange = const RangeValues(0,180);
+                        selectedCuisines.clear(); foodType = 'all'; level = 'all'; timeRange = const RangeValues(0,180); season = 'all'; nutrition = false;
                       }), child: Text(appStrings(sheetContext).label('Reset all','إعادة ضبط الكل'))),
                     ]),
                     Expanded(child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -102,15 +106,32 @@ class _DiscoveryFilterBar extends StatelessWidget {
                         Text('0 min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
                         Text('180+ min',style:TextStyle(color:AppTheme.muted,fontSize:11)),
                       ]),
+
+                      const SizedBox(height: 22),
+                      Text(appStrings(sheetContext).recipeLabel('Season'), style: Theme.of(sheetContext).textTheme.titleMedium),
+                      const SizedBox(height: 10),
+                      Wrap(spacing: 8, runSpacing: 8, children: [
+                        for (final option in const [('all','All seasons'),('winter','Winter'),('rainy','Rainy season'),('summer','Summer'),('spring','Spring'),('autumn','Autumn')])
+                          ChoiceChip(label: Text(appStrings(sheetContext).recipeLabel(option.$2)), selected: season == option.$1, onSelected: (_) => setSheetState(() => season = option.$1), selectedColor: AppTheme.terracotta.withOpacity(.16)),
+                      ]),
+                      const SizedBox(height: 12),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: nutrition,
+                        activeColor: AppTheme.olive,
+                        title: Text(appStrings(sheetContext).recipeLabel('Nutrition data')),
+                        subtitle: Text(appStrings(sheetContext).label('Only show recipes with nutrition information', 'عرض الوصفات التي تحتوي على معلومات غذائية فقط')),
+                        onChanged: (value) => setSheetState(() => nutrition = value),
+                      ),
                       const SizedBox(height:20),
                     ]))),
                     const SizedBox(height:12),
                     Row(children:[
-                      Expanded(child:OutlinedButton(onPressed:(){onChanged(const {},'all','all',0,180);Navigator.pop(sheetContext);},child:Text(appStrings(sheetContext).label('Clear filters','مسح الفلاتر')))),
+                      Expanded(child:OutlinedButton(onPressed:(){onChanged(const {},'all','all',0,180,'all',false);Navigator.pop(sheetContext);},child:Text(appStrings(sheetContext).label('Clear filters','مسح الفلاتر')))),
                       const SizedBox(width:12),
                       Expanded(child:FilledButton(
                         style:FilledButton.styleFrom(backgroundColor:AppTheme.terracotta),
-                        onPressed:(){onChanged(selectedCuisines,foodType,level,timeRange.start.round(),timeRange.end.round());Navigator.pop(sheetContext);},
+                        onPressed:(){onChanged(selectedCuisines,foodType,level,timeRange.start.round(),timeRange.end.round(),season,nutrition);Navigator.pop(sheetContext);},
                         child:Text(appStrings(sheetContext).label('Show recipes','عرض الوصفات')),
                       )),
                     ]),
@@ -250,45 +271,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           ]),
         ),
         const SizedBox(height: 10),
-        Row(children: [
-          Expanded(child: DropdownButtonFormField<String>(
-            key: const Key('recipe-season-filter'),
-            value: _seasonId,
-            isExpanded: true,
-            decoration: InputDecoration(labelText: appStrings(context).recipeLabel('Season'), isDense: true, contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10)),
-            items: [
-              DropdownMenuItem(value: 'all', child: Text(appStrings(context).recipeLabel('All seasons'))),
-              DropdownMenuItem(value: 'winter', child: Text(appStrings(context).recipeLabel('Winter'))),
-              DropdownMenuItem(value: 'rainy', child: Text(appStrings(context).recipeLabel('Rainy season'))),
-              DropdownMenuItem(value: 'summer', child: Text(appStrings(context).recipeLabel('Summer'))),
-              DropdownMenuItem(value: 'spring', child: Text(appStrings(context).recipeLabel('Spring'))),
-              DropdownMenuItem(value: 'autumn', child: Text(appStrings(context).recipeLabel('Autumn'))),
-            ],
-            onChanged: (value) => setState(() => _seasonId = value ?? 'all'),
-          )),
-          const SizedBox(width: 10),
-          Expanded(child: FilterChip(
-            key: const Key('recipe-nutrition-filter'),
-            selected: _nutritionOnly,
-            onSelected: (value) => setState(() => _nutritionOnly = value),
-            label: Text(appStrings(context).recipeLabel('Nutrition data')),
-            avatar: const Icon(Icons.monitor_heart_outlined, size: 17),
-          )),
-        ]),
-        const SizedBox(height: 10),
         _DiscoveryFilterBar(
           cuisineIds: _cuisineIds,
           foodTypeId: _foodTypeId,
           difficulty: _difficulty,
           minMinutes: _minMinutes,
           maxMinutes: _maxMinutes,
+          seasonId: _seasonId,
+          nutritionOnly: _nutritionOnly,
           cuisines: catalog.expand((recipe) => recipe.cuisineIds).toSet().toList(),
-          onChanged: (cuisines, foodType, difficulty, minMinutes, maxMinutes) => setState(() {
+          onChanged: (cuisines, foodType, difficulty, minMinutes, maxMinutes, season, nutrition) => setState(() {
             _cuisineIds = cuisines;
             _foodTypeId = foodType;
             _difficulty = difficulty;
             _minMinutes = minMinutes;
             _maxMinutes = maxMinutes;
+            _seasonId = season;
+            _nutritionOnly = nutrition;
           }),
         ),
         const SizedBox(height: 14),
