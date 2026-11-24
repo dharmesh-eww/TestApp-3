@@ -193,7 +193,7 @@ class SettingsScreen extends StatelessWidget {
             child: Row(children: [
               Icon(Icons.notifications_active_outlined, color: AppTheme.olive),
               const SizedBox(width: 9),
-              Expanded(child: Text(appStrings(context).label('${state.activeReminderKeys.length} reminders currently scheduled on this device', '${state.activeReminderKeys.length} تذكير مجدول حاليًا على هذا الجهاز'), style: TextStyle(fontSize: 12))),
+              Expanded(child: Text(appStrings(context).label('${state.activeReminderKeys.length} reminder entries configured on this device', '${state.activeReminderKeys.length} تذكير مضبوط على هذا الجهاز'), style: TextStyle(fontSize: 12))),
               TextButton(
                 onPressed: () async {
                   SmartReminderService.invalidate();
