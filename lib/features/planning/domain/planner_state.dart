@@ -16,7 +16,10 @@ class PlannerState {
   final List<Map<String, String>> recentlyViewed = [];
   final Set<String> preferredDietaryTags = {};
   final Set<String> preferredCuisines = {};
+  final Set<String> preferredFoodTypes = {};
+  final Set<String> preferredMealTypes = {};
   final Set<String> allergies = {};
+  int? preferredMaxCookingMinutes;
   final Map<String, Recipe> customRecipes = {};
   final Map<String, int> recipeRatings = {};
   final Map<String, String> recipeNotes = {};
@@ -51,7 +54,7 @@ class PlannerState {
   String themePreference = 'system';
 
   Map<String, Object?> toJson() => {
-    'schema_version': 7,
+    'schema_version': 8,
     'favorites': favorites.toList()..sort(),
     'meals': [
       for (final slots in mealPlan.values)
@@ -106,6 +109,9 @@ class PlannerState {
     'preferences': {
       'dietary_tags': preferredDietaryTags.toList()..sort(),
       'cuisines': preferredCuisines.toList()..sort(),
+      'food_types': preferredFoodTypes.toList()..sort(),
+      'meal_types': preferredMealTypes.toList()..sort(),
+      'max_cooking_minutes': preferredMaxCookingMinutes,
       'measurement_system': measurementSystem,
       'week_starts_on': weekStartsOn,
       'locale_code': localeCode,
@@ -121,7 +127,7 @@ class PlannerState {
     return state;
   }
 
-  /// Reads v1-v7 snapshots. The next save writes schema v7.
+  /// Reads v1-v8 snapshots. The next save writes schema v8.
   void restoreFromJson(Map<String, dynamic> json) {
     favorites.clear();
     mealPlan.clear();
@@ -144,6 +150,9 @@ class PlannerState {
     recentlyViewed.clear();
     preferredDietaryTags.clear();
     preferredCuisines.clear();
+    preferredFoodTypes.clear();
+    preferredMealTypes.clear();
+    preferredMaxCookingMinutes = null;
     allergies.clear();
     customRecipes.clear();
     recipeRatings.clear();
@@ -166,7 +175,7 @@ class PlannerState {
     weekStartsOn = 1;
     localeCode = 'en';
     final version = json['schema_version'];
-    if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != 6 && version != 7) return;
+    if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != 6 && version != 7 && version != 8) return;
 
     final rawFavorites = json['favorites'];
     if (rawFavorites is List) {
@@ -362,6 +371,12 @@ class PlannerState {
       if (tags is List) preferredDietaryTags.addAll(tags.whereType<String>());
       final cuisines = preferences['cuisines'];
       if (cuisines is List) preferredCuisines.addAll(cuisines.whereType<String>());
+      final foodTypes = preferences['food_types'];
+      if (foodTypes is List) preferredFoodTypes.addAll(foodTypes.whereType<String>());
+      final mealTypes = preferences['meal_types'];
+      if (mealTypes is List) preferredMealTypes.addAll(mealTypes.whereType<String>());
+      final maxCooking = preferences['max_cooking_minutes'];
+      if (maxCooking is num && maxCooking >= 5 && maxCooking <= 240) preferredMaxCookingMinutes = maxCooking.toInt();
       final system = preferences['measurement_system'];
       if (system == 'metric' || system == 'us') measurementSystem = system as String;
       final week = preferences['week_starts_on'];
@@ -432,6 +447,9 @@ class PlannerState {
     recentlyViewed.clear();
     preferredDietaryTags.clear();
     preferredCuisines.clear();
+    preferredFoodTypes.clear();
+    preferredMealTypes.clear();
+    preferredMaxCookingMinutes = null;
     allergies.clear();
     customRecipes.clear();
     recipeRatings.clear();
