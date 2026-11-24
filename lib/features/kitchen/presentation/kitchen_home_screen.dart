@@ -109,7 +109,17 @@ class KitchenScreen extends StatelessWidget {
         const SizedBox(height: 20),
         const SizedBox(height: 12),
         if (saved.isEmpty)
-          Text(appStrings(context).label('Recipes you save will live here. Tap the bookmark on any recipe you love.', 'ستظهر هنا الوصفات التي تحفظها. اضغط علامة الحفظ على أي وصفة تعجبك.'), style: TextStyle(color: AppTheme.muted))
+          Column(
+            children: [
+              GatherVisuals.emptyKitchenIllustration(width: 210, height: 150),
+              const SizedBox(height: 4),
+              Text(
+                appStrings(context).label('Recipes you save will live here. Tap the bookmark on any recipe you love.', 'ستظهر هنا الوصفات التي تحفظها. اضغط علامة الحفظ على أي وصفة تعجبك.'),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppTheme.muted),
+              ),
+            ],
+          )
         else
           ...saved.map((recipe) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
