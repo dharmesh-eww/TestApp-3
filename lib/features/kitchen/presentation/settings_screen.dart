@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/kitchen/presentation/language_selection_screen.dart';
+import 'package:testapp_3/features/kitchen/presentation/food_preferences_screen.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:testapp_3/features/cooking/domain/cooking_assist_service.dart';
 import 'package:testapp_3/features/widgets/data/gather_home_widget_service.dart';
@@ -96,55 +97,27 @@ class SettingsScreen extends StatelessWidget {
         const SizedBox(height: 24),
         Text(appStrings(context).label('PERSONAL DISCOVERY', 'اكتشاف مخصص'), style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
         const SizedBox(height: 8),
-        Text(appStrings(context).label('Prefer recipes with these dietary tags. Discover will apply every selected tag.', 'فضّل الوصفات التي تحمل هذه التصنيفات الغذائية. سيطبق قسم الاكتشاف جميع التصنيفات المحددة.'), style: TextStyle(color: AppTheme.muted)),
-        for (final option in const {'plant_based': 'Plant based', 'gluten_free': 'Gluten free', 'dairy_free': 'Dairy free', 'high_protein': 'High protein'}.entries)
-          CheckboxListTile(contentPadding: EdgeInsets.zero, title: Text(appStrings(context).dietaryTag(option.key)), value: state.preferredDietaryTags.contains(option.key),
-            onChanged: (selected) { if (selected == true) { state.preferredDietaryTags.add(option.key); } else { state.preferredDietaryTags.remove(option.key); } PlannerScope.refresh(context); }),
-        const SizedBox(height: 12),
-        Text(appStrings(context).label('Preferred cuisines', 'المطابخ المفضلة'), style: Theme.of(context).textTheme.titleMedium),
-        Text(appStrings(context).label('Discover will filter to recipes from the cuisines you select.', 'سيعرض قسم الاكتشاف الوصفات من المطابخ التي تختارها.'), style: TextStyle(color: AppTheme.muted)),
-        for (final option in const {
-          'indian': 'Indian', 'north_indian': 'North Indian', 'south_indian': 'South Indian',
-          'gujarati': 'Gujarati', 'chinese': 'Chinese', 'japanese': 'Japanese',
-          'italian': 'Italian', 'korean': 'Korean', 'mexican': 'Mexican',
-          'american': 'American', 'thai': 'Thai', 'mediterranean': 'Mediterranean',
-          'vietnamese': 'Vietnamese', 'greek': 'Greek', 'french': 'French',
-          'spanish': 'Spanish', 'middle_eastern': 'Middle Eastern',
-        }.entries)
-          CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(appStrings(context).label(option.value, option.value)),
-            value: state.preferredCuisines.contains(option.key),
-            onChanged: (selected) {
-              if (selected == true) {
-                state.preferredCuisines.add(option.key);
-              } else {
-                state.preferredCuisines.remove(option.key);
-              }
-              PlannerScope.refresh(context);
-            },
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: ListTile(
+            key: const Key('open-food-preferences'),
+            leading: Container(
+              width: 42, height: 42,
+              decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
+              child: const Icon(Icons.restaurant_menu_rounded, color: AppTheme.olive),
+            ),
+            title: Text(appStrings(context).label('Recipe preferences', 'تفضيلات الوصفات')),
+            subtitle: Text(appStrings(context).label(
+              '${state.preferredCuisines.length} cuisines · ${state.preferredFoodTypes.length} food styles · ${state.allergies.length} allergy exclusions',
+              '${state.preferredCuisines.length} مطابخ · ${state.preferredFoodTypes.length} أنواع طعام · ${state.allergies.length} استبعادات حساسية',
+            )),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FoodPreferencesScreen()),
+            ),
           ),
-        const SizedBox(height: 24),
-        Text(appStrings(context).label('ALLERGY SAFETY', 'سلامة الحساسية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
-        const SizedBox(height: 6),
-        Text(appStrings(context).label('Select allergens to exclude. When an allergy is active, recipes without verified allergen data are hidden. Always check packaging and confirm ingredients yourself.', 'حدد مسببات الحساسية لاستبعادها. عند تفعيل حساسية، تُخفى الوصفات التي لا تحتوي على بيانات حساسية موثقة. تحقق دائمًا من العبوات والمكونات بنفسك.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
-        for (final allergen in const {
-          'peanuts': 'Peanuts', 'tree nuts': 'Tree nuts', 'milk': 'Milk', 'eggs': 'Eggs',
-          'wheat': 'Wheat', 'gluten': 'Gluten', 'soy': 'Soy', 'fish': 'Fish',
-          'shellfish': 'Crustaceans / shellfish', 'sesame': 'Sesame', 'mustard': 'Mustard',
-          'celery': 'Celery', 'lupin': 'Lupin', 'sulphites': 'Sulphites',
-        }.entries)
-          CheckboxListTile(
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            title: Text(appStrings(context).label(allergen.value, allergen.value)),
-            value: state.allergies.contains(allergen.key),
-            onChanged: (value) {
-              if (value == true) { state.allergies.add(allergen.key); }
-              else { state.allergies.remove(allergen.key); }
-              PlannerScope.refresh(context);
-            },
-          ),
+        ),
         const SizedBox(height: 24),
         Text(appStrings(context).label('SMART REMINDERS', 'التذكيرات الذكية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
         SwitchListTile(
