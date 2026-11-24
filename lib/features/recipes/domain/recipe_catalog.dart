@@ -330,6 +330,9 @@ class RecipeCatalog {
     bool nutritionOnly = false,
     Set<String> dietaryTags = const {},
     Set<String> preferredCuisines = const {},
+    Set<String> preferredFoodTypes = const {},
+    int? preferredMaxCookingMinutes,
+    Set<String> preferredMealTypes = const {},
     Set<String> allergies = const {},
     RecipeSort sort = RecipeSort.recommended,
   }) {
@@ -341,15 +344,19 @@ class RecipeCatalog {
       final matchesCuisine = cuisineIds.isNotEmpty
           ? recipe.cuisineIds.any(cuisineIds.contains)
           : cuisineId == 'all' || recipe.cuisineIds.contains(cuisineId);
-      final matchesFoodType = foodType == null || recipe.foodType == foodType;
+      final matchesFoodType = (foodType == null || recipe.foodType == foodType) &&
+          (preferredFoodTypes.isEmpty || preferredFoodTypes.contains(recipe.foodType.name));
       final matchesDifficulty = difficulty == 'all' || recipe.difficulty.toLowerCase() == difficulty.toLowerCase();
       final matchesTime = (minMinutes == null || recipe.totalMinutes >= minMinutes) &&
-          (maxMinutes == null || recipe.totalMinutes <= maxMinutes);
+          (maxMinutes == null || recipe.totalMinutes <= maxMinutes) &&
+          (preferredMaxCookingMinutes == null || recipe.totalMinutes <= preferredMaxCookingMinutes);
       final matchesSeason = season == 'all' || recipe.seasons.contains(season.toLowerCase());
       final matchesNutrition = !nutritionOnly || recipe.hasNutritionData;
       final matchesDiet = dietaryTags.isEmpty || dietaryTags.every(recipe.dietaryTags.contains);
       final matchesPreferredCuisine = preferredCuisines.isEmpty ||
           recipe.cuisineIds.any(preferredCuisines.contains);
+      final matchesMealType = preferredMealTypes.isEmpty ||
+          recipe.categoryIds.any(preferredMealTypes.contains);
       final blockedAllergens = allergies.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
       final recipeAllergens = recipe.verifiedAllergens.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
       // With an active allergy profile, unverified recipes are excluded rather
@@ -358,7 +365,7 @@ class RecipeCatalog {
           (recipe.allergensVerified && !recipeAllergens.any(blockedAllergens.contains));
       return recipe.isPublished && matchesCategory && matchesCuisine && matchesFoodType &&
           matchesDifficulty && matchesTime && matchesSeason && matchesNutrition && matchesDiet &&
-          matchesPreferredCuisine && matchesAllergies && recipe.matches(normalized);
+          matchesPreferredCuisine && matchesMealType && matchesAllergies && recipe.matches(normalized);
     }).toList();
 
     switch (sort) {
