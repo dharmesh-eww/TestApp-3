@@ -47,6 +47,19 @@ void main() {
       expect(result, hasLength(3));
     });
 
+    test('applies saved onboarding cuisine, food style, meal and time preferences', () {
+      final result = RecipeCatalog.search(
+        recipes,
+        preferredCuisines: {'indian'},
+        preferredFoodTypes: {'vegan'},
+        preferredMealTypes: {'breakfast'},
+        preferredMaxCookingMinutes: 45,
+      );
+      expect(result.map((recipe) => recipe.id), containsAll(['masala-dosa', 'south-indian-idli']));
+      expect(result.every((recipe) => recipe.foodType == FoodType.vegan), isTrue);
+      expect(result.every((recipe) => recipe.totalMinutes <= 45), isTrue);
+    });
+
     test('filters recipes within an inclusive cooking-time range', () {
       final result = RecipeCatalog.search(recipes, minMinutes: 20, maxMinutes: 35);
       expect(result.map((recipe) => recipe.id), containsAll([
