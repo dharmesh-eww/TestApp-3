@@ -4,12 +4,24 @@ import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/kitchen/presentation/collection_detail_screen.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 
-class CollectionsScreen extends StatelessWidget {
+class CollectionsScreen extends StatefulWidget {
   const CollectionsScreen({super.key});
+  @override
+  State<CollectionsScreen> createState() => _CollectionsScreenState();
+}
+
+class _CollectionsScreenState extends State<CollectionsScreen> {
+  String _query = '';
+  bool _largestFirst = false;
 
   @override
   Widget build(BuildContext context) {
     final state = PlannerScope.of(context);
+    final entries = state.collections.entries.where((entry) =>
+      (state.collectionNames[entry.key] ?? '').toLowerCase().contains(_query.toLowerCase())
+    ).toList()..sort((a, b) => _largestFirst
+      ? b.value.length.compareTo(a.value.length)
+      : (state.collectionNames[a.key] ?? '').toLowerCase().compareTo((state.collectionNames[b.key] ?? '').toLowerCase()));
     return Scaffold(
       appBar: AppBar(title: Text(appStrings(context).label('My collections', 'مجموعاتي'))),
       floatingActionButton: FloatingActionButton.extended(
@@ -21,7 +33,28 @@ class CollectionsScreen extends StatelessWidget {
           ? Center(child: Text(appStrings(context).label('Create a collection for recipes you love.', 'أنشئ مجموعة للوصفات التي تحبها.')))
           : ListView(
               padding: const EdgeInsets.all(16),
-              children: state.collections.entries.map((entry) => Card(
+              children: [
+                TextField(
+                  key: const Key('collections-search'),
+                  onChanged: (value) => setState(() => _query = value),
+                  decoration: InputDecoration(
+                    hintText: appStrings(context).label('Search collections', 'ابحث في المجموعات'),
+                    prefixIcon: Icon(Icons.search),
+                    suffixIcon: _query.isEmpty ? null : IconButton(onPressed: () => setState(() => _query = ''), icon: Icon(Icons.close)),
+                  ),
+                ),
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: TextButton.icon(
+                    onPressed: () => setState(() => _largestFirst = !_largestFirst),
+                    icon: Icon(Icons.sort),
+                    label: Text(_largestFirst ? appStrings(context).label('Most recipes first', 'الأكثر وصفات أولاً') : appStrings(context).label('Sort by name', 'ترتيب حسب الاسم')),
+                  ),
+                ),
+                if (entries.isEmpty)
+                  Padding(padding: const EdgeInsets.all(24), child: Text(appStrings(context).label('No collections match your search.', 'لا توجد مجموعات تطابق بحثك.')))
+                else
+                ...entries.map((entry) => Card(
                 child: ListTile(
                   leading: Icon(Icons.folder_open, color: AppTheme.terracotta),
                   title: Text(state.collectionNames[entry.key] ?? appStrings(context).label('Collection', 'مجموعة')),
@@ -42,7 +75,8 @@ class CollectionsScreen extends StatelessWidget {
                   onTap: () => Navigator.push(context, MaterialPageRoute(
                     builder: (_) => CollectionDetailScreen(collectionId: entry.key))),
                 ),
-              )).toList(),
+              )),
+              ],
             ),
     );
   }
