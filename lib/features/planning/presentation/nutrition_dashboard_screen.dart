@@ -22,7 +22,8 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     final state = PlannerScope.of(context);
     final catalog = RecipeCatalogScope.of(context);
     var calories = 0.0, protein = 0.0, carbs = 0.0, fat = 0.0;
-    final planned = <Recipe>[];
+    var eatenCalories = 0.0, eatenProtein = 0.0;
+    final planned = <({Recipe recipe, int servings})>[];
     final dateMeals = state.mealsFor(_dateKey);
     final weekdayNames = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     final today = DateUtils.dateOnly(DateTime.now());
@@ -42,7 +43,10 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
       protein += recipe.proteinGrams * factor;
       carbs += recipe.carbsGrams * factor;
       fat += recipe.fatGrams * factor;
-      planned.add(recipe);
+      planned.add((recipe: recipe, servings: meal.servings));
+      final eaten = state.eatenServings(_dateKey, recipe.id);
+      eatenCalories += recipe.calories * eaten / (recipe.servings < 1 ? 1 : recipe.servings);
+      eatenProtein += recipe.proteinGrams * eaten / (recipe.servings < 1 ? 1 : recipe.servings);
     }
     const weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     final weekStart = _date.subtract(Duration(days: _date.weekday - 1));
@@ -84,6 +88,21 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
           ),
           const SizedBox(height: 10),
           _goalCard(title: strings.label('Protein', 'البروتين'), value: protein, target: state.dailyProteinTargetGrams, unit: 'g', icon: Icons.fitness_center),
+          const SizedBox(height: 10),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(children: [
+                Icon(Icons.restaurant_outlined, color: AppTheme.olive),
+                const SizedBox(width: 10),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(strings.label('Consumed so far', 'المستهلك حتى الآن'), style: TextStyle(fontWeight: FontWeight.w700)),
+                  Text('${eatenCalories.round()} kcal · ${eatenProtein.round()} g protein', style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+                ])),
+                Text('${planned.fold<int>(0, (sum, meal) => sum + state.eatenServings(_dateKey, meal.recipe.id))} servings', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, fontSize: 12)),
+              ]),
+            ),
+          ),
           const SizedBox(height: 18),
           Text(strings.label('Macronutrients', 'المغذيات الكبرى'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 10),
@@ -130,14 +149,27 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
           if (planned.isEmpty)
             Text(strings.label('No meals planned for this date yet.', 'لا توجد وجبات مخططة لهذا التاريخ بعد.'), style: TextStyle(color: AppTheme.muted))
           else
-            for (final recipe in planned)
+            for (final meal in planned)
               Card(child: ListTile(
                 leading: Icon(Icons.restaurant_menu, color: AppTheme.olive),
-                title: Text(recipe.title),
-                subtitle: Text('${recipe.calories} kcal · ${recipe.totalMinutes} min'),
+                title: Text(meal.recipe.title),
+                subtitle: Text('${meal.recipe.calories} kcal · ${meal.servings} planned · ${state.eatenServings(_dateKey, meal.recipe.id)} eaten'),
+                trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                  IconButton(tooltip: strings.label('Remove one serving', 'إزالة حصة'), visualDensity: VisualDensity.compact,
+                    onPressed: state.eatenServings(_dateKey, meal.recipe.id) <= 0 ? null : () {
+                      state.setEatenServings(_dateKey, meal.recipe.id, state.eatenServings(_dateKey, meal.recipe.id) - 1);
+                      PlannerScope.refresh(context);
+                    }, icon: Icon(Icons.remove_circle_outline)),
+                  Text('${state.eatenServings(_dateKey, meal.recipe.id)}', style: TextStyle(fontWeight: FontWeight.w800)),
+                  IconButton(tooltip: strings.label('Add one serving', 'إضافة حصة'), visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      state.setEatenServings(_dateKey, meal.recipe.id, state.eatenServings(_dateKey, meal.recipe.id) + 1);
+                      PlannerScope.refresh(context);
+                    }, icon: Icon(Icons.add_circle_outline)),
+                ]),
               )),
           const SizedBox(height: 18),
-          Text(strings.label('Nutrition values are estimates based on recipe data and planned servings. Missing macro data is shown as zero; verify labels for dietary decisions.', 'القيم الغذائية تقديرية وتعتمد على بيانات الوصفة والحصص المخططة. تظهر بيانات المغذيات غير المتوفرة كصفر؛ تحقق من الملصقات لاتخاذ القرارات الغذائية.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+          Text(strings.label('Nutrition values are estimates based on recipe data and planned servings. Use the serving controls to log what you actually ate. Recipe data may be incomplete; verify labels for dietary decisions.', 'القيم الغذائية تقديرية وتعتمد على بيانات الوصفة والحصص المخططة. استخدم أزرار الحصص لتسجيل ما تناولته فعليًا. قد تكون بيانات الوصفة غير مكتملة؛ تحقق من الملصقات.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
         ],
       ),
     );
