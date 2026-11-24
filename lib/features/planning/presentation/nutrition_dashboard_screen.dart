@@ -3,6 +3,7 @@ import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/recipes/domain/recipe.dart';
+import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 
 class NutritionDashboardScreen extends StatefulWidget {
