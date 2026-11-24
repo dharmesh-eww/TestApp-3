@@ -40,6 +40,7 @@ class CollectionDetailScreen extends StatelessWidget {
 
   Future<void> _addRecipes(BuildContext context, List<Recipe> catalog) async {
     final state = PlannerScope.of(context);
+    var query = '';
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -47,7 +48,17 @@ class CollectionDetailScreen extends StatelessWidget {
         child: SizedBox(
           height: MediaQuery.of(sheetContext).size.height * .7,
           child: ListView(
-            children: catalog.map((recipe) => CheckboxListTile(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+            children: [
+              TextField(
+                key: const Key('collection-recipe-search'),
+                onChanged: (value) => setSheetState(() => query = value),
+                decoration: InputDecoration(
+                  hintText: appStrings(sheetContext).label('Search recipes to add', 'ابحث عن وصفات لإضافتها'),
+                  prefixIcon: Icon(Icons.search),
+                ),
+              ),
+              ...catalog.where((recipe) => recipe.matches(query)).map((recipe) => CheckboxListTile(
               value: state.collections[collectionId]?.contains(recipe.id) ?? false,
               title: Text(recipe.title),
               onChanged: (selected) {
@@ -58,7 +69,8 @@ class CollectionDetailScreen extends StatelessWidget {
                   setSheetState(() {});
                 }
               },
-            )).toList(),
+            )),
+            ],
           ),
         ),
       )),
