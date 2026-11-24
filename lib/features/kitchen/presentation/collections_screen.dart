@@ -49,15 +49,27 @@ class CollectionsScreen extends StatelessWidget {
 
   Future<void> _createCollection(BuildContext context) async {
     final controller = TextEditingController();
-    final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('New collection', 'مجموعة جديدة')),
-      content: TextField(controller: controller, autofocus: true,
-          decoration: InputDecoration(labelText: appStrings(context).label('Collection name', 'اسم المجموعة'))),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text(appStrings(context).label('Create', 'إنشاء'))),
-      ],
-    ));
+    final name = await showModalBottomSheet<String>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('New collection', 'مجموعة جديدة'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(controller: controller, autofocus: true,
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Collection name', 'اسم المجموعة'), prefixIcon: const Icon(Icons.collections_bookmark_outlined))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, controller.text),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Create collection', 'إنشاء المجموعة')))),
+          ]),
+        ]),
+      ),
+    );
     controller.dispose();
     if (name == null || name.trim().isEmpty || !context.mounted) return;
     PlannerScope.of(context).createCollection(name);
@@ -67,14 +79,27 @@ class CollectionsScreen extends StatelessWidget {
   Future<void> _renameCollection(BuildContext context, String id) async {
     final state = PlannerScope.of(context);
     final controller = TextEditingController(text: state.collectionNames[id]);
-    final name = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(appStrings(context).label('Rename collection', 'إعادة تسمية المجموعة')),
-      content: TextField(controller: controller, decoration: InputDecoration(labelText: appStrings(context).label('Collection name', 'اسم المجموعة'))),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: Text(appStrings(context).label('Save', 'حفظ'))),
-      ],
-    ));
+    final name = await showModalBottomSheet<String>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(sheetContext).label('Rename collection', 'إعادة تسمية المجموعة'), style: Theme.of(sheetContext).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(controller: controller, autofocus: true,
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Collection name', 'اسم المجموعة'))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(onPressed: () => Navigator.pop(sheetContext, controller.text),
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta), child: Text(appStrings(sheetContext).label('Save changes', 'حفظ التغييرات')))),
+          ]),
+        ]),
+      ),
+    );
     controller.dispose();
     if (name == null || name.trim().isEmpty || !context.mounted) return;
     state.renameCollection(id, name);
