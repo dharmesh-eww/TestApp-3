@@ -42,14 +42,14 @@ class _GroceryScreenState extends State<GroceryScreen> {
       children: [
         Text(
           appStrings(context).label('THE MARKET LIST', 'قائمة المشتريات'),
-          style: const TextStyle(color: AppTheme.terracotta, fontSize: 10,
+          style: TextStyle(color: AppTheme.terracotta, fontSize: 10,
             fontWeight: FontWeight.w800, letterSpacing: 1.5),
         ),
         const SizedBox(height: 8),
         Row(children: [
           Expanded(child: Text(
             appStrings(context).label('A little plan.\\nA smoother shop.', 'خطة صغيرة.\\nوتسوق أسهل.'),
-            style: const TextStyle(fontFamily: 'Georgia', fontSize: 30,
+            style: TextStyle(fontFamily: 'Georgia', fontSize: 30,
               height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold),
           )),
           GatherVisuals.foodMotion(size: 76),
@@ -65,10 +65,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
             Row(children: [
               Expanded(child: Text(
                 appStrings(context).label('Shopping progress', 'تقدم التسوق'),
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(color: Colors.white70, fontSize: 12),
               )),
               Text('$checked / ${entries.length}',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
             ]),
             const SizedBox(height: 12),
             ClipRRect(
@@ -83,7 +83,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
               entries.isEmpty
                   ? appStrings(context).label('Your next shop starts here.', 'تبدأ رحلة التسوق التالية من هنا.')
                   : appStrings(context).label('$remaining items left to pick up', 'تبقى $remaining عناصر للشراء'),
-              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ]),
         ),
@@ -112,7 +112,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(appStrings(context).label('LIST TOOLS', 'أدوات القائمة'),
-              style: const TextStyle(color: AppTheme.muted, fontSize: 10,
+              style: TextStyle(color: AppTheme.muted, fontSize: 10,
                 fontWeight: FontWeight.w800, letterSpacing: 1.2)),
             const SizedBox(height: 12),
             Row(children: [
@@ -139,7 +139,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
             Row(children: [
               Expanded(child: OutlinedButton.icon(
                 onPressed: () => setState(() => _groupByStore = !_groupByStore),
-                icon: const Icon(Icons.storefront_outlined, size: 17),
+                icon: Icon(Icons.storefront_outlined, size: 17),
                 label: Text(_groupByStore
                   ? appStrings(context).label('Grouped by store', 'حسب المتجر')
                   : appStrings(context).label('Group by store', 'التجميع حسب المتجر')),
@@ -147,7 +147,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
               const SizedBox(width: 8),
               Expanded(child: OutlinedButton.icon(
                 onPressed: () => _editBudget(context),
-                icon: const Icon(Icons.account_balance_wallet_outlined, size: 17),
+                icon: Icon(Icons.account_balance_wallet_outlined, size: 17),
                 label: Text(appStrings(context).label('Set budget', 'تحديد الميزانية')),
               )),
             ]),
@@ -167,13 +167,13 @@ class _GroceryScreenState extends State<GroceryScreen> {
               const SizedBox(width: 10),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(appStrings(context).label('Shopping budget', 'ميزانية التسوق'),
-                  style: const TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
+                  style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
                 Text(
                   appStrings(context).label(
                     '${estimatedTotal.toStringAsFixed(2)} spent of ${budget.toStringAsFixed(2)}',
                     '${estimatedTotal.toStringAsFixed(2)} من ${budget.toStringAsFixed(2)}',
                   ),
-                  style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                  style: TextStyle(fontSize: 12, color: AppTheme.muted),
                 ),
               ])),
               TextButton(onPressed: () => _editBudget(context),
@@ -200,16 +200,16 @@ class _GroceryScreenState extends State<GroceryScreen> {
               GatherVisuals.emptyBasketMotion(width: 180, height: 142),
               const SizedBox(height: 10),
               Text(appStrings(context).label('Your list is waiting', 'قائمتك بانتظارك'),
-                style: const TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
+                style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
               const SizedBox(height: 5),
               Text(appStrings(context).label(
                 'Add ingredients from a recipe or create your own shopping item.',
                 'أضف مكونات من وصفة أو أنشئ عنصر تسوق جديدًا.'),
-                textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.muted)),
+                textAlign: TextAlign.center, style: TextStyle(color: AppTheme.muted)),
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed: () => _showCustomGroceryEditor(context),
-                icon: const Icon(Icons.add), label: Text(appStrings(context).label('Add first item', 'أضف أول عنصر')),
+                icon: Icon(Icons.add), label: Text(appStrings(context).label('Add first item', 'أضف أول عنصر')),
               ),
             ]),
           )
@@ -219,10 +219,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
               padding: const EdgeInsets.only(top: 12, bottom: 8),
               child: Row(children: [
                 Expanded(child: Text(group.key.toUpperCase(),
-                  style: const TextStyle(color: AppTheme.terracotta, fontSize: 10,
+                  style: TextStyle(color: AppTheme.terracotta, fontSize: 10,
                     fontWeight: FontWeight.w800, letterSpacing: 1.2))),
                 Text('${group.value.length} items',
-                  style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+                  style: TextStyle(color: AppTheme.muted, fontSize: 11)),
               ]),
             ),
             for (final item in group.value)
@@ -249,10 +249,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
                       Text(item.isQuantified
                         ? '${_formatAmount(item.toBuyAmount)} ${item.unit} to buy · ${_formatAmount(item.ownedAmount)} owned'
                         : appStrings(context).label('Check pantry quantity', 'تحقق من كمية المخزن'),
-                        style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+                        style: TextStyle(color: AppTheme.muted, fontSize: 11)),
                       if (state.groceryPrices[item.key] != null || state.groceryStores[item.key] != null)
                         Text('${state.groceryPrices[item.key]?.toStringAsFixed(2) ?? 'No price'} · ${state.groceryStores[item.key] ?? 'No store'}',
-                          style: const TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
+                          style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700)),
                     ])),
                     PopupMenuButton<String>(
                       onSelected: (action) {
@@ -280,7 +280,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
                 state.clearCheckedCustomGroceryItems();
                 PlannerScope.refresh(context);
               },
-              icon: const Icon(Icons.cleaning_services_outlined, size: 17),
+              icon: Icon(Icons.cleaning_services_outlined, size: 17),
               label: Text(appStrings(context).label('Clear checked custom items', 'مسح العناصر المحددة')),
             )),
         const SizedBox(height: 24),
@@ -288,23 +288,23 @@ class _GroceryScreenState extends State<GroceryScreen> {
           Expanded(child: Text(appStrings(context).label('Your pantry', 'مخزنك'),
             style: Theme.of(context).textTheme.titleLarge)),
           TextButton.icon(onPressed: () => _showPantryEditor(context),
-            icon: const Icon(Icons.add, size: 17),
+            icon: Icon(Icons.add, size: 17),
             label: Text(appStrings(context).label('Add item', 'إضافة عنصر'))),
         ]),
         Text(appStrings(context).label(
           'What you already own is deducted from your shopping quantities.',
           'يتم خصم ما تملكه بالفعل من كميات التسوق المطلوبة.'),
-          style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+          style: TextStyle(color: AppTheme.muted, fontSize: 12)),
         if (state.expiringPantryItems.isNotEmpty)
           Padding(padding: const EdgeInsets.only(top: 8),
             child: Text(appStrings(context).label(
               '${state.expiringPantryItems.length} pantry item(s) expire within seven days.',
               'ستنتهي صلاحية ${state.expiringPantryItems.length} من عناصر المخزن خلال سبعة أيام.'),
-              style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w700))),
+              style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w700))),
         const SizedBox(height: 10),
         if (state.pantry.isEmpty)
           Text(appStrings(context).label('Your pantry is empty for now.', 'مخزنك فارغ حاليًا.'),
-            style: const TextStyle(color: AppTheme.muted))
+            style: TextStyle(color: AppTheme.muted))
         else
           for (final item in state.pantry.values)
             Container(
@@ -313,9 +313,9 @@ class _GroceryScreenState extends State<GroceryScreen> {
                 border: Border.all(color: AppTheme.line)),
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                leading: const CircleAvatar(backgroundColor: Color(0xFFE8EBDD),
+                leading: CircleAvatar(backgroundColor: Color(0xFFE8EBDD),
                   child: Icon(Icons.inventory_2_outlined, color: AppTheme.olive)),
-                title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+                title: Text(item.name, style: TextStyle(fontWeight: FontWeight.w700)),
                 subtitle: Text('${_formatAmount(item.amount)} ${item.unit}${state.pantryExpiryDates[item.id] == null ? '' : ' · Expires ${MaterialLocalizations.of(context).formatMediumDate(state.pantryExpiryDates[item.id]!)}'}'),
                 trailing: Wrap(children: [
                   IconButton(tooltip: appStrings(context).label('Set expiry date', 'تحديد تاريخ الصلاحية'),
@@ -326,10 +326,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
                         firstDate: DateTime.now().subtract(const Duration(days: 3650)),
                         lastDate: DateTime.now().add(const Duration(days: 3650)));
                       if (picked != null) { state.setPantryExpiry(item.id, picked); PlannerScope.refresh(context); }
-                    }, icon: const Icon(Icons.event_outlined)),
+                    }, icon: Icon(Icons.event_outlined)),
                   IconButton(tooltip: appStrings(context).label('Remove pantry item', 'إزالة عنصر من المخزن'),
                     onPressed: () { state.removePantryItem(item.id); PlannerScope.refresh(context); },
-                    icon: const Icon(Icons.close)),
+                    icon: Icon(Icons.close)),
                 ]),
               ),
             ),
@@ -348,10 +348,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(appStrings(sheetContext).label('Shopping budget', 'ميزانية التسوق'), style: Theme.of(sheetContext).textTheme.titleLarge),
           const SizedBox(height: 6),
-          Text(appStrings(sheetContext).label('Set a spending limit for this list.', 'حدد حد الإنفاق لهذه القائمة.'), style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+          Text(appStrings(sheetContext).label('Set a spending limit for this list.', 'حدد حد الإنفاق لهذه القائمة.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
           const SizedBox(height: 16),
           TextField(controller: controller, autofocus: true, keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Budget amount', 'مبلغ الميزانية'), prefixIcon: const Icon(Icons.payments_outlined))),
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Budget amount', 'مبلغ الميزانية'), prefixIcon: Icon(Icons.payments_outlined))),
           const SizedBox(height: 18),
           Row(children: [
             Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext, null), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
@@ -384,12 +384,12 @@ class _GroceryScreenState extends State<GroceryScreen> {
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(appStrings(sheetContext).label('Price and store', 'السعر والمتجر'), style: Theme.of(sheetContext).textTheme.titleLarge),
           const SizedBox(height: 5),
-          Text(item.name, style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+          Text(item.name, style: TextStyle(color: AppTheme.muted, fontSize: 12)),
           const SizedBox(height: 16),
           TextField(controller: price, keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Item total price', 'السعر الإجمالي للعنصر'), prefixIcon: const Icon(Icons.payments_outlined))),
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Item total price', 'السعر الإجمالي للعنصر'), prefixIcon: Icon(Icons.payments_outlined))),
           const SizedBox(height: 10),
-          TextField(controller: store, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Store / shop', 'المتجر / المحل'), prefixIcon: const Icon(Icons.storefront_outlined))),
+          TextField(controller: store, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Store / shop', 'المتجر / المحل'), prefixIcon: Icon(Icons.storefront_outlined))),
           const SizedBox(height: 18),
           Row(children: [
             Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext, false), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
@@ -432,7 +432,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(appStrings(sheetContext).label('Add a grocery item', 'إضافة عنصر للمشتريات'), style: Theme.of(sheetContext).textTheme.titleLarge),
           const SizedBox(height: 14),
-          TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Item', 'العنصر'), prefixIcon: const Icon(Icons.shopping_basket_outlined))),
+          TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: appStrings(sheetContext).label('Item', 'العنصر'), prefixIcon: Icon(Icons.shopping_basket_outlined))),
           const SizedBox(height: 10),
           Row(children: [
             Expanded(child: TextField(controller: amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: appStrings(sheetContext).label('Quantity', 'الكمية')))),
@@ -555,7 +555,7 @@ class _GroceryMetric extends StatelessWidget {
       Icon(icon, color: alert ? AppTheme.terracotta : AppTheme.olive, size: 20),
       const SizedBox(width: 9),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+        Text(label, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
         Text(value, style: TextStyle(color: alert ? AppTheme.terracotta : AppTheme.ink,
           fontWeight: FontWeight.w800, fontSize: 17)),
       ])),
@@ -578,7 +578,7 @@ class _GroceryAction extends StatelessWidget {
           Icon(icon, color: AppTheme.terracotta, size: 21),
           const SizedBox(height: 6),
           Text(title, maxLines: 1, overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.ink)),
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.ink)),
         ]),
       ),
     ),
