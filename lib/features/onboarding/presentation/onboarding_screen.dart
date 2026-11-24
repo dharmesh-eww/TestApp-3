@@ -74,7 +74,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(children: [
           Padding(padding: const EdgeInsets.fromLTRB(22,14,22,12), child: Row(children: [
             Container(width:40,height:40,decoration:BoxDecoration(color:AppTheme.terracotta.withOpacity(.12),borderRadius:BorderRadius.circular(13)),child:const Icon(Icons.spa_rounded,color:AppTheme.terracotta)),
-            const SizedBox(width:10),const Text('GATHER',style:TextStyle(fontWeight:FontWeight.w900,letterSpacing:2.2,color:AppTheme.ink)),
+            const SizedBox(width:10),Text('GATHER',style:TextStyle(fontWeight:FontWeight.w900,letterSpacing:2.2,color:AppTheme.ink)),
             const Spacer(),Text('${_page+1} / $_pageCount',style:TextStyle(color:AppTheme.muted,fontSize:12,fontWeight:FontWeight.w700)),
           ])),
           Padding(padding:const EdgeInsets.symmetric(horizontal:22),child:ClipRRect(borderRadius:BorderRadius.circular(10),child:LinearProgressIndicator(value:(_page+1)/_pageCount,minHeight:5,backgroundColor:AppTheme.line,color:AppTheme.terracotta))),
@@ -159,7 +159,7 @@ class _IntroPoint extends StatelessWidget {
   @override Widget build(BuildContext context)=>Padding(padding:const EdgeInsets.only(bottom:13),child:Row(children:[
     Container(width:42,height:42,decoration:BoxDecoration(color:AppTheme.olive.withOpacity(.12),borderRadius:BorderRadius.circular(13)),child:Icon(icon,color:AppTheme.olive)),
     const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Text(title,style:const TextStyle(fontWeight:FontWeight.w800,color:AppTheme.ink)),const SizedBox(height:3),
+      Text(title,style:TextStyle(fontWeight:FontWeight.w800,color:AppTheme.ink)),const SizedBox(height:3),
       Text(detail,style:TextStyle(color:AppTheme.muted,fontSize:12)),
     ])),
   ]));
