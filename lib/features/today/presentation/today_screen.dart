@@ -91,17 +91,54 @@ class _TodayScreenState extends State<TodayScreen> {
         const SizedBox(height: 5),
         Text(strings.label('Pick an ingredient to find recipes you can make.', 'اختر مكونًا للعثور على وصفات يمكنك إعدادها.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
         const SizedBox(height: 14),
-        Wrap(spacing: 8, runSpacing: 8, children: [
-          for (final ingredient in filterOptions)
-            ChoiceChip(
-              key: Key('home-ingredient-$ingredient'),
-              label: Text(ingredient),
-              selected: _ingredientFilter == ingredient,
-              onSelected: (selected) => setState(() => _ingredientFilter = selected ? ingredient : null),
-              selectedColor: AppTheme.terracotta.withOpacity(.16),
-              side: BorderSide(color: _ingredientFilter == ingredient ? AppTheme.terracotta : AppTheme.line),
-            ),
-        ]),
+        SizedBox(
+          height: 38,
+          child: ListView.separated(
+            key: const Key('home-ingredient-filters'),
+            scrollDirection: Axis.horizontal,
+            itemCount: filterOptions.length + 1,
+            separatorBuilder: (_, __) => const SizedBox(width: 6),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                final selected = _ingredientFilter == null;
+                return ChoiceChip(
+                  key: const Key('home-ingredient-all'),
+                  label: Text(strings.label('All', 'الكل')),
+                  selected: selected,
+                  onSelected: (_) => setState(() => _ingredientFilter = null),
+                  showCheckmark: false,
+                  visualDensity: const VisualDensity(horizontal: -3, vertical: -3),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 9),
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  side: BorderSide(color: selected ? AppTheme.terracotta : AppTheme.line),
+                  backgroundColor: AppTheme.card,
+                  selectedColor: AppTheme.terracotta.withOpacity(.13),
+                  labelStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                    color: selected ? AppTheme.terracotta : AppTheme.ink),
+                );
+              }
+              final ingredient = filterOptions[index - 1];
+              final selected = _ingredientFilter == ingredient;
+              return ChoiceChip(
+                key: Key('home-ingredient-$ingredient'),
+                label: Text(ingredient),
+                selected: selected,
+                onSelected: (value) => setState(() => _ingredientFilter = value ? ingredient : null),
+                showCheckmark: false,
+                visualDensity: const VisualDensity(horizontal: -3, vertical: -3),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 9),
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                side: BorderSide(color: selected ? AppTheme.terracotta : AppTheme.line),
+                backgroundColor: AppTheme.card,
+                selectedColor: AppTheme.terracotta.withOpacity(.13),
+                labelStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                  color: selected ? AppTheme.terracotta : AppTheme.ink),
+              );
+            },
+          ),
+        ),
         if (_ingredientFilter != null) ...[
           const SizedBox(height: 14),
           Row(children: [
