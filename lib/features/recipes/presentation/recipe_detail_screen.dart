@@ -97,10 +97,10 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               key: const Key('schedule-recipe-button'),
               onPressed: allergyBlocked ? null : () => showRecipeScheduleDialog(context, recipe, servings),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 12),
-                side: const BorderSide(color: AppTheme.line), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
+                side: BorderSide(color: AppTheme.line), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.calendar_month_outlined, size: 18), const SizedBox(height: 3),
-                Text(appStrings(context).label('Plan', 'خطط'), maxLines: 1, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
+                Icon(Icons.calendar_month_outlined, size: 18), const SizedBox(height: 3),
+                Text(appStrings(context).label('Plan', 'خطط'), maxLines: 1, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
               ]),
             )),
             const SizedBox(width: 8),
@@ -111,11 +111,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Ingredients added to your grocery list', 'تمت إضافة المكونات إلى قائمة المشتريات'))));
               },
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 12),
-                side: const BorderSide(color: AppTheme.olive), foregroundColor: AppTheme.olive,
+                side: BorderSide(color: AppTheme.olive), foregroundColor: AppTheme.olive,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.add_shopping_cart_outlined, size: 18), const SizedBox(height: 3),
-                Text(appStrings(context).label('Add items', 'أضف'), maxLines: 1, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
+                Icon(Icons.add_shopping_cart_outlined, size: 18), const SizedBox(height: 3),
+                Text(appStrings(context).label('Add items', 'أضف'), maxLines: 1, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
               ]),
             )),
             const SizedBox(width: 8),
@@ -128,8 +128,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta, minimumSize: const Size(0, 52),
                 padding: const EdgeInsets.symmetric(horizontal: 8), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.restaurant_menu_rounded, size: 18), const SizedBox(height: 3),
-                Text(appStrings(context).label('Start cooking', 'ابدأ الطهي'), maxLines: 1, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
+                Icon(Icons.restaurant_menu_rounded, size: 18), const SizedBox(height: 3),
+                Text(appStrings(context).label('Start cooking', 'ابدأ الطهي'), maxLines: 1, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
               ]),
             )),
           ]),
@@ -157,7 +157,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   final saved = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => CustomRecipeEditorScreen(recipe: widget.recipe)));
                   if (saved == true && mounted) Navigator.pop(context);
                 },
-                icon: const Icon(Icons.edit_outlined),
+                icon: Icon(Icons.edit_outlined),
                 style: IconButton.styleFrom(backgroundColor: AppTheme.card),
               ),
             IconButton(
@@ -167,7 +167,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 await Clipboard.setData(ClipboardData(text: text));
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Recipe copied to clipboard.', 'تم نسخ الوصفة.'))));
               },
-              icon: const Icon(Icons.copy_outlined),
+              icon: Icon(Icons.copy_outlined),
               style: IconButton.styleFrom(backgroundColor: AppTheme.card),
             ),
             const SizedBox(width: 12),
@@ -190,7 +190,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(color: Colors.red.withOpacity(.08), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.red.withOpacity(.3))),
-                child: Text(appStrings(context).label('Blocked by your allergy settings or missing verified allergen data. Do not prepare this recipe until you have checked every ingredient.', 'تم حظر الوصفة بسبب إعدادات الحساسية أو نقص بيانات مسببات الحساسية الموثقة. لا تحضّر هذه الوصفة قبل التحقق من جميع المكونات.'), style: const TextStyle(color: Colors.red)),
+                child: Text(appStrings(context).label('Blocked by your allergy settings or missing verified allergen data. Do not prepare this recipe until you have checked every ingredient.', 'تم حظر الوصفة بسبب إعدادات الحساسية أو نقص بيانات مسببات الحساسية الموثقة. لا تحضّر هذه الوصفة قبل التحقق من جميع المكونات.'), style: TextStyle(color: Colors.red)),
               ),
             ],
             const SizedBox(height: 18),
@@ -224,7 +224,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => RecipeVideoScreen(recipeTitle: recipe.title, videoUrl: recipe.youtubeVideoUrl!),
                   )),
-                  icon: const Icon(Icons.fullscreen),
+                  icon: Icon(Icons.fullscreen),
                   label: Text(appStrings(context).recipeLabel('Watch full video')),
                 ),
               ),
@@ -267,7 +267,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(appStrings(context).label('Your rating', 'تقييمك'), style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text(appStrings(context).label('Your rating', 'تقييمك'), style: TextStyle(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 6),
                   Row(children: [
                     for (var star = 1; star <= 5; star++)
@@ -288,7 +288,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                     alignment: AlignmentDirectional.centerEnd,
                     child: TextButton.icon(
                       onPressed: () { state.setRecipeNote(recipe.id, _noteController.text); PlannerScope.refresh(context); },
-                      icon: const Icon(Icons.save_outlined),
+                      icon: Icon(Icons.save_outlined),
                       label: Text(appStrings(context).label('Save note', 'حفظ الملاحظة')),
                     ),
                   ),
@@ -317,7 +317,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
                 onPressed: () => _showSubstitutions(context, recipe),
-                icon: const Icon(Icons.swap_horiz),
+                icon: Icon(Icons.swap_horiz),
                 label: Text(appStrings(context).label('Ingredient substitutions', 'بدائل المكونات')),
               ),
             ),
@@ -454,23 +454,23 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
-                child: const Icon(Icons.swap_horiz_rounded, color: AppTheme.olive)),
+                child: Icon(Icons.swap_horiz_rounded, color: AppTheme.olive)),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(appStrings(sheetContext).label('Ingredient swaps', 'بدائل المكونات'), style: Theme.of(sheetContext).textTheme.titleLarge),
-                Text(appStrings(sheetContext).label('Ideas for what you have on hand', 'أفكار للمكونات المتوفرة لديك'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+                Text(appStrings(sheetContext).label('Ideas for what you have on hand', 'أفكار للمكونات المتوفرة لديك'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
               ])),
-              IconButton(onPressed: () => Navigator.pop(sheetContext), icon: const Icon(Icons.close_rounded)),
+              IconButton(onPressed: () => Navigator.pop(sheetContext), icon: Icon(Icons.close_rounded)),
             ]),
             const SizedBox(height: 12),
             Container(padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: const Color(0xFFFFF1E8), borderRadius: BorderRadius.circular(14)),
               child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Icon(Icons.info_outline_rounded, color: AppTheme.terracotta, size: 18), const SizedBox(width: 9),
+                Icon(Icons.info_outline_rounded, color: AppTheme.terracotta, size: 18), const SizedBox(width: 9),
                 Expanded(child: Text(appStrings(sheetContext).label(
                   'Swaps can change flavour and texture. Always check ingredient labels and allergy warnings before using an alternative.',
                   'قد تغير البدائل النكهة والقوام. تحقق دائمًا من ملصقات المكونات وتحذيرات الحساسية قبل استخدام أي بديل.'),
-                  style: const TextStyle(color: AppTheme.ink, fontSize: 11, height: 1.4))),
+                  style: TextStyle(color: AppTheme.ink, fontSize: 11, height: 1.4))),
               ])),
             const SizedBox(height: 14),
             Expanded(child: ListView.separated(
@@ -482,19 +482,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.line)),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Row(children: [
-                      const Icon(Icons.restaurant_outlined, color: AppTheme.terracotta, size: 17), const SizedBox(width: 8),
-                      Expanded(child: Text(ingredient.name, style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w800))),
-                      Text('${index + 1}/${recipe.ingredients.length}', style: const TextStyle(color: AppTheme.muted, fontSize: 10)),
+                      Icon(Icons.restaurant_outlined, color: AppTheme.terracotta, size: 17), const SizedBox(width: 8),
+                      Expanded(child: Text(ingredient.name, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w800))),
+                      Text('${index + 1}/${recipe.ingredients.length}', style: TextStyle(color: AppTheme.muted, fontSize: 10)),
                     ]),
                     const SizedBox(height: 9),
                     if (alternatives.isEmpty)
                       Text(appStrings(sheetContext).label('No suggested swaps for this ingredient yet.', 'لا توجد بدائل مقترحة لهذا المكون حاليًا.'),
-                        style: const TextStyle(color: AppTheme.muted, fontSize: 11))
+                        style: TextStyle(color: AppTheme.muted, fontSize: 11))
                     else Wrap(spacing: 7, runSpacing: 7, children: [
                       for (final alternative in alternatives)
                         Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                           decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.10), borderRadius: BorderRadius.circular(20)),
-                          child: Text(alternative, style: const TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700))),
+                          child: Text(alternative, style: TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700))),
                     ]),
                   ]),
                 );
