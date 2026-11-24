@@ -67,15 +67,15 @@ class SmartReminderService {
               final declared = recipe.verifiedAllergens.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
               if (!recipe.allergensVerified || declared.any(blocked.contains)) continue;
             }
-            final time = switch (meal.slot.name) {
-              'breakfast' => (hour: 8, minute: 0),
-              'lunch' => (hour: 12, minute: 0),
-              'snack' => (hour: 15, minute: 0),
-              _ => (hour: 18, minute: 0),
+            final clock = state.mealReminderTimes[meal.slot.name] ?? switch (meal.slot.name) {
+              'breakfast' => '08:00', 'lunch' => '12:00', 'snack' => '15:00', _ => '18:00',
             };
+            final parts = clock.split(':');
+            final hour = int.tryParse(parts.first) ?? 8;
+            final minute = int.tryParse(parts.last) ?? 0;
             final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
             if (isWeekdayTemplate && state.mealsFor(dateKey).any((dated) => dated.slot == meal.slot)) continue;
-            final plannedAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+            final plannedAt = DateTime(date.year, date.month, date.day, hour, minute);
             final fireAt = plannedAt.subtract(Duration(minutes: state.mealReminderMinutes));
             if (!fireAt.isAfter(currentTime) || fireAt.isAfter(mealEnd)) continue;
             final key = 'meal:$dateKey:${meal.slot.name}:${meal.recipeId}';
@@ -117,6 +117,8 @@ class SmartReminderService {
       ..write(state.pantryExpiryRemindersEnabled)
       ..write('|')
       ..write(state.mealReminderMinutes)
+      ..write('|')
+      ..write(state.mealReminderTimes)
       ..write('|')
       ..write('${now.year}-${now.month}-${now.day}')
       ..write('|')
