@@ -147,6 +147,23 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                               fontWeight: FontWeight.w600,
                             )),
                           ),
+                          const SizedBox(height: 18),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppTheme.card,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: AppTheme.line),
+                            ),
+                            child: CheckboxListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                              value: session.isStepComplete(widget.recipe.id, currentStep),
+                              onChanged: (value) => session.setStepComplete(widget.recipe.id, currentStep, value ?? false),
+                              title: Text(strings.label('Step completed', 'اكتملت الخطوة'), style: TextStyle(fontWeight: FontWeight.w700)),
+                              subtitle: Text(strings.label('${session.completedStepCount(widget.recipe.id)} of $total steps checked', 'تم تحديد ${session.completedStepCount(widget.recipe.id)} من $total خطوات')),
+                              activeColor: AppTheme.olive,
+                            ),
+                          ),
                           if (instruction?.durationMinutes != null && instruction!.durationMinutes! > 0) ...[
                             const SizedBox(height: 12),
                             OutlinedButton.icon(
