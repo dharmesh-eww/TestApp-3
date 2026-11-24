@@ -23,7 +23,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     final catalog = RecipeCatalogScope.of(context);
     var calories = 0.0, protein = 0.0, carbs = 0.0, fat = 0.0;
     var eatenCalories = 0.0, eatenProtein = 0.0;
-    final planned = <({Recipe recipe, int servings})>[];
+    final planned = <({Recipe recipe, int servings, MealSlot slot})>[];
     final dateMeals = state.mealsFor(_dateKey);
     final weekdayNames = const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     final today = DateUtils.dateOnly(DateTime.now());
@@ -43,8 +43,8 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
       protein += recipe.proteinGrams * factor;
       carbs += recipe.carbsGrams * factor;
       fat += recipe.fatGrams * factor;
-      planned.add((recipe: recipe, servings: meal.servings));
-      final eaten = state.eatenServings(_dateKey, recipe.id);
+      planned.add((recipe: recipe, servings: meal.servings, slot: meal.slot));
+      final eaten = state.eatenServings(_dateKey, recipe.id, slot: meal.slot.name);
       eatenCalories += recipe.calories * eaten / (recipe.servings < 1 ? 1 : recipe.servings);
       eatenProtein += recipe.proteinGrams * eaten / (recipe.servings < 1 ? 1 : recipe.servings);
     }
@@ -100,7 +100,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
                   Text(strings.label('Consumed so far', 'المستهلك حتى الآن'), style: TextStyle(fontWeight: FontWeight.w700)),
                   Text('${eatenCalories.round()} kcal · ${eatenProtein.round()} g protein', style: TextStyle(color: AppTheme.muted, fontSize: 12)),
                 ])),
-                Text('${planned.fold<int>(0, (sum, meal) => sum + state.eatenServings(_dateKey, meal.recipe.id))} servings', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, fontSize: 12)),
+                Text('${planned.fold<int>(0, (sum, meal) => sum + state.eatenServings(_dateKey, meal.recipe.id, slot: meal.slot.name))} servings', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, fontSize: 12)),
               ]),
             ),
           ),
