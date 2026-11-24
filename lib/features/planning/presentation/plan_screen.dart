@@ -83,6 +83,8 @@ class _PlanScreenState extends State<PlanScreen> {
       for(final slot in MealSlot.values)
         _MealSlotCard(key: ValueKey('meal-slot-$day-${slot.name}'), day:day,slot:slot,meal:meals.where((m)=>m.slot==slot).firstOrNull,
           onAdd:()=>_showPlanPicker(context,day,slot),onRemove:(){state.removeMeal(day,slot);PlannerScope.refresh(context);},onMove:()=>_showMoveMeal(context,day,slot)),
+      const SizedBox(height:18),
+      _PantryMealSuggestions(day: day),
       const SizedBox(height:14),
       OutlinedButton.icon(onPressed:()=>goToAppTab(context,3),icon:Icon(Icons.shopping_basket_outlined),label:Text(appStrings(context).label('Build your grocery list', 'أنشئ قائمة مشترياتك')),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
       const SizedBox(height:28),
@@ -553,5 +555,91 @@ class _MealSlotCard extends StatelessWidget {
           IconButton(key:Key('remove-${day}-${slot.name}'),tooltip:appStrings(context).label('Remove ${slot.label}', 'إزالة ${appStrings(context).mealSlot(slot.name)}'),onPressed:onRemove,icon:Icon(Icons.close,color:AppTheme.muted)),
         ]),
       ]));
+  }
+}
+
+
+class _PantryMealSuggestions extends StatelessWidget {
+  const _PantryMealSuggestions({required this.day});
+  final String day;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = PlannerScope.of(context);
+    final catalog = RecipeCatalogScope.of(context);
+    final plannedIds = state.mealPlan.values
+        .expand((slots) => slots.values)
+        .map((meal) => meal.recipeId)
+        .toSet();
+    final pantryNames = state.pantry.values
+        .map((item) => item.name.toLowerCase().trim())
+        .where((name) => name.isNotEmpty)
+        .toSet();
+    final candidates = catalog.where((recipe) {
+      if (plannedIds.contains(recipe.id)) return false;
+      if (state.allergies.isNotEmpty) {
+        final blocked = state.allergies.map((value) => value.toLowerCase()).toSet();
+        final declared = recipe.verifiedAllergens.map((value) => value.toLowerCase()).toSet();
+        if (!recipe.allergensVerified || declared.any(blocked.contains)) return false;
+      }
+      return true;
+    }).map((recipe) {
+      final matches = recipe.ingredients.where((ingredient) {
+        final name = ingredient.name.toLowerCase();
+        return pantryNames.any((pantry) => name.contains(pantry) || pantry.contains(name));
+      }).length;
+      return (recipe: recipe, matches: matches);
+    }).toList()
+      ..sort((a, b) {
+        final byPantry = b.matches.compareTo(a.matches);
+        return byPantry != 0 ? byPantry : a.recipe.totalMinutes.compareTo(b.recipe.totalMinutes);
+      });
+    final suggestions = candidates.where((item) => item.matches > 0).take(3).toList();
+    if (suggestions.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.olive.withOpacity(.07),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.olive.withOpacity(.2)),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(Icons.auto_awesome, color: AppTheme.olive, size: 18),
+          const SizedBox(width: 8),
+          Expanded(child: Text(appStrings(context).label('Make a meal from your pantry', 'حضّر وجبة من مخزونك'),
+              style: TextStyle(fontWeight: FontWeight.w800, color: AppTheme.ink))),
+        ]),
+        const SizedBox(height: 4),
+        Text(appStrings(context).label('Suggestions use ingredients you already have and avoid repeating recipes already in your plan.', 'تعتمد الاقتراحات على المكونات المتوفرة وتتجنب تكرار الوصفات الموجودة في خطتك.'),
+          style: TextStyle(color: AppTheme.muted, fontSize: 11, height: 1.35)),
+        const SizedBox(height: 10),
+        for (final item in suggestions)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Row(children: [
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(item.recipe.title, style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.ink)),
+                Text(appStrings(context).label('${item.matches} pantry ingredients · ${item.recipe.totalMinutes} min', '${item.matches} مكونات من المخزون · ${item.recipe.totalMinutes} دقيقة'),
+                  style: TextStyle(color: AppTheme.muted, fontSize: 11)),
+              ])),
+              IconButton(
+                tooltip: appStrings(context).label('Add to first open meal', 'إضافة إلى أول وجبة متاحة'),
+                onPressed: () {
+                  final openSlot = MealSlot.values.where((slot) => !state.mealsFor(day).any((meal) => meal.slot == slot)).firstOrNull;
+                  if (openSlot == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('All meal slots are filled for this day.', 'جميع خانات الوجبات ممتلئة لهذا اليوم.'))));
+                    return;
+                  }
+                  state.assignMeal(day: day, slot: openSlot, recipeId: item.recipe.id, servings: item.recipe.servings);
+                  PlannerScope.refresh(context);
+                },
+                icon: Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
+              ),
+            ]),
+          ),
+      ]),
+    );
   }
 }
