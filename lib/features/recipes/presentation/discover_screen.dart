@@ -9,6 +9,7 @@ import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/features/kitchen/presentation/ingredient_finder_screen.dart';
 import 'package:testapp_3/features/recipes/presentation/recipe_detail_screen.dart';
 import 'package:testapp_3/app/app_widgets.dart';
+import 'package:testapp_3/app/gather_visuals.dart';
 import 'package:testapp_3/features/recipes/presentation/favorites_screen.dart';
 
 class _DiscoveryFilterBar extends StatelessWidget {
@@ -178,6 +179,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             Expanded(
               child: Text(strings.recipeShelf, style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
             ),
+            GatherVisuals.foodMotion(size: 66),
             IconButton(
               key: const Key('open-favourites-button'),
               tooltip: strings.favorites,
