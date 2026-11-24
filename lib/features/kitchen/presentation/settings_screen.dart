@@ -104,7 +104,7 @@ class SettingsScreen extends StatelessWidget {
             leading: Container(
               width: 42, height: 42,
               decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
-              child: const Icon(Icons.restaurant_menu_rounded, color: AppTheme.olive),
+              child: Icon(Icons.restaurant_menu_rounded, color: AppTheme.olive),
             ),
             title: Text(appStrings(context).label('Recipe preferences', 'تفضيلات الوصفات')),
             subtitle: Text(appStrings(context).label(
