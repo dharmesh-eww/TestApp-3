@@ -83,11 +83,12 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
             title: strings.label('Calories', 'السعرات الحرارية'),
             value: calories,
             target: state.dailyCalorieTarget.toDouble(),
+            available: planned.any((meal) => meal.recipe.calories > 0),
             unit: 'kcal',
             icon: Icons.local_fire_department_outlined,
           ),
           const SizedBox(height: 10),
-          _goalCard(title: strings.label('Protein', 'البروتين'), value: protein, target: state.dailyProteinTargetGrams, unit: 'g', icon: Icons.fitness_center),
+          _goalCard(title: strings.label('Protein', 'البروتين'), value: protein, target: state.dailyProteinTargetGrams, available: planned.any((meal) => meal.recipe.proteinGrams > 0), unit: 'g', icon: Icons.fitness_center),
           const SizedBox(height: 10),
           Card(
             child: Padding(
@@ -107,11 +108,11 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
           Text(strings.label('Macronutrients', 'المغذيات الكبرى'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 10),
           Row(children: [
-            Expanded(child: _macroCard('Carbs', carbs, 'g')),
+            Expanded(child: _macroCard('Carbs', carbs, 'g', available: planned.any((meal) => meal.recipe.carbsGrams > 0))),
             const SizedBox(width: 8),
-            Expanded(child: _macroCard('Protein', protein, 'g')),
+            Expanded(child: _macroCard('Protein', protein, 'g', available: planned.any((meal) => meal.recipe.proteinGrams > 0))),
             const SizedBox(width: 8),
-            Expanded(child: _macroCard('Fat', fat, 'g')),
+            Expanded(child: _macroCard('Fat', fat, 'g', available: planned.any((meal) => meal.recipe.fatGrams > 0))),
           ]),
           const SizedBox(height: 22),
           Row(children: [
@@ -197,7 +198,9 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     return total;
   }
 
-  Widget _goalCard({required String title, required double value, required double target, required String unit, required IconData icon}) {
+  static const stringsNotAvailable = 'Not available';
+
+  Widget _goalCard({required String title, required double value, required double target, required String unit, required IconData icon, bool available = true}) {
     final progress = target <= 0 ? 0.0 : (value / target).clamp(0.0, 1.0).toDouble();
     return Card(
       child: Padding(
@@ -207,7 +210,7 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
             Icon(icon, color: AppTheme.terracotta),
             const SizedBox(width: 8),
             Expanded(child: Text(title, style: TextStyle(fontWeight: FontWeight.w700))),
-            Text('${value.round()} / ${target.round()} $unit', style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700)),
+            Text(available ? '${value.round()} / ${target.round()} $unit' : stringsNotAvailable, style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w700)),
           ]),
           const SizedBox(height: 12),
           ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: progress, minHeight: 9, color: AppTheme.terracotta, backgroundColor: AppTheme.line)),
@@ -216,13 +219,13 @@ class _NutritionDashboardScreenState extends State<NutritionDashboardScreen> {
     );
   }
 
-  Widget _macroCard(String label, double value, String unit) => Container(
+  Widget _macroCard(String label, double value, String unit, {required bool available}) => Container(
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppTheme.line)),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
       const SizedBox(height: 5),
-      Text('${value.round()} $unit', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+      Text(available ? '${value.round()} $unit' : '—', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
     ]),
   );
 
