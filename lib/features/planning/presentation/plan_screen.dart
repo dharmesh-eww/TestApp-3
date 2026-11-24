@@ -11,6 +11,7 @@ import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/app/app_tab_navigation.dart';
 import 'package:testapp_3/features/planning/presentation/meal_calendar_screen.dart';
 import 'package:testapp_3/features/planning/presentation/nutrition_dashboard_screen.dart';
+import 'package:testapp_3/app/gather_visuals.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
@@ -27,11 +28,17 @@ class _PlanScreenState extends State<PlanScreen> {
     final day = days[selectedDay];
     final meals = state.mealsFor(day);
     return ListView(padding: const EdgeInsets.fromLTRB(20,20,20,28), children: [
-      Text(appStrings(context).weekEyebrow, style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
-      const SizedBox(height:8),
-      Text(appStrings(context).mealPlanner,style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),
-      const SizedBox(height:8),
-      Text(appStrings(context).weekDescription,style:TextStyle(color:AppTheme.muted)),
+      Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(appStrings(context).weekEyebrow, style: TextStyle(color: AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),
+          const SizedBox(height:8),
+          Text(appStrings(context).mealPlanner,style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),
+          const SizedBox(height:8),
+          Text(appStrings(context).weekDescription,style:TextStyle(color:AppTheme.muted)),
+        ])),
+        const SizedBox(width: 8),
+        GatherVisuals.foodMotion(size: 78),
+      ]),
       const SizedBox(height:16),
       SizedBox(
         width: double.infinity,
