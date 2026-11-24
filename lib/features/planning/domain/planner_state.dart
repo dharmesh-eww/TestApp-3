@@ -443,7 +443,6 @@ class PlannerState {
     mealReminderTimes
       ..clear()
       ..addAll({'breakfast': '08:00', 'lunch': '12:00', 'snack': '15:00', 'dinner': '18:00'});
-    activeReminderKeys.clear();
     groceryBudget = null;
     dailyCalorieTarget = 2000;
     dailyProteinTargetGrams = 100;
