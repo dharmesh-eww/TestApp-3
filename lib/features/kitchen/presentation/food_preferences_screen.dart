@@ -39,12 +39,14 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
   late Set<String> _selectedDietary;
   late Set<String> _selectedMeals;
   int? _maxMinutes;
-  bool _dirty = false;
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
     final state = PlannerScope.of(context);
+    _initialized = true;
     _cuisine = {...state.preferredCuisines};
     _selectedFoodTypes = {...state.preferredFoodTypes};
     _allergies = {...state.allergies};
@@ -54,7 +56,7 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
   }
 
   void _toggle(Set<String> values,String key) {
-    setState(() { if(!values.add(key)) values.remove(key); _dirty=true; });
+    setState(() { if(!values.add(key)) values.remove(key);  });
   }
 
   void _save() {
@@ -66,8 +68,10 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
     state.preferredMealTypes..clear()..addAll(_selectedMeals);
     state.preferredMaxCookingMinutes = _maxMinutes;
     PlannerScope.refresh(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final message = appStrings(context).label('Your recipe preferences have been updated.','تم تحديث تفضيلات الوصفات.');
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(appStrings(context).label('Your recipe preferences have been updated.','تم تحديث تفضيلات الوصفات.'))));
+    messenger.showSnackBar(SnackBar(content:Text(message)));
   }
 
   @override
@@ -77,7 +81,7 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
       backgroundColor: AppTheme.paper,
       appBar: AppBar(title:Text(strings.label('Recipe preferences','تفضيلات الوصفات')),actions:[
         TextButton(onPressed:(){
-          setState((){_cuisine.clear();_selectedFoodTypes.clear();_allergies.clear();_selectedDietary.clear();_selectedMeals.clear();_maxMinutes=null;_dirty=true;});
+          setState((){_cuisine.clear();_selectedFoodTypes.clear();_allergies.clear();_selectedDietary.clear();_selectedMeals.clear();_maxMinutes=null;});
         },child:Text(strings.label('Reset','إعادة ضبط'))),
       ]),
       body: ListView(padding:const EdgeInsets.fromLTRB(18,8,18,24),children:[
@@ -116,7 +120,7 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
           description:strings.label('Recipes without verified allergen information are hidden when an allergy is selected. Always check food labels.','تُخفى الوصفات التي لا تحتوي على معلومات حساسية موثقة عند تحديد حساسية. تحقق دائمًا من ملصقات الطعام.'),
           child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
             OutlinedButton.icon(
-              onPressed:(){setState((){_allergies.clear();_dirty=true;});},
+              onPressed:(){setState((){_allergies.clear();});},
               icon:const Icon(Icons.check_circle_outline),
               label:Text(strings.label('No known allergies','لا توجد حساسية معروفة')),
             ),
