@@ -29,13 +29,13 @@ class KitchenScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
       children: [
         Text(appStrings(context).label('YOUR LITTLE COOKBOOK', 'كتاب وصفاتك الصغير'),
-          style: const TextStyle(color: AppTheme.terracotta, fontSize: 10,
+          style: TextStyle(color: AppTheme.terracotta, fontSize: 10,
             fontWeight: FontWeight.w800, letterSpacing: 1.5)),
         const SizedBox(height: 8),
         Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(child: Text(
             appStrings(context).label('Your kitchen,\\nyour rhythm.', 'مطبخك،\\nإيقاعك الخاص.'),
-            style: const TextStyle(fontFamily: 'Georgia', fontSize: 31,
+            style: TextStyle(fontFamily: 'Georgia', fontSize: 31,
               height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold),
           )),
           GatherVisuals.foodMotion(size: 82),
@@ -47,16 +47,16 @@ class KitchenScreen extends StatelessWidget {
           child: Row(children: [
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(appStrings(context).label('YOUR COOKBOOK AT A GLANCE', 'ملخص كتاب وصفاتك'),
-                style: const TextStyle(color: Colors.white70, fontSize: 9,
+                style: TextStyle(color: Colors.white70, fontSize: 9,
                   letterSpacing: 1.1, fontWeight: FontWeight.w800)),
               const SizedBox(height: 9),
               Text(appStrings(context).label('A place for every good idea.', 'مكان لكل فكرة لذيذة.'),
-                style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700)),
+                style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
               Text(appStrings(context).label(
                 'Keep favourites, personal recipes and cooking memories together.',
                 'احتفظ بوصفاتك المفضلة ووصفاتك الخاصة وذكريات الطهي في مكان واحد.'),
-                style: const TextStyle(color: Colors.white70, fontSize: 11, height: 1.4)),
+                style: TextStyle(color: Colors.white70, fontSize: 11, height: 1.4)),
             ])),
             const SizedBox(width: 8),
             Column(children: [
@@ -71,7 +71,7 @@ class KitchenScreen extends StatelessWidget {
           Expanded(child: Text(appStrings(context).label('Your kitchen space', 'مساحة مطبخك'),
             style: Theme.of(context).textTheme.titleLarge)),
           Text(appStrings(context).label('5 spaces', '5 أقسام'),
-            style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+            style: TextStyle(color: AppTheme.muted, fontSize: 11)),
         ]),
         const SizedBox(height: 11),
         _KitchenDestinationCard(
@@ -88,7 +88,7 @@ class KitchenScreen extends StatelessWidget {
           subtitle: appStrings(context).label('Save a recipe of your own', 'احفظ وصفة من ابتكارك'),
           tint: const Color(0xFFE9EEDC),
           key: const Key('create-custom-recipe'),
-          trailing: const Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
+          trailing: Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomRecipeEditorScreen())),
         ),
         const SizedBox(height: 9),
@@ -121,7 +121,7 @@ class KitchenScreen extends StatelessWidget {
           Expanded(child: Text(appStrings(context).label('Recently viewed', 'شوهدت مؤخرًا'),
             style: Theme.of(context).textTheme.titleLarge)),
           if (recent.isNotEmpty)
-            Text('${recent.length}', style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+            Text('${recent.length}', style: TextStyle(color: AppTheme.muted, fontSize: 12)),
         ]),
         const SizedBox(height: 10),
         if (recent.isEmpty)
@@ -137,7 +137,7 @@ class KitchenScreen extends StatelessWidget {
         Row(children: [
           Expanded(child: Text(appStrings(context).label('Saved recipes', 'وصفاتك المحفوظة'),
             style: Theme.of(context).textTheme.titleLarge)),
-          Text('${saved.length}', style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+          Text('${saved.length}', style: TextStyle(color: AppTheme.muted, fontSize: 12)),
         ]),
         const SizedBox(height: 10),
         if (saved.isEmpty)
@@ -153,7 +153,7 @@ class KitchenScreen extends StatelessWidget {
                 Text(appStrings(context).label('Your next favourite starts with a bookmark.',
                   'تبدأ وصفتك المفضلة التالية بعلامة حفظ.'),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+                  style: TextStyle(color: AppTheme.muted, fontSize: 12)),
               ]),
             ),
           ])
@@ -168,18 +168,18 @@ class KitchenScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(18), border: Border.all(color: AppTheme.line)),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              const Icon(Icons.library_books_outlined, color: AppTheme.olive),
+              Icon(Icons.library_books_outlined, color: AppTheme.olive),
               const SizedBox(width: 9),
               Expanded(child: Text(appStrings(context).label('Recipe library', 'مكتبة الوصفات'),
                 style: Theme.of(context).textTheme.titleMedium)),
               Text('v${RecipeCatalogScope.versionOf(context)}',
-                style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+                style: TextStyle(color: AppTheme.muted, fontSize: 11)),
             ]),
             const SizedBox(height: 7),
             Text(appStrings(context).label(
               'Check for curated recipe updates. Your plans, pantry and saved recipes stay on this device.',
               'تحقق من تحديثات الوصفات المختارة. تظل خططك ومخزنك ووصفاتك المحفوظة على هذا الجهاز.'),
-              style: const TextStyle(color: AppTheme.muted, fontSize: 12, height: 1.45)),
+              style: TextStyle(color: AppTheme.muted, fontSize: 12, height: 1.45)),
             const SizedBox(height: 8),
             Align(
               alignment: AlignmentDirectional.centerEnd,
@@ -192,7 +192,7 @@ class KitchenScreen extends StatelessWidget {
                     content: Text(updated ? 'Recipe library updated.' : 'No update available. Current library kept.'),
                   ));
                 } : null,
-                icon: const Icon(Icons.sync_rounded),
+                icon: Icon(Icons.sync_rounded),
                 label: Text(appStrings(context).label('Check for updates', 'التحقق من التحديثات')),
               ),
             ),
@@ -209,8 +209,8 @@ class _KitchenStat extends StatelessWidget {
   final String label;
   @override
   Widget build(BuildContext context) => Column(children: [
-    Text(value, style: const TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800)),
-    Text(label, style: const TextStyle(color: Colors.white70, fontSize: 10)),
+    Text(value, style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800)),
+    Text(label, style: TextStyle(color: Colors.white70, fontSize: 10)),
   ]);
 }
 
@@ -242,11 +242,11 @@ class _KitchenDestinationCard extends StatelessWidget {
             child: Icon(icon, color: AppTheme.ink, size: 23)),
           const SizedBox(width: 13),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w800, fontSize: 14)),
+            Text(title, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w800, fontSize: 14)),
             const SizedBox(height: 3),
-            Text(subtitle, style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+            Text(subtitle, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
           ])),
-          trailing ?? const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
+          trailing ?? Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
         ]),
       ),
     ),
@@ -266,7 +266,7 @@ class _KitchenEmptyHint extends StatelessWidget {
     child: Row(children: [
       Icon(icon, color: AppTheme.olive),
       const SizedBox(width: 10),
-      Expanded(child: Text(text, style: const TextStyle(color: AppTheme.muted, fontSize: 12))),
+      Expanded(child: Text(text, style: TextStyle(color: AppTheme.muted, fontSize: 12))),
     ]),
   );
 }
