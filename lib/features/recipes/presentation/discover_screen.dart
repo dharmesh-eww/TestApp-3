@@ -189,6 +189,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       nutritionOnly: _nutritionOnly,
       dietaryTags: PlannerScope.of(context).preferredDietaryTags,
       preferredCuisines: PlannerScope.of(context).preferredCuisines,
+      preferredFoodTypes: PlannerScope.of(context).preferredFoodTypes,
+      preferredMaxCookingMinutes: PlannerScope.of(context).preferredMaxCookingMinutes,
+      preferredMealTypes: PlannerScope.of(context).preferredMealTypes,
       allergies: PlannerScope.of(context).allergies,
       sort: _sort,
     );
