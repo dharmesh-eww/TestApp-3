@@ -45,7 +45,7 @@ class _PlanScreenState extends State<PlanScreen> {
         child: FilledButton.icon(
           key: const Key('schedule-recipe-from-plan'),
           onPressed: () => _showSchedulePicker(context),
-          icon: const Icon(Icons.event_available_outlined),
+          icon: Icon(Icons.event_available_outlined),
           label: Text(appStrings(context).label('Schedule a recipe', 'جدولة وصفة')),
           style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta, minimumSize: const Size(0, 50)),
         ),
@@ -55,14 +55,14 @@ class _PlanScreenState extends State<PlanScreen> {
         Expanded(child: OutlinedButton.icon(
           key: const Key('open-meal-calendar'),
           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MealCalendarScreen())),
-          icon: const Icon(Icons.calendar_month_outlined),
+          icon: Icon(Icons.calendar_month_outlined),
           label: Text(appStrings(context).label('Calendar', 'التقويم')),
         )),
         const SizedBox(width: 8),
         Expanded(child: OutlinedButton.icon(
           key: const Key('open-nutrition-dashboard'),
           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NutritionDashboardScreen())),
-          icon: const Icon(Icons.monitor_heart_outlined),
+          icon: Icon(Icons.monitor_heart_outlined),
           label: Text(appStrings(context).label('Nutrition', 'التغذية')),
         )),
       ]),
@@ -135,18 +135,18 @@ class _PlanScreenState extends State<PlanScreen> {
               style: Theme.of(sheetContext).textTheme.headlineSmall),
             const SizedBox(height: 5),
             Text(appStrings(sheetContext).label('Choose a new day and meal slot.', 'اختر يومًا وموعدًا جديدًا للوجبة.'),
-              style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
+              style: TextStyle(color: AppTheme.muted, fontSize: 12)),
             const SizedBox(height: 18),
             DropdownButtonFormField<String>(
               value: targetDay,
-              decoration: InputDecoration(labelText: appStrings(sheetContext).label('Day', 'اليوم'), prefixIcon: const Icon(Icons.calendar_today_outlined)),
+              decoration: InputDecoration(labelText: appStrings(sheetContext).label('Day', 'اليوم'), prefixIcon: Icon(Icons.calendar_today_outlined)),
               items: days.map((day) => DropdownMenuItem(value: day, child: Text(appStrings(sheetContext).weekday(day)))).toList(),
               onChanged: (value) => setSheetState(() => targetDay = value ?? fromDay),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<MealSlot>(
               value: targetSlot,
-              decoration: InputDecoration(labelText: appStrings(sheetContext).label('Meal', 'الوجبة'), prefixIcon: const Icon(Icons.restaurant_outlined)),
+              decoration: InputDecoration(labelText: appStrings(sheetContext).label('Meal', 'الوجبة'), prefixIcon: Icon(Icons.restaurant_outlined)),
               items: MealSlot.values.map((slot) => DropdownMenuItem(value: slot, child: Text(appStrings(sheetContext).mealSlot(slot.name)))).toList(),
               onChanged: (value) => setSheetState(() => targetSlot = value ?? fromSlot),
             ),
@@ -266,7 +266,7 @@ List<Widget> _buildUpcomingMealWidgets(BuildContext context, PlannerState state)
                   state.removeMeal(_dateKey(entry.date!), meal.slot);
                   PlannerScope.refresh(context);
                 },
-                icon: const Icon(Icons.close, size: 18),
+                icon: Icon(Icons.close, size: 18),
               ),
             ]),
         ]),
@@ -297,11 +297,11 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
             const SizedBox(height: 16),
             Row(children: [
               Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.terracotta.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
-                child: const Icon(Icons.event_available_outlined, color: AppTheme.terracotta)),
+                child: Icon(Icons.event_available_outlined, color: AppTheme.terracotta)),
               const SizedBox(width: 11),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(appStrings(sheetContext).label('Plan this recipe', 'خطط لهذه الوصفة'), style: Theme.of(sheetContext).textTheme.titleLarge),
-                Text(recipe.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+                Text(recipe.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.muted, fontSize: 11)),
               ])),
             ]),
             const SizedBox(height: 14),
@@ -310,10 +310,10 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
                 decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(15), border: Border.all(color: AppTheme.line)),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 3),
-                  leading: const Icon(Icons.calendar_month_outlined, color: AppTheme.olive),
-                  title: Text(appStrings(sheetContext).label('Start date', 'تاريخ البدء'), style: const TextStyle(fontWeight: FontWeight.w700)),
+                  leading: Icon(Icons.calendar_month_outlined, color: AppTheme.olive),
+                  title: Text(appStrings(sheetContext).label('Start date', 'تاريخ البدء'), style: TextStyle(fontWeight: FontWeight.w700)),
                   subtitle: Text(MaterialLocalizations.of(sheetContext).formatMediumDate(startDate)),
-                  trailing: const Icon(Icons.edit_calendar_outlined),
+                  trailing: Icon(Icons.edit_calendar_outlined),
                   onTap: () async {
                     final picked = await showDatePicker(context: sheetContext, initialDate: startDate, firstDate: today, lastDate: lastAllowedDate);
                     if (picked != null) setSheetState(() { startDate = DateUtils.dateOnly(picked); weekday = startDate.weekday; monthDay = startDate.day; });
@@ -323,14 +323,14 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
               const SizedBox(height: 12),
               DropdownButtonFormField<MealSlot>(
                 value: slot,
-                decoration: InputDecoration(labelText: appStrings(sheetContext).label('Meal', 'الوجبة'), prefixIcon: const Icon(Icons.restaurant_outlined)),
+                decoration: InputDecoration(labelText: appStrings(sheetContext).label('Meal', 'الوجبة'), prefixIcon: Icon(Icons.restaurant_outlined)),
                 items: MealSlot.values.map((value) => DropdownMenuItem(value: value, child: Text(appStrings(sheetContext).mealSlot(value.name)))).toList(),
                 onChanged: (value) => setSheetState(() => slot = value ?? slot),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: frequency,
-                decoration: InputDecoration(labelText: appStrings(sheetContext).label('Repeat', 'التكرار'), prefixIcon: const Icon(Icons.repeat_rounded)),
+                decoration: InputDecoration(labelText: appStrings(sheetContext).label('Repeat', 'التكرار'), prefixIcon: Icon(Icons.repeat_rounded)),
                 items: [
                   DropdownMenuItem(value: 'once', child: Text(appStrings(sheetContext).label('Just once', 'مرة واحدة'))),
                   DropdownMenuItem(value: 'weekly', child: Text(appStrings(sheetContext).label('Every week', 'كل أسبوع'))),
@@ -356,11 +356,11 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
                   onChanged: (value) => setSheetState(() => monthDay = value ?? monthDay),
                 ),
                 const SizedBox(height: 5),
-                Text(appStrings(sheetContext).label('Months without this date are skipped.', 'يتم تخطي الأشهر التي لا تحتوي على هذا التاريخ.'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+                Text(appStrings(sheetContext).label('Months without this date are skipped.', 'يتم تخطي الأشهر التي لا تحتوي على هذا التاريخ.'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
               ],
               const SizedBox(height: 12),
               Text(appStrings(sheetContext).label('Plans can be scheduled from today through ${MaterialLocalizations.of(sheetContext).formatMediumDate(lastAllowedDate)}. Past dates are unavailable.', 'يمكن جدولة الخطط من اليوم حتى ${MaterialLocalizations.of(sheetContext).formatMediumDate(lastAllowedDate)}. التواريخ السابقة غير متاحة.'),
-                style: const TextStyle(color: AppTheme.muted, fontSize: 11, height: 1.4)),
+                style: TextStyle(color: AppTheme.muted, fontSize: 11, height: 1.4)),
             ])),
             const SizedBox(height: 12),
             Row(children: [
@@ -439,10 +439,10 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
             key: const Key('plan-recipe-search'), controller: _search, onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
               hintText: appStrings(context).label('Search recipes or ingredients', 'ابحث عن وصفات أو مكونات'),
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(Icons.search),
               suffixIcon: _search.text.isEmpty ? null : IconButton(
                 tooltip: appStrings(context).label('Clear search', 'مسح البحث'),
-                onPressed: () { _search.clear(); setState(() {}); }, icon: const Icon(Icons.close)),
+                onPressed: () { _search.clear(); setState(() {}); }, icon: Icon(Icons.close)),
             ),
           ),
           const SizedBox(height: 12),
@@ -462,7 +462,7 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
             title: Text(appStrings(context).label('Filters', 'الفلاتر')),
             trailing: Row(mainAxisSize: MainAxisSize.min, children: [
               if (activeFilters > 0) Text('$activeFilters active', style: TextStyle(color: AppTheme.terracotta, fontSize: 11)),
-              const Icon(Icons.expand_more),
+              Icon(Icons.expand_more),
             ]),
             children: [
               Align(alignment: AlignmentDirectional.centerStart, child: Text(appStrings(context).label('Cuisine', 'نوع المطبخ'), style: Theme.of(context).textTheme.titleSmall)),
@@ -508,8 +508,8 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
                       child: Padding(padding: const EdgeInsets.all(9), child: Row(children: [
                         ClipRRect(borderRadius: BorderRadius.circular(11), child: CachedNetworkImage(
                           imageUrl: recipe.image, width: 82, height: 82, fit: BoxFit.cover,
-                          placeholder: (_, __) => Container(width: 82, height: 82, color: AppTheme.line, child: const Icon(Icons.restaurant)),
-                          errorWidget: (_, __, ___) => Container(width: 82, height: 82, color: AppTheme.line, child: const Icon(Icons.restaurant)))),
+                          placeholder: (_, __) => Container(width: 82, height: 82, color: AppTheme.line, child: Icon(Icons.restaurant)),
+                          errorWidget: (_, __, ___) => Container(width: 82, height: 82, color: AppTheme.line, child: Icon(Icons.restaurant)))),
                         const SizedBox(width: 12),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(recipe.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
@@ -522,7 +522,7 @@ class _PlanRecipePickerState extends State<_PlanRecipePicker> {
                             Text('${recipe.servings} servings', style: TextStyle(color: AppTheme.muted, fontSize: 11)),
                           ]),
                         ])),
-                        const Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
+                        Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
                       ])),
                     ),
                   );
