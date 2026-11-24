@@ -9,6 +9,7 @@ import 'package:testapp_3/features/kitchen/presentation/settings_screen.dart';
 import 'package:testapp_3/features/recipes/presentation/custom_recipe_editor_screen.dart';
 import 'package:testapp_3/features/recipes/presentation/custom_recipes_screen.dart';
 import 'package:testapp_3/app/app_widgets.dart';
+import 'package:testapp_3/app/gather_visuals.dart';
 
 class KitchenScreen extends StatelessWidget {
   const KitchenScreen({super.key, required this.onLocaleChanged});
@@ -22,9 +23,15 @@ class KitchenScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
-        Text(appStrings(context).label('YOUR LITTLE COOKBOOK', 'كتاب وصفاتك الصغير'), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
-        const SizedBox(height: 8),
-        Text(appStrings(context).label('Your kitchen,\nyour rhythm.', 'مطبخك،\nإيقاعك الخاص.'), style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(appStrings(context).label('YOUR LITTLE COOKBOOK', 'كتاب وصفاتك الصغير'), style: TextStyle(color: AppTheme.terracotta, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
+            const SizedBox(height: 8),
+            Text(appStrings(context).label('Your kitchen,\\nyour rhythm.', 'مطبخك،\\nإيقاعك الخاص.'), style: TextStyle(fontFamily: 'Georgia', fontSize: 32, height: 1.08, color: AppTheme.ink, fontWeight: FontWeight.bold)),
+          ])),
+          const SizedBox(width: 8),
+          GatherVisuals.foodMotion(size: 82),
+        ]),
         const SizedBox(height: 20),
         Row(children: [
           StatCard(value: '${saved.length}', label: 'Saved recipes', icon: Icons.bookmark_outline),
