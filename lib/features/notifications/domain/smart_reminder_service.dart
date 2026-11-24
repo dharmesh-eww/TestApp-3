@@ -67,9 +67,10 @@ class SmartReminderService {
               final declared = recipe.verifiedAllergens.map((value) => value.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ')).toSet();
               if (!recipe.allergensVerified || declared.any(blocked.contains)) continue;
             }
-            final clock = state.mealReminderTimes[meal.slot.name] ?? switch (meal.slot.name) {
+            final defaultClock = switch (meal.slot.name) {
               'breakfast' => '08:00', 'lunch' => '12:00', 'snack' => '15:00', _ => '18:00',
             };
+            final clock = state.mealReminderTimes[meal.slot.name] ?? defaultClock;
             final parts = clock.split(':');
             final hour = int.tryParse(parts.first) ?? 8;
             final minute = int.tryParse(parts.last) ?? 0;
