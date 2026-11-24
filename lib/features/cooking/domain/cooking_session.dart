@@ -89,6 +89,7 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
 
   final Map<String, int> _steps = {};
   final Map<String, int> _servings = {};
+  final Map<String, Set<int>> _completedSteps = {};
   final List<CookingTimerEntry> _timers = [];
   Timer? _ticker;
   int _nextTimerId = 0;
@@ -99,6 +100,7 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
     'schema_version': 1,
     'steps': _steps,
     'servings': _servings,
+    'completed_steps': {for (final entry in _completedSteps.entries) entry.key: entry.value.toList()..sort()},
     'next_timer_id': _nextTimerId,
     'timers': [
       for (final timer in _timers)
@@ -117,6 +119,7 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
   void restoreFromJson(Map<String, dynamic> json) {
     _steps.clear();
     _servings.clear();
+    _completedSteps.clear();
     _timers.clear();
     if (json['schema_version'] != 1) return;
     final steps = json['steps'];
@@ -132,6 +135,14 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
       for (final entry in servings.entries) {
         if (entry.key is String && entry.value is num && (entry.value as num) >= 1) {
           _servings[entry.key as String] = (entry.value as num).toInt();
+        }
+      }
+    }
+    final completedSteps = json['completed_steps'];
+    if (completedSteps is Map) {
+      for (final entry in completedSteps.entries) {
+        if (entry.key is String && entry.value is List) {
+          _completedSteps[entry.key as String] = entry.value.whereType<num>().map((value) => value.toInt()).where((value) => value >= 0).toSet();
         }
       }
     }
@@ -166,6 +177,7 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
   void clearSession() {
     _steps.clear();
     _servings.clear();
+    _completedSteps.clear();
     _timers.clear();
     _nextTimerId = 0;
     notifyListeners();
@@ -173,6 +185,18 @@ class CookingSession extends ChangeNotifier with WidgetsBindingObserver {
 
   int stepFor(String recipeId) => _steps[recipeId] ?? 0;
   int servingsFor(String recipeId, int fallback) => _servings[recipeId] ?? fallback;
+
+  bool isStepComplete(String recipeId, int step) => _completedSteps[recipeId]?.contains(step) ?? false;
+
+  int completedStepCount(String recipeId) => _completedSteps[recipeId]?.length ?? 0;
+
+  void setStepComplete(String recipeId, int step, bool complete) {
+    if (step < 0) return;
+    final steps = _completedSteps.putIfAbsent(recipeId, () => <int>{});
+    if (complete) { steps.add(step); } else { steps.remove(step); }
+    if (steps.isEmpty) _completedSteps.remove(recipeId);
+    notifyListeners();
+  }
 
   void setStep(String recipeId, int step, int total) {
     if (total <= 0) return;
