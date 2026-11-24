@@ -25,6 +25,10 @@ void main() {
     original.recordCooked(recipes.first);
     original.recordViewed(recipes.last);
     original.preferredDietaryTags.add('plant_based');
+    original.preferredCuisines.add('indian');
+    original.preferredFoodTypes.add('vegetarian');
+    original.preferredMealTypes.add('dinner');
+    original.preferredMaxCookingMinutes = 30;
     original.addCustomGroceryItem(name: 'Tea bags', amount: 2, unit: 'boxes');
     final pastaKey = original.buildGroceryList(recipes).singleWhere((item) => item.name == 'Pasta').key;
     original.setGroceryChecked(pastaKey, true);
@@ -49,6 +53,10 @@ void main() {
     expect(restored.cookingHistory, hasLength(1));
     expect(restored.recentlyViewed.single['recipe_id'], recipes.last.id);
     expect(restored.preferredDietaryTags, contains('plant_based'));
+    expect(restored.preferredCuisines, contains('indian'));
+    expect(restored.preferredFoodTypes, contains('vegetarian'));
+    expect(restored.preferredMealTypes, contains('dinner'));
+    expect(restored.preferredMaxCookingMinutes, 30);
     expect(restored.buildGroceryList(recipes).any((item) => item.name == 'Tea bags' && item.isCustom), isTrue);
     expect(restored.buildGroceryList(recipes).firstWhere((item) => item.key == pastaKey).amount, 450);
   });
@@ -56,7 +64,7 @@ void main() {
   test('legacy v1 snapshots remain readable after the v3 schema migration', () {
     final restored = PlannerState.fromJson({'schema_version': 1, 'favorites': ['legacy-recipe']});
     expect(restored.isFavorite('legacy-recipe'), isTrue);
-    expect(restored.toJson()['schema_version'], 6);
+    expect(restored.toJson()['schema_version'], 8);
   });
 
   test('unsupported snapshots restore as an empty safe state', () {
@@ -100,6 +108,10 @@ test('reset personal data clears local user state without changing catalog', () 
     expect(state.recentlyViewed, isEmpty);
     expect(state.customGroceryItems, isEmpty);
     expect(state.preferredDietaryTags, isEmpty);
+    expect(state.preferredCuisines, isEmpty);
+    expect(state.preferredFoodTypes, isEmpty);
+    expect(state.preferredMealTypes, isEmpty);
+    expect(state.preferredMaxCookingMinutes, isNull);
     expect(state.allergies, isEmpty);
     expect(state.groceryBudget, isNull);
     expect(state.mealPrepChecks, isEmpty);
