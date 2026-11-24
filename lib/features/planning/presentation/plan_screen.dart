@@ -85,6 +85,8 @@ class _PlanScreenState extends State<PlanScreen> {
           onAdd:()=>_showPlanPicker(context,day,slot),onRemove:(){state.removeMeal(day,slot);PlannerScope.refresh(context);},onMove:()=>_showMoveMeal(context,day,slot)),
       const SizedBox(height:18),
       _PantryMealSuggestions(day: day),
+      const SizedBox(height:10),
+      _MealPrepChecklist(day: day),
       const SizedBox(height:14),
       OutlinedButton.icon(onPressed:()=>goToAppTab(context,3),icon:Icon(Icons.shopping_basket_outlined),label:Text(appStrings(context).label('Build your grocery list', 'أنشئ قائمة مشترياتك')),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
       const SizedBox(height:28),
@@ -638,6 +640,63 @@ class _PantryMealSuggestions extends StatelessWidget {
                 icon: Icon(Icons.add_circle_outline, color: AppTheme.terracotta),
               ),
             ]),
+          ),
+      ]),
+    );
+  }
+}
+
+
+class _MealPrepChecklist extends StatelessWidget {
+  const _MealPrepChecklist({required this.day});
+  final String day;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = PlannerScope.of(context);
+    final catalog = RecipeCatalogScope.of(context);
+    final recipeIds = state.mealsFor(day).map((meal) => meal.recipeId).toSet();
+    final ingredientsByKey = <String, String>{};
+    for (final recipe in catalog.where((item) => recipeIds.contains(item.id))) {
+      for (final ingredient in recipe.ingredients) {
+        final name = ingredient.name.trim();
+        if (name.isNotEmpty) ingredientsByKey.putIfAbsent(name.toLowerCase(), () => name);
+      }
+    }
+    final ingredients = ingredientsByKey.values.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    if (ingredients.isEmpty) return const SizedBox.shrink();
+    final done = ingredients.where((name) => state.isMealPrepDone(day, name)).length;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(17), border: Border.all(color: AppTheme.line)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(Icons.checklist_rounded, color: AppTheme.olive),
+          const SizedBox(width: 8),
+          Expanded(child: Text(appStrings(context).label('Meal prep checklist', 'قائمة تجهيز الوجبات'), style: TextStyle(fontWeight: FontWeight.w800))),
+          Text('$done / ${ingredients.length}', style: TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, fontSize: 12)),
+        ]),
+        const SizedBox(height: 3),
+        Text(appStrings(context).label('Get ingredients ready before you start cooking.', 'جهّز المكونات قبل بدء الطهي.'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(value: done / ingredients.length, minHeight: 5, backgroundColor: AppTheme.line, color: AppTheme.olive),
+        ),
+        const SizedBox(height: 6),
+        for (final ingredient in ingredients)
+          CheckboxListTile(
+            dense: true,
+            visualDensity: VisualDensity.compact,
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            value: state.isMealPrepDone(day, ingredient),
+            title: Text(ingredient, style: TextStyle(fontSize: 13)),
+            onChanged: (value) {
+              state.setMealPrepDone(day, ingredient, value ?? false);
+              PlannerScope.refresh(context);
+            },
           ),
       ]),
     );
