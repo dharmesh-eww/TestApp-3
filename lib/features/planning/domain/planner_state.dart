@@ -458,12 +458,12 @@ class PlannerState {
     onboardingComplete = false;
   }
 
-  String nutritionKey(String dateKey, String recipeId) => '$dateKey|$recipeId';
+  String nutritionKey(String dateKey, String recipeId, {String slot = ''}) => '$dateKey|$recipeId|$slot';
 
-  int eatenServings(String dateKey, String recipeId) => nutritionConsumedServings[nutritionKey(dateKey, recipeId)] ?? 0;
+  int eatenServings(String dateKey, String recipeId, {String slot = ''}) => nutritionConsumedServings[nutritionKey(dateKey, recipeId, slot: slot)] ?? 0;
 
-  void setEatenServings(String dateKey, String recipeId, int servings) {
-    final key = nutritionKey(dateKey, recipeId);
+  void setEatenServings(String dateKey, String recipeId, int servings, {String slot = ''}) {
+    final key = nutritionKey(dateKey, recipeId, slot: slot);
     if (servings <= 0) {
       nutritionConsumedServings.remove(key);
     } else {
