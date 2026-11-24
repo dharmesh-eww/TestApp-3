@@ -17,7 +17,7 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
     'mediterranean':'Mediterranean','vietnamese':'Vietnamese','greek':'Greek','french':'French',
     'middle_eastern':'Middle Eastern','turkish':'Turkish',
   };
-  static const _foodTypes = <String,String>{
+  static const _foodTypeOptions = <String,String>{
     'vegetarian':'Vegetarian','vegan':'Vegan','eggetarian':'Eggetarian',
     'nonVegetarian':'Non-vegetarian','pescatarian':'Pescatarian',
   };
@@ -26,18 +26,18 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
     'gluten':'Gluten','soy':'Soy','fish':'Fish','shellfish':'Shellfish','sesame':'Sesame',
     'mustard':'Mustard','celery':'Celery','lupin':'Lupin','sulphites':'Sulphites',
   };
-  static const _dietary = <String,String>{
+  static const _dietaryOptions = <String,String>{
     'plant_based':'Plant based','gluten_free':'Gluten free','dairy_free':'Dairy free','high_protein':'High protein',
   };
-  static const _meals = <String,String>{
+  static const _mealOptions = <String,String>{
     'breakfast':'Breakfast','lunch':'Lunch','dinner':'Dinner','snacks':'Snacks',
   };
 
   late Set<String> _cuisine;
-  late Set<String> _foodTypes;
+  late Set<String> _selectedFoodTypes;
   late Set<String> _allergies;
-  late Set<String> _dietary;
-  late Set<String> _mealsSelected;
+  late Set<String> _selectedDietary;
+  late Set<String> _selectedMeals;
   int? _maxMinutes;
   bool _dirty = false;
 
@@ -46,10 +46,10 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
     super.initState();
     final state = PlannerScope.of(context);
     _cuisine = {...state.preferredCuisines};
-    _foodTypes = {...state.preferredFoodTypes};
+    _selectedFoodTypes = {...state.preferredFoodTypes};
     _allergies = {...state.allergies};
-    _dietary = {...state.preferredDietaryTags};
-    _mealsSelected = {...state.preferredMealTypes};
+    _selectedDietary = {...state.preferredDietaryTags};
+    _selectedMeals = {...state.preferredMealTypes};
     _maxMinutes = state.preferredMaxCookingMinutes;
   }
 
@@ -60,10 +60,10 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
   void _save() {
     final state = PlannerScope.of(context);
     state.preferredCuisines..clear()..addAll(_cuisine);
-    state.preferredFoodTypes..clear()..addAll(_foodTypes);
+    state.preferredFoodTypes..clear()..addAll(_selectedFoodTypes);
     state.allergies..clear()..addAll(_allergies);
-    state.preferredDietaryTags..clear()..addAll(_dietary);
-    state.preferredMealTypes..clear()..addAll(_mealsSelected);
+    state.preferredDietaryTags..clear()..addAll(_selectedDietary);
+    state.preferredMealTypes..clear()..addAll(_selectedMeals);
     state.preferredMaxCookingMinutes = _maxMinutes;
     PlannerScope.refresh(context);
     Navigator.pop(context);
@@ -77,7 +77,7 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
       backgroundColor: AppTheme.paper,
       appBar: AppBar(title:Text(strings.label('Recipe preferences','تفضيلات الوصفات')),actions:[
         TextButton(onPressed:(){
-          setState((){_cuisine.clear();_foodTypes.clear();_allergies.clear();_dietary.clear();_mealsSelected.clear();_maxMinutes=null;_dirty=true;});
+          setState((){_cuisine.clear();_selectedFoodTypes.clear();_allergies.clear();_selectedDietary.clear();_selectedMeals.clear();_maxMinutes=null;_dirty=true;});
         },child:Text(strings.label('Reset','إعادة ضبط'))),
       ]),
       body: ListView(padding:const EdgeInsets.fromLTRB(18,8,18,24),children:[
@@ -104,12 +104,12 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
         _PreferenceSection(
           number:'02',title:strings.label('Food style','نوع الطعام'),
           description:strings.label('Choose the food types you are happy to eat.','اختر أنواع الطعام التي تناسبك.'),
-          child:_PreferenceChips(options:_foodTypes,selected:_foodTypes,onTap:(v)=>_toggle(_foodTypes,v)),
+          child:_PreferenceChips(options:_foodTypeOptions,selected:_selectedFoodTypes,onTap:(v)=>_toggle(_selectedFoodTypes,v)),
         ),
         _PreferenceSection(
           number:'03',title:strings.label('Dietary preferences','التفضيلات الغذائية'),
           description:strings.label('We’ll favour recipes that match these tags.','سنفضل الوصفات التي تطابق هذه التصنيفات.'),
-          child:_PreferenceChips(options:_dietary,selected:_dietary,onTap:(v)=>_toggle(_dietary,v)),
+          child:_PreferenceChips(options:_dietaryOptions,selected:_selectedDietary,onTap:(v)=>_toggle(_selectedDietary,v)),
         ),
         _PreferenceSection(
           number:'04',title:strings.label('Allergy exclusions','استبعاد مسببات الحساسية'),
@@ -127,7 +127,7 @@ class _FoodPreferencesScreenState extends State<FoodPreferencesScreen> {
         _PreferenceSection(
           number:'05',title:strings.label('What do you cook?','ما الوجبات التي تحضرها؟'),
           description:strings.label('Choose the meals you usually browse for.','اختر الوجبات التي تبحث عنها عادةً.'),
-          child:_PreferenceChips(options:_meals,selected:_mealsSelected,onTap:(v)=>_toggle(_mealsSelected,v)),
+          child:_PreferenceChips(options:_mealOptions,selected:_selectedMeals,onTap:(v)=>_toggle(_selectedMeals,v)),
         ),
         _PreferenceSection(
           number:'06',title:strings.label('Time in the kitchen','الوقت في المطبخ'),
