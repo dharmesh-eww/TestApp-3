@@ -324,7 +324,13 @@ class PlannerState {
     final rawReminderTimes = json['meal_reminder_times'];
     if (rawReminderTimes is Map) {
       for (final entry in rawReminderTimes.entries) {
-        if (entry.key is String && entry.value is String && RegExp(r'^([01]\\d|2[0-3]):[0-5]\\d
+        if (entry.key is String &&
+            entry.value is String &&
+            RegExp(r'^([01]\d|2[0-3]):[0-5]\d$').hasMatch(entry.value as String)) {
+          mealReminderTimes[entry.key as String] = entry.value as String;
+        }
+      }
+    }
     if (rawReminderKeys is List) activeReminderKeys.addAll(rawReminderKeys.whereType<String>());
     final rawPrepChecks = json['meal_prep_checks'];
     if (rawPrepChecks is Map) {
