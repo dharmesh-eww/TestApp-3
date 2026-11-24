@@ -6,6 +6,7 @@ import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/groceries/presentation/grocery_lists_screen.dart';
+import 'package:testapp_3/app/gather_visuals.dart';
 
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
@@ -25,7 +26,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
     final estimatedTotal = entries.fold<double>(0, (sum, item) => sum + (state.groceryPrices[item.key] ?? 0));
     return ListView(padding:const EdgeInsets.fromLTRB(20,20,20,28),children:[
       Text(appStrings(context).label('THE MARKET LIST', 'قائمة المشتريات'),style:TextStyle(color:AppTheme.terracotta,fontSize:10,fontWeight:FontWeight.w800,letterSpacing:1.5)),const SizedBox(height:8),
-      Text(appStrings(context).label('Good things\\nto pick up.', 'أشياء جيدة\\nلشرائها.'),style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold)),const SizedBox(height:8),
+      Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Expanded(child: Text(appStrings(context).label('Good things\\nto pick up.', 'أشياء جيدة\\nلشرائها.'),style:TextStyle(fontFamily:'Georgia',fontSize:32,height:1.08,color:AppTheme.ink,fontWeight:FontWeight.bold))),
+        GatherVisuals.foodMotion(size: 76),
+      ]),const SizedBox(height:8),
       Text(entries.isEmpty?appStrings(context).label('Your planned meals will gather ingredients here.', 'ستظهر مكونات وجباتك المخططة هنا.') : appStrings(context).label('$checked of ${entries.length} items checked · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} to buy', 'تم تحديد $checked من ${entries.length} عناصر · ${entries.where((e)=>e.toBuyAmount>0||!e.isQuantified).length} للشراء'),style:TextStyle(color:AppTheme.muted)),
       const SizedBox(height:12),
       Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
