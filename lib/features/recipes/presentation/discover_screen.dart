@@ -164,6 +164,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   int _maxMinutes = 180;
   String _seasonId = 'all';
   bool _nutritionOnly = false;
+  bool _favoritesOnly = false;
 
   @override
   void dispose() {
@@ -175,7 +176,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Widget build(BuildContext context) {
     final strings = appStrings(context);
     final catalog = RecipeCatalogScope.of(context);
-    final filtered = RecipeCatalog.search(
+    final searchResults = RecipeCatalog.search(
       catalog,
       query: _query,
       categoryId: _categoryId,
@@ -191,6 +192,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       allergies: PlannerScope.of(context).allergies,
       sort: _sort,
     );
+    final filtered = _favoritesOnly
+        ? searchResults.where((recipe) => PlannerScope.of(context).favorites.contains(recipe.id)).toList()
+        : searchResults;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
@@ -289,6 +293,19 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             _seasonId = season;
             _nutritionOnly = nutrition;
           }),
+        ),
+        const SizedBox(height: 8),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: FilterChip(
+            key: const Key('discover-favorites-only'),
+            selected: _favoritesOnly,
+            onSelected: (value) => setState(() => _favoritesOnly = value),
+            avatar: Icon(_favoritesOnly ? Icons.favorite : Icons.favorite_border, size: 17),
+            label: Text(appStrings(context).label('Saved recipes only', 'الوصفات المحفوظة فقط')),
+            selectedColor: AppTheme.terracotta.withOpacity(.14),
+            side: BorderSide(color: _favoritesOnly ? AppTheme.terracotta : AppTheme.line),
+          ),
         ),
         const SizedBox(height: 14),
         Row(children: [
