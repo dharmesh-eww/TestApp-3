@@ -85,6 +85,56 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     final rating = state.recipeRatings[recipe.id] ?? 0;
     final allergyBlocked = RecipeCatalog.search([recipe], allergies: state.allergies).isEmpty;
     return Scaffold(
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          decoration: BoxDecoration(color: AppTheme.paper,
+            border: Border(top: BorderSide(color: AppTheme.line)),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 14, offset: const Offset(0, -4))]),
+          child: Row(children: [
+            Expanded(flex: 4, child: OutlinedButton(
+              key: const Key('schedule-recipe-button'),
+              onPressed: allergyBlocked ? null : () => showRecipeScheduleDialog(context, recipe, servings),
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+                side: const BorderSide(color: AppTheme.line), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.calendar_month_outlined, size: 18), const SizedBox(height: 3),
+                Text(appStrings(context).label('Plan', 'خطط'), maxLines: 1, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
+              ]),
+            )),
+            const SizedBox(width: 8),
+            Expanded(flex: 5, child: OutlinedButton(
+              onPressed: allergyBlocked ? null : () {
+                state.addIngredients(recipe, servings);
+                PlannerScope.refresh(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Ingredients added to your grocery list', 'تمت إضافة المكونات إلى قائمة المشتريات'))));
+              },
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+                side: const BorderSide(color: AppTheme.olive), foregroundColor: AppTheme.olive,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.add_shopping_cart_outlined, size: 18), const SizedBox(height: 3),
+                Text(appStrings(context).label('Add items', 'أضف'), maxLines: 1, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700)),
+              ]),
+            )),
+            const SizedBox(width: 8),
+            Expanded(flex: 7, child: FilledButton(
+              key: const Key('start-cooking-button'),
+              onPressed: allergyBlocked ? null : () {
+                PlannerScope.cookingOf(context).setServings(recipe.id, servings);
+                Navigator.push(context, AnimatedPageRoute(builder: (_) => CookingModeScreen(recipe: recipe)));
+              },
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta, minimumSize: const Size(0, 52),
+                padding: const EdgeInsets.symmetric(horizontal: 8), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.restaurant_menu_rounded, size: 18), const SizedBox(height: 3),
+                Text(appStrings(context).label('Start cooking', 'ابدأ الطهي'), maxLines: 1, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800)),
+              ]),
+            )),
+          ]),
+        ),
+      ),
       body: CustomScrollView(slivers: [
         SliverAppBar(
           expandedHeight: 280, pinned: true, backgroundColor: AppTheme.paper,
@@ -271,45 +321,6 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                 label: Text(appStrings(context).label('Ingredient substitutions', 'بدائل المكونات')),
               ),
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                key: const Key('schedule-recipe-button'),
-                onPressed: allergyBlocked ? null : () => showRecipeScheduleDialog(context, recipe, servings),
-                icon: const Icon(Icons.event_available_outlined),
-                label: Text(appStrings(context).label('Plan this recipe', 'خطط لهذه الوصفة')),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(width: double.infinity, child: OutlinedButton.icon(
-              onPressed: allergyBlocked ? null : () {
-                state.addIngredients(recipe, servings);
-                PlannerScope.refresh(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Ingredients added to your grocery list', 'تمت إضافة المكونات إلى قائمة المشتريات'))));
-              },
-              icon: Icon(Icons.add_shopping_cart), label: Text(appStrings(context).label('Add ingredients to grocery list', 'إضافة المكونات إلى قائمة المشتريات')),
-            )),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                key: const Key('start-cooking-button'),
-                onPressed: allergyBlocked ? null : () {
-                  PlannerScope.cookingOf(context).setServings(recipe.id, servings);
-                  Navigator.push(
-                    context,
-                    AnimatedPageRoute(builder: (_) => CookingModeScreen(recipe: recipe)),
-                  );
-                },
-                icon: Icon(Icons.restaurant_menu),
-                label: Text(appStrings(context).label('Start cooking', 'ابدأ الطهي')),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppTheme.terracotta,
-                  minimumSize: const Size(0, 54),
-                ),
-              ),
-            ),
             const SizedBox(height: 26),
             _buildCookingTips(context, recipe),
             const SizedBox(height: 26),
@@ -433,32 +444,63 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   Future<void> _showSubstitutions(BuildContext context, Recipe recipe) async {
     await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) => SafeArea(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
+      builder: (sheetContext) => SizedBox(
+        height: MediaQuery.of(sheetContext).size.height * .78,
         child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: SizedBox(
-            height: MediaQuery.of(sheetContext).size.height * .65,
-            child: ListView(
-              children: [
-                Text(appStrings(context).label('Ingredient substitutions', 'بدائل المكونات'), style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 8),
-                Text(appStrings(context).label('Suggestions may change flavour or texture. Check all labels and allergy warnings before using a substitute.', 'قد تغير الاقتراحات النكهة أو القوام. تحقق من الملصقات وتحذيرات الحساسية قبل استخدام أي بديل.'), style: TextStyle(color: AppTheme.muted, fontSize: 12)),
-                const SizedBox(height: 14),
-                for (final ingredient in recipe.ingredients) ...[
-                  Text(ingredient.name, style: const TextStyle(fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 4),
-                  if (IngredientSubstitutionService.alternativesFor(ingredient.name).isEmpty)
-                    Text(appStrings(context).label('No curated suggestion available.', 'لا يوجد اقتراح بديل متاح.'), style: TextStyle(color: AppTheme.muted, fontSize: 12))
-                  else
-                    for (final alternative in IngredientSubstitutionService.alternativesFor(ingredient.name))
-                      Padding(padding: const EdgeInsets.only(bottom: 4), child: Text('• $alternative')),
-                  const Divider(height: 18),
-                ],
-              ],
-            ),
-          ),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 18),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
+                child: const Icon(Icons.swap_horiz_rounded, color: AppTheme.olive)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(appStrings(sheetContext).label('Ingredient swaps', 'بدائل المكونات'), style: Theme.of(sheetContext).textTheme.titleLarge),
+                Text(appStrings(sheetContext).label('Ideas for what you have on hand', 'أفكار للمكونات المتوفرة لديك'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+              ])),
+              IconButton(onPressed: () => Navigator.pop(sheetContext), icon: const Icon(Icons.close_rounded)),
+            ]),
+            const SizedBox(height: 12),
+            Container(padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: const Color(0xFFFFF1E8), borderRadius: BorderRadius.circular(14)),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Icon(Icons.info_outline_rounded, color: AppTheme.terracotta, size: 18), const SizedBox(width: 9),
+                Expanded(child: Text(appStrings(sheetContext).label(
+                  'Swaps can change flavour and texture. Always check ingredient labels and allergy warnings before using an alternative.',
+                  'قد تغير البدائل النكهة والقوام. تحقق دائمًا من ملصقات المكونات وتحذيرات الحساسية قبل استخدام أي بديل.'),
+                  style: const TextStyle(color: AppTheme.ink, fontSize: 11, height: 1.4))),
+              ])),
+            const SizedBox(height: 14),
+            Expanded(child: ListView.separated(
+              itemCount: recipe.ingredients.length, separatorBuilder: (_, __) => const SizedBox(height: 9),
+              itemBuilder: (context, index) {
+                final ingredient = recipe.ingredients[index];
+                final alternatives = IngredientSubstitutionService.alternativesFor(ingredient.name);
+                return Container(padding: const EdgeInsets.all(13),
+                  decoration: BoxDecoration(color: AppTheme.card, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.line)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(children: [
+                      const Icon(Icons.restaurant_outlined, color: AppTheme.terracotta, size: 17), const SizedBox(width: 8),
+                      Expanded(child: Text(ingredient.name, style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w800))),
+                      Text('${index + 1}/${recipe.ingredients.length}', style: const TextStyle(color: AppTheme.muted, fontSize: 10)),
+                    ]),
+                    const SizedBox(height: 9),
+                    if (alternatives.isEmpty)
+                      Text(appStrings(sheetContext).label('No suggested swaps for this ingredient yet.', 'لا توجد بدائل مقترحة لهذا المكون حاليًا.'),
+                        style: const TextStyle(color: AppTheme.muted, fontSize: 11))
+                    else Wrap(spacing: 7, runSpacing: 7, children: [
+                      for (final alternative in alternatives)
+                        Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                          decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.10), borderRadius: BorderRadius.circular(20)),
+                          child: Text(alternative, style: const TextStyle(color: AppTheme.olive, fontSize: 11, fontWeight: FontWeight.w700))),
+                    ]),
+                  ]),
+                );
+              },
+            )),
+          ]),
         ),
       ),
     );
