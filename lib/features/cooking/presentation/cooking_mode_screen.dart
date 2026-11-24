@@ -341,35 +341,48 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
   Future<void> _addTimer({String? initialLabel, int? initialMinutes}) async {
     final labelController = TextEditingController(text: initialLabel ?? '');
     final minutesController = TextEditingController(text: '${initialMinutes ?? 5}');
-    final result = await showDialog<(String, int)>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(appStrings(context).label('Add a kitchen timer', 'إضافة مؤقت للمطبخ')),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: labelController, decoration: InputDecoration(labelText: appStrings(context).label('Timer label', 'اسم المؤقت'))),
+    final result = await showModalBottomSheet<(String, int)>(
+      context: context, isScrollControlled: true, useSafeArea: true, showDragHandle: true,
+      backgroundColor: AppTheme.paper,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + MediaQuery.viewInsetsOf(sheetContext).bottom),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
+              child: const Icon(Icons.timer_outlined, color: AppTheme.olive)),
+            const SizedBox(width: 11),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(appStrings(sheetContext).label('Add a kitchen timer', 'إضافة مؤقت للمطبخ'), style: Theme.of(sheetContext).textTheme.titleLarge),
+              Text(appStrings(sheetContext).label('Keep track of each cooking step.', 'تابع وقت كل خطوة أثناء الطهي.'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+            ])),
+          ]),
+          const SizedBox(height: 16),
+          TextField(controller: labelController, autofocus: true,
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Timer label', 'اسم المؤقت'), prefixIcon: const Icon(Icons.label_outline))),
           const SizedBox(height: 10),
           TextField(controller: minutesController, keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: appStrings(context).label('Minutes', 'الدقائق'))),
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Minutes', 'الدقائق'), prefixIcon: const Icon(Icons.schedule))),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
+            const SizedBox(width: 10),
+            Expanded(child: FilledButton(
+              onPressed: () {
+                final minutes = int.tryParse(minutesController.text.trim());
+                if (minutes == null || minutes < 1 || minutes > 1440) return;
+                Navigator.pop(sheetContext, (labelController.text, minutes));
+              },
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.terracotta),
+              child: Text(appStrings(sheetContext).label('Create timer', 'إنشاء المؤقت')),
+            )),
+          ]),
         ]),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-          FilledButton(
-            onPressed: () {
-              final minutes = int.tryParse(minutesController.text.trim());
-              if (minutes == null || minutes < 1 || minutes > 1440) return;
-              Navigator.pop(dialogContext, (labelController.text, minutes));
-            },
-            child: Text(appStrings(context).label('Create', 'إنشاء')),
-          ),
-        ],
       ),
     );
     labelController.dispose();
     minutesController.dispose();
     if (!mounted || result == null) return;
-    PlannerScope.cookingOf(context).addTimer(
-      result.$1,
-      Duration(minutes: result.$2),
-    );
+    PlannerScope.cookingOf(context).addTimer(result.$1, Duration(minutes: result.$2));
   }
 }
