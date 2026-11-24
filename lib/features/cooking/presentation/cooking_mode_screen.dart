@@ -154,7 +154,7 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
                                 initialLabel: '${appStrings(context).label('Step', 'الخطوة')} ${currentStep + 1}',
                                 initialMinutes: instruction.durationMinutes,
                               ),
-                              icon: const Icon(Icons.timer_outlined),
+                              icon: Icon(Icons.timer_outlined),
                               label: Text(appStrings(context).label('Add ${instruction.durationMinutes}-minute step timer', 'إضافة مؤقت لمدة ${instruction.durationMinutes} دقيقة')),
                             ),
                           ],
@@ -350,19 +350,19 @@ class _CookingModeScreenState extends State<CookingModeScreen> {
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Container(width: 42, height: 42, decoration: BoxDecoration(color: AppTheme.olive.withOpacity(.12), borderRadius: BorderRadius.circular(13)),
-              child: const Icon(Icons.timer_outlined, color: AppTheme.olive)),
+              child: Icon(Icons.timer_outlined, color: AppTheme.olive)),
             const SizedBox(width: 11),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(appStrings(sheetContext).label('Add a kitchen timer', 'إضافة مؤقت للمطبخ'), style: Theme.of(sheetContext).textTheme.titleLarge),
-              Text(appStrings(sheetContext).label('Keep track of each cooking step.', 'تابع وقت كل خطوة أثناء الطهي.'), style: const TextStyle(color: AppTheme.muted, fontSize: 11)),
+              Text(appStrings(sheetContext).label('Keep track of each cooking step.', 'تابع وقت كل خطوة أثناء الطهي.'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
             ])),
           ]),
           const SizedBox(height: 16),
           TextField(controller: labelController, autofocus: true,
-            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Timer label', 'اسم المؤقت'), prefixIcon: const Icon(Icons.label_outline))),
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Timer label', 'اسم المؤقت'), prefixIcon: Icon(Icons.label_outline))),
           const SizedBox(height: 10),
           TextField(controller: minutesController, keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Minutes', 'الدقائق'), prefixIcon: const Icon(Icons.schedule))),
+            decoration: InputDecoration(labelText: appStrings(sheetContext).label('Minutes', 'الدقائق'), prefixIcon: Icon(Icons.schedule))),
           const SizedBox(height: 18),
           Row(children: [
             Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(sheetContext), child: Text(appStrings(sheetContext).label('Cancel', 'إلغاء')))),
