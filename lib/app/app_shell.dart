@@ -9,7 +9,6 @@ import '../features/kitchen/presentation/kitchen_home_screen.dart';
 import '../localization/app_localizations.dart';
 import 'app_tab_navigation.dart';
 import 'planner_scope.dart';
-import 'gather_visuals.dart';
 
 /// Main tab scaffold, kept separate from application startup and persistence.
 class AppShell extends StatefulWidget {
@@ -44,45 +43,32 @@ class _AppShellState extends State<AppShell> {
       child: Scaffold(
         body: SafeArea(
           bottom: false,
-          child: Stack(
+          child: Column(
             children: [
-              PositionedDirectional(
-                end: 8,
-                top: 4,
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: .10,
-                    child: GatherVisuals.foodMotion(size: 112),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: reduceMotion ? Duration.zero : AppMotion.page,
+                  switchInCurve: AppMotion.enter,
+                  switchOutCurve: AppMotion.exit,
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, .025),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  ),
+                  child: KeyedSubtree(
+                    key: ValueKey(selected),
+                    child: pages[selected],
                   ),
                 ),
               ),
-              Column(
-                children: [
-                  Expanded(
-                    child: AnimatedSwitcher(
-                      duration: reduceMotion ? Duration.zero : AppMotion.page,
-                      switchInCurve: AppMotion.enter,
-                      switchOutCurve: AppMotion.exit,
-                      transitionBuilder: (child, animation) => FadeTransition(
-                        opacity: animation,
-                        child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, .025),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        ),
-                      ),
-                      child: KeyedSubtree(
-                        key: ValueKey(selected),
-                        child: pages[selected],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
+
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: selected,
