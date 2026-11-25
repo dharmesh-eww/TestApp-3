@@ -353,9 +353,10 @@ class PlannerState {
           };
           final templateWeekday = weekdayNames[meal.day];
           if (parsedDate == null && templateWeekday == null) continue;
-          final today = DateUtils.dateOnly(DateTime.now());
+          final today = DateTime.now();
+          final todayDate = DateTime(today.year, today.month, today.day);
           var date = parsedDate ?? today.add(Duration(days: (templateWeekday! - today.weekday + 7) % 7));
-          if (templateWeekday != null && date.isBefore(today)) {
+          if (templateWeekday != null && date.isBefore(todayDate)) {
             date = date.add(const Duration(days: 7));
           }
           final mealTime = switch (meal.slot) {
@@ -621,7 +622,7 @@ class PlannerState {
     final ids = reminderSeries.values.where((item) => item.sourceId == sourceId).map((item) => item.id).toSet();
     for (final id in ids) {
       reminderSeries.remove(id);
-      for (final occurrence in reminderOccurrences.values.where((item) => item.seriesId == id).toList()) {
+      for (final occurrence in reminderOccurrences.values.where((item) => item.seriesId == id && item.status == ReminderStatus.pending).toList()) {
         reminderOccurrences[occurrence.id] = occurrence.copyWith(status: ReminderStatus.cancelled);
       }
     }
@@ -644,7 +645,7 @@ class PlannerState {
 
   void deleteReminderSeries(String seriesId) {
     reminderSeries.remove(seriesId);
-    for (final occurrence in reminderOccurrences.values.where((item) => item.seriesId == seriesId).toList()) {
+    for (final occurrence in reminderOccurrences.values.where((item) => item.seriesId == seriesId && item.status == ReminderStatus.pending).toList()) {
       reminderOccurrences[occurrence.id] = occurrence.copyWith(status: ReminderStatus.cancelled);
     }
   }

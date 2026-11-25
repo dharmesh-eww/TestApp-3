@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testapp_3/app/planner_scope.dart';
+import 'package:testapp_3/features/planning/domain/planner_state.dart';
 import 'package:testapp_3/features/notifications/domain/reminder_series.dart';
 import 'package:testapp_3/features/notifications/domain/reminder_notification_service.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
@@ -11,58 +12,6 @@ class NotificationsScreen extends StatefulWidget {
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 
-  Future<void> _editSeries(BuildContext context, dynamic state, String seriesId) async {
-    final series = state.reminderSeries[seriesId];
-    if (series == null) return;
-    var offset = series.offset;
-    var time = TimeOfDay(hour: series.hour, minute: series.minute);
-    var enabled = series.isEnabled;
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, setDialogState) => AlertDialog(
-        title: Text(appStrings(context).label('Edit reminder', 'تعديل التذكير')),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(appStrings(context).label('Enabled', 'مفعّل')),
-            value: enabled,
-            onChanged: (value) => setDialogState(() => enabled = value),
-          ),
-          DropdownButtonFormField<ReminderOffset>(
-            value: offset,
-            decoration: InputDecoration(labelText: appStrings(context).label('Remind me', 'ذكرني')),
-            items: [
-              DropdownMenuItem(value: ReminderOffset.sameDay, child: Text(appStrings(context).label('Same day', 'في نفس اليوم'))),
-              DropdownMenuItem(value: ReminderOffset.previousDay, child: Text(appStrings(context).label('Previous day', 'في اليوم السابق'))),
-            ],
-            onChanged: (value) => setDialogState(() => offset = value ?? offset),
-          ),
-          ListTile(
-            title: Text(appStrings(context).label('Notification time', 'وقت الإشعار')),
-            subtitle: Text(time.format(context)),
-            onTap: () async {
-              final picked = await showTimePicker(context: dialogContext, initialTime: time);
-              if (picked != null) setDialogState(() => time = picked);
-            },
-          ),
-        ]),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Save', 'حفظ'))),
-        ],
-      )),
-    );
-    if (saved != true || !context.mounted) return;
-    state.saveReminderSeries(series.copyWith(
-      offset: offset,
-      hour: time.hour,
-      minute: time.minute,
-      isEnabled: enabled,
-    ));
-    PlannerScope.refresh(context);
-  }
-
-}
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   _ReminderFilter _filter = _ReminderFilter.all;
@@ -149,4 +98,56 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ]),
     );
   }
+  Future<void> _editSeries(BuildContext context, PlannerState state, String seriesId) async {
+    final series = state.reminderSeries[seriesId];
+    if (series == null) return;
+    var offset = series.offset;
+    var time = TimeOfDay(hour: series.hour, minute: series.minute);
+    var enabled = series.isEnabled;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, setDialogState) => AlertDialog(
+        title: Text(appStrings(context).label('Edit reminder', 'تعديل التذكير')),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(appStrings(context).label('Enabled', 'مفعّل')),
+            value: enabled,
+            onChanged: (value) => setDialogState(() => enabled = value),
+          ),
+          DropdownButtonFormField<ReminderOffset>(
+            value: offset,
+            decoration: InputDecoration(labelText: appStrings(context).label('Remind me', 'ذكرني')),
+            items: [
+              DropdownMenuItem(value: ReminderOffset.sameDay, child: Text(appStrings(context).label('Same day', 'في نفس اليوم'))),
+              DropdownMenuItem(value: ReminderOffset.previousDay, child: Text(appStrings(context).label('Previous day', 'في اليوم السابق'))),
+            ],
+            onChanged: (value) => setDialogState(() => offset = value ?? offset),
+          ),
+          ListTile(
+            title: Text(appStrings(context).label('Notification time', 'وقت الإشعار')),
+            subtitle: Text(time.format(context)),
+            onTap: () async {
+              final picked = await showTimePicker(context: dialogContext, initialTime: time);
+              if (picked != null) setDialogState(() => time = picked);
+            },
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Save', 'حفظ'))),
+        ],
+      )),
+    );
+    if (saved != true || !context.mounted) return;
+    state.saveReminderSeries(series.copyWith(
+      offset: offset,
+      hour: time.hour,
+      minute: time.minute,
+      isEnabled: enabled,
+    ));
+    PlannerScope.refresh(context);
+  }
+
+
 }
