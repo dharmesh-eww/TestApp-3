@@ -61,6 +61,7 @@ class GroceryListDetailScreen extends StatelessWidget {
     var frequency = 'once';
     var weekday = date.weekday;
     var monthDay = date.day;
+    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     var time = const TimeOfDay(hour: 18, minute: 0);
     final saved = await showDialog<bool>(
       context: context,
@@ -81,7 +82,7 @@ class GroceryListDetailScreen extends StatelessWidget {
             DropdownButtonFormField<int>(
               value: weekday,
               decoration: InputDecoration(labelText: appStrings(context).label('Weekday', 'يوم الأسبوع')),
-              items: List.generate(7, (index) => DropdownMenuItem(value: index + 1, child: Text(MaterialLocalizations.of(context).narrowWeekdays[index]))),
+              items: List.generate(7, (index) => DropdownMenuItem(value: index + 1, child: Text(appStrings(context).weekday(weekdays[index])))),
               onChanged: (value) => setDialogState(() => weekday = value ?? weekday),
             ),
           if (frequency == 'monthly')

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/features/planning/domain/planner_state.dart';
+import 'package:testapp_3/app/recipe_catalog_scope.dart';
+import 'package:testapp_3/features/recipes/presentation/recipe_detail_screen.dart';
+import 'package:testapp_3/features/groceries/presentation/grocery_list_detail_screen.dart';
+import 'package:testapp_3/features/groceries/presentation/grocery_screen.dart';
 import 'package:testapp_3/features/notifications/domain/reminder_series.dart';
 import 'package:testapp_3/features/notifications/domain/reminder_notification_service.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
@@ -70,6 +74,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     '${completed ? ' · ${appStrings(context).label('Completed', 'مكتمل')}' : ''}',
                   ),
                   isThreeLine: true,
+                  onTap: () {
+                    if (item.sourceType == ReminderType.recipe) {
+                      final recipe = RecipeCatalogScope.of(context).where((value) => value.id == item.sourceId).firstOrNull;
+                      if (recipe != null) {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe)));
+                      }
+                    } else if (item.sourceType == ReminderType.shopping) {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroceryListDetailScreen(listId: item.sourceId)));
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GroceryScreen()));
+                    }
+                  },
                   trailing: PopupMenuButton<String>(
                     onSelected: (action) async {
                       if (action == 'edit-series') {

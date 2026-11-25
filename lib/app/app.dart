@@ -29,7 +29,7 @@ class RecipePlannerApp extends StatefulWidget {
   State<RecipePlannerApp> createState() => _RecipePlannerAppState();
 }
 
-class _RecipePlannerAppState extends State<RecipePlannerApp> {
+class _RecipePlannerAppState extends State<RecipePlannerApp> with WidgetsBindingObserver {
   late final AppDependencies dependencies = AppDependencies(repository: widget.repository);
   Timer? _cookingPersistTimer;
   Locale _locale = const Locale('en');
@@ -41,6 +41,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     dependencies.cookingSession.addListener(_onCookingChanged);
     unawaited(_initializeLocalData());
   }
@@ -102,9 +103,15 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
       await GatherHomeWidgetService.sync(state, catalog);
       final store = dependencies.repository;
       if (store != null) await store.savePlannerState(state);
+      if (mounted) setState(() {});
     } catch (_) {
       // Native integrations are optional; core planning remains usable.
     }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) unawaited(_syncPlatformIntegrations());
   }
 
   void _onCookingChanged() {
@@ -142,6 +149,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   @override
   void dispose() {
     _cookingPersistTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     dependencies.cookingSession.removeListener(_onCookingChanged);
     final store = dependencies.repository;
     if (store != null) {
