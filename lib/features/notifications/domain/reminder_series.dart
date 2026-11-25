@@ -160,7 +160,7 @@ class ReminderSeries {
             minute,
           ),
           status: ReminderStatus.pending,
-          notificationId: _stableNotificationId('$id:${date.toIso8601String()}'),
+          notificationId: _stableNotificationId('occurrence:$id:${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}'),
         ),
     ];
   }
