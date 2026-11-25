@@ -355,7 +355,7 @@ class PlannerState {
           if (parsedDate == null && templateWeekday == null) continue;
           final today = DateTime.now();
           final todayDate = DateTime(today.year, today.month, today.day);
-          var date = parsedDate ?? today.add(Duration(days: (templateWeekday! - today.weekday + 7) % 7));
+          var date = parsedDate ?? todayDate.add(Duration(days: (templateWeekday! - todayDate.weekday + 7) % 7));
           if (templateWeekday != null && date.isBefore(todayDate)) {
             date = date.add(const Duration(days: 7));
           }
@@ -550,6 +550,7 @@ class PlannerState {
 
   void deleteCustomRecipe(String id) {
     customRecipes.remove(id);
+    removeReminderSeriesForSource(id);
     recipeRatings.remove(id);
     recipeNotes.remove(id);
     favorites.remove(id);
@@ -587,6 +588,8 @@ class PlannerState {
   }
 
   void assignMeal({required String day, required MealSlot slot, required String recipeId, required int servings}) {
+    final existing = mealPlan[day]?[slot];
+    if (existing != null && existing.recipeId != recipeId) removeMeal(day, slot);
     mealPlan.putIfAbsent(day, () => <MealSlot, PlannedMeal>{})[slot] =
         PlannedMeal(day: day, slot: slot, recipeId: recipeId, servings: servings < 1 ? 1 : servings);
   }
