@@ -344,8 +344,20 @@ class PlannerState {
     if (version != 7 && mealRemindersEnabled && reminderSeries.isEmpty) {
       for (final slots in mealPlan.values) {
         for (final meal in slots.values) {
-          final date = DateTime.tryParse(meal.day);
-          if (date == null) continue;
+          final parsedDate = DateTime.tryParse(meal.day);
+          const weekdayNames = {
+            'Monday': DateTime.monday, 'Tuesday': DateTime.tuesday,
+            'Wednesday': DateTime.wednesday, 'Thursday': DateTime.thursday,
+            'Friday': DateTime.friday, 'Saturday': DateTime.saturday,
+            'Sunday': DateTime.sunday,
+          };
+          final templateWeekday = weekdayNames[meal.day];
+          if (parsedDate == null && templateWeekday == null) continue;
+          final today = DateUtils.dateOnly(DateTime.now());
+          var date = parsedDate ?? today.add(Duration(days: (templateWeekday! - today.weekday + 7) % 7));
+          if (templateWeekday != null && date.isBefore(today)) {
+            date = date.add(const Duration(days: 7));
+          }
           final mealTime = switch (meal.slot) {
             MealSlot.breakfast => 8,
             MealSlot.lunch => 12,
@@ -364,12 +376,13 @@ class PlannerState {
             title: 'Meal reminder',
             description: 'Your planned meal is coming up.',
             startDate: date,
-            recurrence: ReminderRecurrence.once,
+            recurrence: templateWeekday == null ? ReminderRecurrence.once : ReminderRecurrence.weekly,
             offset: notificationDay == date ? ReminderOffset.sameDay : ReminderOffset.previousDay,
             hour: normalizedMinute ~/ 60,
             minute: normalizedMinute % 60,
             isEnabled: true,
             createdAt: DateTime.now(),
+            weekday: templateWeekday,
           );
           reminderSeries[series.id] = series;
         }

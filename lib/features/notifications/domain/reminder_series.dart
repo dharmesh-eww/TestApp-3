@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 enum ReminderType { recipe, shopping, ingredient }
 enum ReminderOffset { sameDay, previousDay }
 enum ReminderStatus { pending, completed, cancelled }
@@ -235,5 +233,5 @@ int _stableNotificationId(String value) {
     hash ^= unit;
     hash = (hash * 0x01000193) & 0x7fffffff;
   }
-  return math.max(1, hash);
+  return hash == 0 ? 1 : hash;
 }
