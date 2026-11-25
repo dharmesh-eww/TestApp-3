@@ -57,6 +57,31 @@ void main() {
     });
 
 
+
+    test('stops a recipe recurrence at its schedule end date', () {
+      final series = ReminderSeries(
+        id: 'bounded',
+        sourceType: ReminderType.recipe,
+        sourceId: 'recipe-3',
+        title: 'Rice',
+        description: '',
+        startDate: DateTime(2026, 11, 29),
+        endDate: DateTime(2026, 12, 6),
+        recurrence: ReminderRecurrence.weekly,
+        offset: ReminderOffset.sameDay,
+        hour: 12,
+        minute: 0,
+        isEnabled: true,
+        createdAt: DateTime(2026, 11, 1),
+        weekday: DateTime.sunday,
+      );
+      final occurrences = series.generateOccurrences(
+        from: DateTime(2026, 11, 29),
+        through: DateTime(2027, 2, 1),
+      );
+      expect(occurrences.map((item) => item.scheduledDate.day), [29, 6]);
+    });
+
     test('excludes a single date without breaking the recurring series', () {
       final series = ReminderSeries(
         id: 'weekly-exception',
