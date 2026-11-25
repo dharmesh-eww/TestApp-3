@@ -19,6 +19,7 @@ class ReminderSeries {
     required this.createdAt,
     this.weekday,
     this.monthDay,
+    this.excludedDates = const {},
   })  : assert(hour >= 0 && hour <= 23),
         assert(minute >= 0 && minute <= 59),
         assert(weekday == null || (weekday >= 1 && weekday <= 7)),
@@ -38,6 +39,7 @@ class ReminderSeries {
   final DateTime createdAt;
   final int? weekday;
   final int? monthDay;
+  final Set<String> excludedDates;
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -54,6 +56,7 @@ class ReminderSeries {
     'created_at': createdAt.toIso8601String(),
     'weekday': weekday,
     'month_day': monthDay,
+    'excluded_dates': excludedDates.toList()..sort(),
   };
 
   factory ReminderSeries.fromJson(Map<String, dynamic> json) {
@@ -75,6 +78,7 @@ class ReminderSeries {
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
       weekday: (json['weekday'] as num?)?.toInt(),
       monthDay: (json['month_day'] as num?)?.toInt(),
+      excludedDates: (json['excluded_dates'] as List?)?.whereType<String>().toSet() ?? const {},
     );
   }
 
@@ -85,6 +89,7 @@ class ReminderSeries {
     int? hour,
     int? minute,
     bool? isEnabled,
+    Set<String>? excludedDates,
   }) => ReminderSeries(
     id: id,
     sourceType: sourceType,
@@ -100,6 +105,7 @@ class ReminderSeries {
     createdAt: createdAt,
     weekday: weekday,
     monthDay: monthDay,
+    excludedDates: excludedDates ?? this.excludedDates,
   );
 
   List<ReminderOccurrence> generateOccurrences({
@@ -124,7 +130,8 @@ class ReminderSeries {
           ReminderRecurrence.weekly => date.weekday == (weekday ?? start.weekday),
           ReminderRecurrence.monthly => date.day == (monthDay ?? start.day),
         };
-        if (matches) dates.add(date);
+        final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        if (matches && !excludedDates.contains(dateKey)) dates.add(date);
       }
     }
 

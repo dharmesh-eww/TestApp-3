@@ -56,6 +56,31 @@ void main() {
       expect(occurrences.map((item) => item.scheduledDate.month), [1, 3]);
     });
 
+
+    test('excludes a single date without breaking the recurring series', () {
+      final series = ReminderSeries(
+        id: 'weekly-exception',
+        sourceType: ReminderType.recipe,
+        sourceId: 'recipe-2',
+        title: 'Soup',
+        description: '',
+        startDate: DateTime(2026, 11, 29),
+        recurrence: ReminderRecurrence.weekly,
+        offset: ReminderOffset.sameDay,
+        hour: 9,
+        minute: 0,
+        isEnabled: true,
+        createdAt: DateTime(2026, 11, 1),
+        weekday: DateTime.sunday,
+        excludedDates: {'2026-12-06'},
+      );
+      final dates = series.generateOccurrences(
+        from: DateTime(2026, 11, 29),
+        through: DateTime(2026, 12, 13),
+      ).map((item) => item.scheduledDate.day).toList();
+      expect(dates, [29, 13]);
+    });
+
     test('round trips series and occurrence persistence', () {
       final state = PlannerState();
       final series = ReminderSeries(

@@ -379,10 +379,12 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
   );
   final state = PlannerScope.of(context);
   var added = 0;
+  final addedDateKeys = <String>{};
   for (final date in dates) {
     final key = _dateKey(date);
     if (state.mealsFor(key).any((meal) => meal.slot == slot)) continue;
     state.assignMeal(day: key, slot: slot, recipeId: recipe.id, servings: servings);
+    addedDateKeys.add(key);
     added++;
   }
   if (added > 0 && reminderEnabled) {
@@ -405,6 +407,7 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
       createdAt: DateTime.now(),
       weekday: frequency == 'weekly' ? weekday : null,
       monthDay: frequency == 'monthly' ? monthDay : null,
+      excludedDates: dates.where((date) => !addedDateKeys.contains(_dateKey(date))).map(_dateKey).toSet(),
     );
     state.saveReminderSeries(series);
   }

@@ -601,8 +601,25 @@ class PlannerState {
 
   void removeMeal(String day, MealSlot slot) {
     final slots = mealPlan[day];
-    slots?.remove(slot);
+    final removed = slots?.remove(slot);
     if (slots != null && slots.isEmpty) mealPlan.remove(day);
+    if (removed != null) {
+      final date = DateTime.tryParse(day);
+      if (date != null) {
+        final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final matching = reminderSeries.values.where((series) =>
+          series.sourceType == ReminderType.recipe &&
+          series.sourceId == removed.recipeId &&
+          series.generateOccurrences(from: date, through: date).isNotEmpty).toList();
+        for (final series in matching) {
+          if (series.recurrence == ReminderRecurrence.once) {
+            deleteReminderSeries(series.id);
+          } else {
+            saveReminderSeries(series.copyWith(excludedDates: {...series.excludedDates, dateKey}));
+          }
+        }
+      }
+    }
   }
 
   List<PlannedMeal> mealsFor(String day) =>
