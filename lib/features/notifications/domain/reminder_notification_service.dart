@@ -6,12 +6,14 @@ import 'reminder_series.dart';
 class ReminderNotificationService {
   ReminderNotificationService._();
   static const horizonDays = 90;
+  static const occurrenceHistoryDays = 365;
   static String? _lastFingerprint;
 
   static Future<void> sync(PlannerState state, {DateTime? now, bool force = false}) async {
     final current = now ?? DateTime.now();
     final from = DateTime(current.year, current.month, current.day);
-    final through = from.add(const Duration(days: horizonDays));
+    final through = from.add(const Duration(days: occurrenceHistoryDays));
+    final scheduleThrough = current.add(const Duration(days: horizonDays));
     final fingerprint = _fingerprint(state, from);
     if (!force && fingerprint == _lastFingerprint) return;
 
@@ -38,7 +40,12 @@ class ReminderNotificationService {
       final occurrence = existing ?? entry.value;
       state.reminderOccurrences[entry.key] = occurrence;
       final key = 'occurrence:${occurrence.id}';
-      if (!occurrence.notificationDate.isAfter(current)) continue;
+      if (!occurrence.notificationDate.isAfter(current)) {
+        await CookingAssistService.cancelTimerNotification(key);
+        state.activeReminderKeys.remove(key);
+        continue;
+      }
+      if (occurrence.notificationDate.isAfter(scheduleThrough)) continue;
       await CookingAssistService.scheduleTimerNotification(
         id: key,
         title: occurrence.title,
