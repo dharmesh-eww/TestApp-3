@@ -108,6 +108,31 @@ void main() {
       expect(restored.reminderOccurrences[occurrence.id]?.notificationId, occurrence.notificationId);
     });
 
+
+    test('schema v7 stores reminder configuration and occurrence history', () {
+      final state = PlannerState();
+      final series = ReminderSeries(
+        id: 'persisted-weekly',
+        sourceType: ReminderType.shopping,
+        sourceId: 'list-2',
+        title: 'Market run',
+        description: 'Pick up ingredients',
+        startDate: DateTime(2026, 11, 29),
+        recurrence: ReminderRecurrence.weekly,
+        offset: ReminderOffset.previousDay,
+        hour: 18,
+        minute: 15,
+        isEnabled: true,
+        createdAt: DateTime(2026, 11, 1),
+        weekday: DateTime.sunday,
+        excludedDates: {'2026-12-06'},
+      );
+      state.saveReminderSeries(series);
+      final restored = PlannerState.fromJson(state.toJson());
+      expect(restored.toJson()['schema_version'], 7);
+      expect(restored.reminderSeries[series.id]?.excludedDates, {'2026-12-06'});
+    });
+
     test('migrates opted-in v6 global meal reminders', () {
       final state = PlannerState.fromJson({
         'schema_version': 6,

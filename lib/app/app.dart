@@ -111,7 +111,11 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> with WidgetsBinding
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) unawaited(_syncPlatformIntegrations());
+    if (state == AppLifecycleState.resumed) {
+      SmartReminderService.invalidate();
+      ReminderNotificationService.invalidate();
+      unawaited(_syncPlatformIntegrations());
+    }
   }
 
   void _onCookingChanged() {
