@@ -11,7 +11,7 @@ class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
-
+}
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   _ReminderFilter _filter = _ReminderFilter.all;
@@ -103,18 +103,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (series == null) return;
     var offset = series.offset;
     var time = TimeOfDay(hour: series.hour, minute: series.minute);
-    var enabled = series.isEnabled;
     final saved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, setDialogState) => AlertDialog(
         title: Text(appStrings(context).label('Edit reminder', 'تعديل التذكير')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(appStrings(context).label('Enabled', 'مفعّل')),
-            value: enabled,
-            onChanged: (value) => setDialogState(() => enabled = value),
-          ),
           DropdownButtonFormField<ReminderOffset>(
             value: offset,
             decoration: InputDecoration(labelText: appStrings(context).label('Remind me', 'ذكرني')),
@@ -144,7 +137,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       offset: offset,
       hour: time.hour,
       minute: time.minute,
-      isEnabled: enabled,
+      isEnabled: series.isEnabled,
     ));
     PlannerScope.refresh(context);
   }
