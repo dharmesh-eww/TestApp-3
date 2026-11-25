@@ -58,12 +58,39 @@ class GroceryListDetailScreen extends StatelessWidget {
     );
     if (date == null || !context.mounted) return;
     var offset = ReminderOffset.previousDay;
+    var frequency = 'once';
+    var weekday = date.weekday;
+    var monthDay = date.day;
     var time = const TimeOfDay(hour: 18, minute: 0);
     final saved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, setDialogState) => AlertDialog(
         title: Text(appStrings(context).label('Shopping reminder', 'تذكير التسوق')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
+          DropdownButtonFormField<String>(
+            value: frequency,
+            decoration: InputDecoration(labelText: appStrings(context).label('Repeat', 'التكرار')),
+            items: [
+              DropdownMenuItem(value: 'once', child: Text(appStrings(context).label('Just once', 'مرة واحدة'))),
+              DropdownMenuItem(value: 'weekly', child: Text(appStrings(context).label('Every week', 'كل أسبوع'))),
+              DropdownMenuItem(value: 'monthly', child: Text(appStrings(context).label('Every month', 'كل شهر'))),
+            ],
+            onChanged: (value) => setDialogState(() => frequency = value ?? frequency),
+          ),
+          if (frequency == 'weekly')
+            DropdownButtonFormField<int>(
+              value: weekday,
+              decoration: InputDecoration(labelText: appStrings(context).label('Weekday', 'يوم الأسبوع')),
+              items: List.generate(7, (index) => DropdownMenuItem(value: index + 1, child: Text(MaterialLocalizations.of(context).narrowWeekdays[index]))),
+              onChanged: (value) => setDialogState(() => weekday = value ?? weekday),
+            ),
+          if (frequency == 'monthly')
+            DropdownButtonFormField<int>(
+              value: monthDay,
+              decoration: InputDecoration(labelText: appStrings(context).label('Day of month', 'يوم الشهر')),
+              items: List.generate(31, (index) => DropdownMenuItem(value: index + 1, child: Text('${index + 1}'))),
+              onChanged: (value) => setDialogState(() => monthDay = value ?? monthDay),
+            ),
           DropdownButtonFormField<ReminderOffset>(
             value: offset,
             decoration: InputDecoration(labelText: appStrings(context).label('Remind me', 'ذكرني')),
@@ -96,7 +123,9 @@ class GroceryListDetailScreen extends StatelessWidget {
       title: state.groceryListNames[listId] ?? 'Shopping list',
       description: appStrings(context).label('Your shopping is scheduled.', 'موعد التسوق الخاص بك.'),
       startDate: date,
-      recurrence: ReminderRecurrence.once,
+      recurrence: switch (frequency) { 'weekly' => ReminderRecurrence.weekly, 'monthly' => ReminderRecurrence.monthly, _ => ReminderRecurrence.once },
+      weekday: frequency == 'weekly' ? weekday : null,
+      monthDay: frequency == 'monthly' ? monthDay : null,
       offset: offset,
       hour: time.hour,
       minute: time.minute,
