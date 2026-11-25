@@ -1,6 +1,7 @@
 import '../../recipes/domain/recipe.dart';
 import '../../recipes/domain/measurement_units.dart';
 import 'meal_plan.dart';
+import '../../notifications/domain/reminder_series.dart';
 
 class PlannerState {
   PlannerState();
@@ -24,6 +25,8 @@ class PlannerState {
   final Map<String, String> groceryStores = {};
   final Map<String, bool> mealPrepChecks = {};
   final Set<String> activeReminderKeys = {};
+  final Map<String, ReminderSeries> reminderSeries = {};
+  final Map<String, ReminderOccurrence> reminderOccurrences = {};
   int dailyCalorieTarget = 2000;
   double dailyProteinTargetGrams = 100;
   double? groceryBudget;
@@ -45,7 +48,7 @@ class PlannerState {
   String themePreference = 'system';
 
   Map<String, Object?> toJson() => {
-    'schema_version': 6,
+    'schema_version': 7,
     'favorites': favorites.toList()..sort(),
     'meals': [
       for (final slots in mealPlan.values)
@@ -79,6 +82,8 @@ class PlannerState {
     'grocery_stores': groceryStores,
     'meal_prep_checks': mealPrepChecks,
     'active_reminder_keys': activeReminderKeys.toList()..sort(),
+    'reminder_series': [for (final item in reminderSeries.values) item.toJson()],
+    'reminder_occurrences': [for (final item in reminderOccurrences.values) item.toJson()],
     'grocery_budget': groceryBudget,
     'nutrition_goals': {
       'daily_calories': dailyCalorieTarget,
@@ -113,7 +118,7 @@ class PlannerState {
     return state;
   }
 
-  /// Reads v1-v6 snapshots. The next save writes schema v6.
+  /// Reads v1-v7 snapshots. The next save writes schema v7.
   void restoreFromJson(Map<String, dynamic> json) {
     favorites.clear();
     mealPlan.clear();
@@ -144,6 +149,8 @@ class PlannerState {
     groceryStores.clear();
     mealPrepChecks.clear();
     activeReminderKeys.clear();
+    reminderSeries.clear();
+    reminderOccurrences.clear();
     dailyCalorieTarget = 2000;
     dailyProteinTargetGrams = 100;
     groceryBudget = null;
@@ -154,7 +161,7 @@ class PlannerState {
     weekStartsOn = 1;
     localeCode = 'en';
     final version = json['schema_version'];
-    if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != 6) return;
+    if (version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != 6 && version != 7) return;
 
     final rawFavorites = json['favorites'];
     if (rawFavorites is List) {
@@ -310,6 +317,79 @@ class PlannerState {
     _restoreStringStringMap(json['grocery_stores'], groceryStores);
     final rawReminderKeys = json['active_reminder_keys'];
     if (rawReminderKeys is List) activeReminderKeys.addAll(rawReminderKeys.whereType<String>());
+    final rawSeries = json['reminder_series'];
+    if (rawSeries is List) {
+      for (final raw in rawSeries.whereType<Map>()) {
+        try {
+          final item = ReminderSeries.fromJson(Map<String, dynamic>.from(raw));
+          reminderSeries[item.id] = item;
+        } catch (_) {
+          // Ignore malformed reminder records without losing the planner.
+        }
+      }
+    }
+    final rawOccurrences = json['reminder_occurrences'];
+    if (rawOccurrences is List) {
+      for (final raw in rawOccurrences.whereType<Map>()) {
+        try {
+          final item = ReminderOccurrence.fromJson(Map<String, dynamic>.from(raw));
+          reminderOccurrences[item.id] = item;
+        } catch (_) {
+          // Ignore malformed occurrence records without losing the planner.
+        }
+      }
+    }
+    // Migrate opted-in v1-v6 global meal reminders into per-meal series.
+    // Pantry expiry reminders remain managed by SmartReminderService.
+    if (version != 7 && mealRemindersEnabled && reminderSeries.isEmpty) {
+      for (final slots in mealPlan.values) {
+        for (final meal in slots.values) {
+          final parsedDate = DateTime.tryParse(meal.day);
+          const weekdayNames = {
+            'Monday': DateTime.monday, 'Tuesday': DateTime.tuesday,
+            'Wednesday': DateTime.wednesday, 'Thursday': DateTime.thursday,
+            'Friday': DateTime.friday, 'Saturday': DateTime.saturday,
+            'Sunday': DateTime.sunday,
+          };
+          final templateWeekday = weekdayNames[meal.day];
+          if (parsedDate == null && templateWeekday == null) continue;
+          final today = DateTime.now();
+          final todayDate = DateTime(today.year, today.month, today.day);
+          var date = parsedDate ?? todayDate.add(Duration(days: (templateWeekday! - todayDate.weekday + 7) % 7));
+          if (templateWeekday != null && date.isBefore(todayDate)) {
+            date = date.add(const Duration(days: 7));
+          }
+          final mealTime = switch (meal.slot) {
+            MealSlot.breakfast => 8,
+            MealSlot.lunch => 12,
+            MealSlot.snack => 15,
+            MealSlot.dinner => 18,
+          };
+          final fireMinute = mealTime * 60 - mealReminderMinutes;
+          final notificationDay = fireMinute < 0
+              ? date.subtract(const Duration(days: 1))
+              : date;
+          final normalizedMinute = (fireMinute % 1440 + 1440) % 1440;
+          final series = ReminderSeries(
+            id: 'migrated-meal:${meal.day}:${meal.slot.name}:${meal.recipeId}',
+            sourceType: ReminderType.recipe,
+            sourceId: meal.recipeId,
+            title: 'Meal reminder',
+            description: 'Your planned meal is coming up.',
+            startDate: date,
+            recurrence: templateWeekday == null ? ReminderRecurrence.once : ReminderRecurrence.weekly,
+            offset: notificationDay == date ? ReminderOffset.sameDay : ReminderOffset.previousDay,
+            hour: normalizedMinute ~/ 60,
+            minute: normalizedMinute % 60,
+            isEnabled: true,
+            createdAt: DateTime.now(),
+            weekday: templateWeekday,
+          );
+          reminderSeries[series.id] = series;
+        }
+      }
+      mealRemindersEnabled = false;
+    }
     final rawPrepChecks = json['meal_prep_checks'];
     if (rawPrepChecks is Map) {
       for (final entry in rawPrepChecks.entries) {
@@ -416,6 +496,9 @@ class PlannerState {
     groceryPrices.clear();
     groceryStores.clear();
     mealPrepChecks.clear();
+    reminderSeries.clear();
+    reminderOccurrences.clear();
+    activeReminderKeys.clear();
     groceryBudget = null;
     dailyCalorieTarget = 2000;
     dailyProteinTargetGrams = 100;
@@ -467,6 +550,7 @@ class PlannerState {
 
   void deleteCustomRecipe(String id) {
     customRecipes.remove(id);
+    removeReminderSeriesForSource(id);
     recipeRatings.remove(id);
     recipeNotes.remove(id);
     favorites.remove(id);
@@ -504,6 +588,8 @@ class PlannerState {
   }
 
   void assignMeal({required String day, required MealSlot slot, required String recipeId, required int servings}) {
+    final existing = mealPlan[day]?[slot];
+    if (existing != null && existing.recipeId != recipeId) removeMeal(day, slot);
     mealPlan.putIfAbsent(day, () => <MealSlot, PlannedMeal>{})[slot] =
         PlannedMeal(day: day, slot: slot, recipeId: recipeId, servings: servings < 1 ? 1 : servings);
   }
@@ -518,13 +604,71 @@ class PlannerState {
 
   void removeMeal(String day, MealSlot slot) {
     final slots = mealPlan[day];
-    slots?.remove(slot);
+    final removed = slots?.remove(slot);
     if (slots != null && slots.isEmpty) mealPlan.remove(day);
+    if (removed != null) {
+      final date = DateTime.tryParse(day);
+      if (date != null) {
+        final dateKey = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final matching = reminderSeries.values.where((series) =>
+          series.sourceType == ReminderType.recipe &&
+          series.sourceId == removed.recipeId &&
+          series.generateOccurrences(from: date, through: date).isNotEmpty).toList();
+        for (final series in matching) {
+          if (series.recurrence == ReminderRecurrence.once) {
+            deleteReminderSeries(series.id);
+          } else {
+            saveReminderSeries(series.copyWith(excludedDates: {...series.excludedDates, dateKey}));
+          }
+        }
+      }
+    }
   }
 
   List<PlannedMeal> mealsFor(String day) =>
       List.unmodifiable(mealPlan[day]?.values ?? const <PlannedMeal>[]);
   int get plannedMealCount => mealPlan.values.fold(0, (sum, slots) => sum + slots.length);
+
+
+  void saveReminderSeries(ReminderSeries series) {
+    reminderSeries[series.id] = series;
+    // A changed series invalidates only its pending occurrences. Completed
+    // history remains available in the notification inbox.
+    reminderOccurrences.removeWhere((_, occurrence) =>
+        occurrence.seriesId == series.id && occurrence.status == ReminderStatus.pending);
+  }
+
+  void removeReminderSeriesForSource(String sourceId) {
+    final ids = reminderSeries.values.where((item) => item.sourceId == sourceId).map((item) => item.id).toSet();
+    for (final id in ids) {
+      reminderSeries.remove(id);
+      for (final occurrence in reminderOccurrences.values.where((item) => item.seriesId == id && item.status == ReminderStatus.pending).toList()) {
+        reminderOccurrences[occurrence.id] = occurrence.copyWith(status: ReminderStatus.cancelled);
+      }
+    }
+  }
+
+  void completeReminderOccurrence(String occurrenceId, {DateTime? completedAt}) {
+    final occurrence = reminderOccurrences[occurrenceId];
+    if (occurrence == null || occurrence.status != ReminderStatus.pending) return;
+    reminderOccurrences[occurrenceId] = occurrence.copyWith(
+      status: ReminderStatus.completed,
+      completedAt: completedAt ?? DateTime.now(),
+    );
+  }
+
+  void deleteReminderOccurrence(String occurrenceId) {
+    final occurrence = reminderOccurrences[occurrenceId];
+    if (occurrence == null) return;
+    reminderOccurrences[occurrenceId] = occurrence.copyWith(status: ReminderStatus.cancelled);
+  }
+
+  void deleteReminderSeries(String seriesId) {
+    reminderSeries.remove(seriesId);
+    for (final occurrence in reminderOccurrences.values.where((item) => item.seriesId == seriesId && item.status == ReminderStatus.pending).toList()) {
+      reminderOccurrences[occurrence.id] = occurrence.copyWith(status: ReminderStatus.cancelled);
+    }
+  }
 
   void addCustomGroceryItem({required String name, required double amount, required String unit}) {
     final cleanName = name.trim(), cleanUnit = unit.trim();
@@ -562,8 +706,18 @@ class PlannerState {
     return id;
   }
 
-  void renameGroceryList(String id, String name) { final clean = name.trim(); if (groceryLists.containsKey(id) && clean.isNotEmpty) groceryListNames[id] = clean; }
-  void deleteGroceryList(String id) { groceryLists.remove(id); groceryListNames.remove(id); }
+  void renameGroceryList(String id, String name) {
+    final clean = name.trim();
+    if (!groceryLists.containsKey(id) || clean.isEmpty) return;
+    groceryListNames[id] = clean;
+    final reminder = reminderSeries['shopping:$id'];
+    if (reminder != null) saveReminderSeries(reminder.copyWith(title: clean));
+  }
+  void deleteGroceryList(String id) {
+    groceryLists.remove(id);
+    groceryListNames.remove(id);
+    removeReminderSeriesForSource(id);
+  }
   void assignGroceryItem(String listId, String itemKey) { if (groceryLists.containsKey(listId) && itemKey.isNotEmpty) groceryLists[listId]!.add(itemKey); }
   void removeGroceryItemFromList(String listId, String itemKey) => groceryLists[listId]?.remove(itemKey);
   void setPantryExpiry(String pantryId, DateTime? expiry) { if (pantry.containsKey(pantryId)) pantryExpiryDates[pantryId] = expiry == null ? null : DateTime(expiry.year, expiry.month, expiry.day); }

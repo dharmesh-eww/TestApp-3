@@ -17,6 +17,7 @@ import 'planner_scope.dart';
 import 'recipe_catalog_scope.dart';
 import '../localization/app_locale.dart';
 import '../features/notifications/domain/smart_reminder_service.dart';
+import '../features/notifications/domain/reminder_notification_service.dart';
 import '../features/widgets/data/gather_home_widget_service.dart';
 
 class RecipePlannerApp extends StatefulWidget {
@@ -28,7 +29,7 @@ class RecipePlannerApp extends StatefulWidget {
   State<RecipePlannerApp> createState() => _RecipePlannerAppState();
 }
 
-class _RecipePlannerAppState extends State<RecipePlannerApp> {
+class _RecipePlannerAppState extends State<RecipePlannerApp> with WidgetsBindingObserver {
   late final AppDependencies dependencies = AppDependencies(repository: widget.repository);
   Timer? _cookingPersistTimer;
   Locale _locale = const Locale('en');
@@ -40,6 +41,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     dependencies.cookingSession.addListener(_onCookingChanged);
     unawaited(_initializeLocalData());
   }
@@ -97,11 +99,22 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     final catalog = [..._catalogRecipes, ...state.customRecipes.values];
     try {
       await SmartReminderService.sync(state, catalog);
+      await ReminderNotificationService.sync(state);
       await GatherHomeWidgetService.sync(state, catalog);
       final store = dependencies.repository;
       if (store != null) await store.savePlannerState(state);
+      if (mounted) setState(() {});
     } catch (_) {
       // Native integrations are optional; core planning remains usable.
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      SmartReminderService.invalidate();
+      ReminderNotificationService.invalidate();
+      unawaited(_syncPlatformIntegrations());
     }
   }
 
@@ -140,6 +153,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
   @override
   void dispose() {
     _cookingPersistTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     dependencies.cookingSession.removeListener(_onCookingChanged);
     final store = dependencies.repository;
     if (store != null) {

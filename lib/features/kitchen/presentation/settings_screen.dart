@@ -6,6 +6,7 @@ import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:testapp_3/features/cooking/domain/cooking_assist_service.dart';
 import 'package:testapp_3/features/widgets/data/gather_home_widget_service.dart';
 import 'package:testapp_3/features/notifications/domain/smart_reminder_service.dart';
+import 'package:testapp_3/features/notifications/domain/reminder_notification_service.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -147,26 +148,20 @@ class SettingsScreen extends StatelessWidget {
           ),
         const SizedBox(height: 24),
         Text(appStrings(context).label('SMART REMINDERS', 'التذكيرات الذكية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(appStrings(context).label('Meal reminders', 'تذكيرات الوجبات')),
-          subtitle: Text(appStrings(context).label('Get a reminder before each planned meal (default times: breakfast 8:00, lunch 12:00, snack 15:00, dinner 18:00).', 'احصل على تذكير قبل كل وجبة مخططة (الأوقات الافتراضية: الإفطار 8:00، الغداء 12:00، الوجبة الخفيفة 15:00، العشاء 18:00).')),
-          value: state.mealRemindersEnabled,
-          onChanged: (value) { state.mealRemindersEnabled = value; PlannerScope.refresh(context); },
-        ),
-        if (state.mealRemindersEnabled)
-          DropdownButtonFormField<int>(
-            value: state.mealReminderMinutes,
-            decoration: InputDecoration(labelText: appStrings(context).label('Remind me before', 'ذكرني قبل')),
-            items: const [15, 30, 60, 120].map((value) => DropdownMenuItem(value: value, child: Text('${value} min'))).toList(),
-            onChanged: (value) { if (value == null) return; state.mealReminderMinutes = value; PlannerScope.refresh(context); },
+        Text(
+          appStrings(context).label(
+            'Set an optional reminder for each recipe when you add it to your meal plan. Manage upcoming and completed reminders from Notifications.',
+            'قم بتعيين تذكير اختياري لكل وصفة عند إضافتها إلى خطة الوجبات. يمكنك إدارة التذكيرات القادمة والمكتملة من شاشة الإشعارات.',
           ),
+          style: TextStyle(color: AppTheme.muted, fontSize: 12),
+        ),
         OutlinedButton.icon(
           onPressed: () async {
             final granted = await CookingAssistService.requestNotificationPermission();
             if (granted && context.mounted) {
               SmartReminderService.invalidate();
               await SmartReminderService.sync(state, RecipeCatalogScope.of(context));
+              await ReminderNotificationService.sync(state, force: true);
             }
             if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(granted

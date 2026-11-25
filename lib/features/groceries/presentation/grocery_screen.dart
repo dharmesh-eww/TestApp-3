@@ -6,6 +6,7 @@ import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/groceries/presentation/grocery_lists_screen.dart';
+import 'package:testapp_3/features/notifications/domain/reminder_series.dart';
 
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
@@ -31,6 +32,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
       Align(alignment:AlignmentDirectional.centerStart,child:Wrap(spacing:8,children:[
         OutlinedButton.icon(key:const Key('add-custom-grocery-item'),onPressed:()=>_showCustomGroceryEditor(context),icon:Icon(Icons.add),label:Text(appStrings(context).label('Add item', 'إضافة عنصر'))),
         OutlinedButton.icon(onPressed:()=>Navigator.push(context, MaterialPageRoute(builder: (_) => const GroceryListsScreen())),icon:Icon(Icons.list_alt),label:Text(appStrings(context).label('Shopping lists', 'قوائم التسوق'))),
+        OutlinedButton.icon(onPressed:()=>_setGeneratedGroceryReminder(context),icon:const Icon(Icons.notifications_active_outlined),label:Text(appStrings(context).label('Shopping reminder', 'تذكير التسوق'))),
         OutlinedButton.icon(onPressed:()=>setState(()=>_groupByStore=!_groupByStore),icon:const Icon(Icons.storefront_outlined),label:Text(_groupByStore ? appStrings(context).label('Group by aisle', 'التجميع حسب القسم') : appStrings(context).label('Group by store', 'التجميع حسب المتجر'))),
         OutlinedButton.icon(onPressed:()=>_editBudget(context),icon:const Icon(Icons.account_balance_wallet_outlined),label:Text(appStrings(context).label('Budget', 'الميزانية'))),
         OutlinedButton.icon(onPressed:()=>_copyList(context, entries),icon:const Icon(Icons.copy_outlined),label:Text(appStrings(context).label('Copy list', 'نسخ القائمة'))),
@@ -120,6 +122,83 @@ class _GroceryScreenState extends State<GroceryScreen> {
         ])),
     ]);
   }
+  Future<void> _setGeneratedGroceryReminder(BuildContext context) async {
+    final state = PlannerScope.of(context);
+    final today = DateUtils.dateOnly(DateTime.now());
+    final date = await showDatePicker(context: context, initialDate: today, firstDate: today, lastDate: today.add(const Duration(days: 365)));
+    if (date == null || !context.mounted) return;
+    var offset = ReminderOffset.previousDay;
+    var frequency = 'once';
+    var weekday = date.weekday;
+    var monthDay = date.day;
+    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var time = const TimeOfDay(hour: 18, minute: 0);
+    final saved = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
+      builder: (dialogContext, setDialogState) => AlertDialog(
+        title: Text(appStrings(context).label('Shopping reminder', 'تذكير التسوق')),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          DropdownButtonFormField<String>(
+            value: frequency,
+            decoration: InputDecoration(labelText: appStrings(context).label('Repeat', 'التكرار')),
+            items: [
+              DropdownMenuItem(value: 'once', child: Text(appStrings(context).label('Just once', 'مرة واحدة'))),
+              DropdownMenuItem(value: 'weekly', child: Text(appStrings(context).label('Every week', 'كل أسبوع'))),
+              DropdownMenuItem(value: 'monthly', child: Text(appStrings(context).label('Every month', 'كل شهر'))),
+            ],
+            onChanged: (value) => setDialogState(() => frequency = value ?? frequency),
+          ),
+          if (frequency == 'weekly')
+            DropdownButtonFormField<int>(
+              value: weekday,
+              decoration: InputDecoration(labelText: appStrings(context).label('Weekday', 'يوم الأسبوع')),
+              items: List.generate(7, (index) => DropdownMenuItem(value: index + 1, child: Text(appStrings(context).weekday(weekdays[index])))),
+              onChanged: (value) => setDialogState(() => weekday = value ?? weekday),
+            ),
+          if (frequency == 'monthly')
+            DropdownButtonFormField<int>(
+              value: monthDay,
+              decoration: InputDecoration(labelText: appStrings(context).label('Day of month', 'يوم الشهر')),
+              items: List.generate(31, (index) => DropdownMenuItem(value: index + 1, child: Text('${index + 1}'))),
+              onChanged: (value) => setDialogState(() => monthDay = value ?? monthDay),
+            ),
+          DropdownButtonFormField<ReminderOffset>(
+            value: offset,
+            decoration: InputDecoration(labelText: appStrings(context).label('Remind me', 'ذكرني')),
+            items: [
+              DropdownMenuItem(value: ReminderOffset.sameDay, child: Text(appStrings(context).label('Same day', 'في نفس اليوم'))),
+              DropdownMenuItem(value: ReminderOffset.previousDay, child: Text(appStrings(context).label('Previous day', 'في اليوم السابق'))),
+            ],
+            onChanged: (value) => setDialogState(() => offset = value ?? offset),
+          ),
+          ListTile(title: Text(appStrings(context).label('Notification time', 'وقت الإشعار')), subtitle: Text(time.format(context)),
+            onTap: () async { final picked = await showTimePicker(context: dialogContext, initialTime: time); if (picked != null) setDialogState(() => time = picked); }),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(context).label('Cancel', 'إلغاء'))),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(context).label('Save', 'حفظ'))),
+        ],
+      ),
+    ));
+    if (saved != true || !context.mounted) return;
+    state.saveReminderSeries(ReminderSeries(
+      id: 'shopping:generated-grocery',
+      sourceType: ReminderType.ingredient,
+      sourceId: 'generated-grocery',
+      title: appStrings(context).label('Grocery shopping', 'تسوق البقالة'),
+      description: appStrings(context).label('Your generated ingredient list is ready for shopping.', 'قائمة المكونات الخاصة بك جاهزة للتسوق.'),
+      startDate: date,
+      recurrence: switch (frequency) { 'weekly' => ReminderRecurrence.weekly, 'monthly' => ReminderRecurrence.monthly, _ => ReminderRecurrence.once },
+      weekday: frequency == 'weekly' ? weekday : null,
+      monthDay: frequency == 'monthly' ? monthDay : null,
+      offset: offset,
+      hour: time.hour,
+      minute: time.minute,
+      isEnabled: true,
+      createdAt: DateTime.now(),
+    ));
+    PlannerScope.refresh(context);
+  }
+
   Future<void> _editBudget(BuildContext context) async {
     final controller = TextEditingController(text: PlannerScope.of(context).groceryBudget?.toString() ?? '');
     final value = await showDialog<double?>(context: context, builder: (dialogContext) => AlertDialog(

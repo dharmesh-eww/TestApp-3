@@ -17,11 +17,11 @@ class SmartReminderService {
     final fingerprint = _fingerprint(state, recipesById, currentTime);
     if (!force && fingerprint == _lastFingerprint) return;
 
-    final previous = state.activeReminderKeys.toList(growable: false);
+    final previous = state.activeReminderKeys.where((key) => !key.startsWith('occurrence:')).toList(growable: false);
     for (final key in previous) {
       await CookingAssistService.cancelTimerNotification(key);
     }
-    state.activeReminderKeys.clear();
+    state.activeReminderKeys.removeWhere((key) => !key.startsWith('occurrence:'));
 
     if (!state.mealRemindersEnabled && !state.pantryExpiryRemindersEnabled) {
       _lastFingerprint = fingerprint;
