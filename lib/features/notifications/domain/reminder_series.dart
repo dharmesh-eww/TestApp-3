@@ -19,6 +19,7 @@ class ReminderSeries {
     required this.createdAt,
     this.weekday,
     this.monthDay,
+    this.endDate,
     this.excludedDates = const {},
   })  : assert(hour >= 0 && hour <= 23),
         assert(minute >= 0 && minute <= 59),
@@ -39,6 +40,7 @@ class ReminderSeries {
   final DateTime createdAt;
   final int? weekday;
   final int? monthDay;
+  final DateTime? endDate;
   final Set<String> excludedDates;
 
   Map<String, Object?> toJson() => {
@@ -56,6 +58,7 @@ class ReminderSeries {
     'created_at': createdAt.toIso8601String(),
     'weekday': weekday,
     'month_day': monthDay,
+    'end_date': endDate?.toIso8601String(),
     'excluded_dates': excludedDates.toList()..sort(),
   };
 
@@ -78,6 +81,7 @@ class ReminderSeries {
       createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
       weekday: (json['weekday'] as num?)?.toInt(),
       monthDay: (json['month_day'] as num?)?.toInt(),
+      endDate: DateTime.tryParse(json['end_date'] as String? ?? ''),
       excludedDates: (json['excluded_dates'] as List?)?.whereType<String>().toSet() ?? const {},
     );
   }
@@ -105,6 +109,7 @@ class ReminderSeries {
     createdAt: createdAt,
     weekday: weekday,
     monthDay: monthDay,
+    endDate: endDate,
     excludedDates: excludedDates ?? this.excludedDates,
   );
 
@@ -114,7 +119,9 @@ class ReminderSeries {
   }) {
     if (!isEnabled) return const [];
     final first = DateTime(from.year, from.month, from.day);
-    final last = DateTime(through.year, through.month, through.day);
+    final requestedLast = DateTime(through.year, through.month, through.day);
+    final seriesEnd = endDate == null ? requestedLast : DateTime(endDate!.year, endDate!.month, endDate!.day);
+    final last = seriesEnd.isBefore(requestedLast) ? seriesEnd : requestedLast;
     final start = DateTime(startDate.year, startDate.month, startDate.day);
     if (last.isBefore(first) || last.isBefore(start)) return const [];
     final dates = <DateTime>[];

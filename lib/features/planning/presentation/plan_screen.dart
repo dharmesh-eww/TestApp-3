@@ -395,6 +395,7 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
       title: recipe.title,
       description: appStrings(context).label('Your planned recipe is coming up.', 'اقترب موعد وصفتك المخططة.'),
       startDate: startDate,
+      endDate: lastAllowedDate,
       recurrence: switch (frequency) {
         'weekly' => ReminderRecurrence.weekly,
         'monthly' => ReminderRecurrence.monthly,
