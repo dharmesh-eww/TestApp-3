@@ -706,7 +706,13 @@ class PlannerState {
     return id;
   }
 
-  void renameGroceryList(String id, String name) { final clean = name.trim(); if (groceryLists.containsKey(id) && clean.isNotEmpty) groceryListNames[id] = clean; }
+  void renameGroceryList(String id, String name) {
+    final clean = name.trim();
+    if (!groceryLists.containsKey(id) || clean.isEmpty) return;
+    groceryListNames[id] = clean;
+    final reminder = reminderSeries['shopping:$id'];
+    if (reminder != null) saveReminderSeries(reminder.copyWith(title: clean));
+  }
   void deleteGroceryList(String id) {
     groceryLists.remove(id);
     groceryListNames.remove(id);

@@ -91,6 +91,6 @@ class ReminderNotificationService {
   static String _fingerprint(PlannerState state, DateTime date) {
     final values = state.reminderSeries.values.toList()..sort((a, b) => a.id.compareTo(b.id));
     return '${date.year}-${date.month}-${date.day}|' + values.map((item) =>
-      '${item.id}:${item.isEnabled}:${item.startDate}:${item.endDate}:${item.recurrence}:${item.offset}:${item.hour}:${item.minute}:${item.weekday}:${item.monthDay}:${item.excludedDates.toList()..sort()}').join('|');
+      '${item.id}:${item.isEnabled}:${item.title}:${item.description}:${item.sourceId}:${item.startDate}:${item.endDate}:${item.recurrence}:${item.offset}:${item.hour}:${item.minute}:${item.weekday}:${item.monthDay}:${item.excludedDates.toList()..sort()}').join('|');
   }
 }
