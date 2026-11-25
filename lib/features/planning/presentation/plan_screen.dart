@@ -7,6 +7,7 @@ import 'package:testapp_3/features/recipes/domain/recipe.dart';
 import 'package:testapp_3/features/recipes/domain/recipe_catalog.dart';
 import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/planning/domain/planner_state.dart';
+import 'package:testapp_3/features/notifications/domain/reminder_series.dart';
 import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/app/app_tab_navigation.dart';
 import 'package:testapp_3/features/planning/presentation/meal_calendar_screen.dart';
@@ -251,6 +252,9 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
   var slot = MealSlot.dinner;
   var weekday = today.weekday;
   var monthDay = today.day;
+  var reminderEnabled = false;
+  var reminderOffset = ReminderOffset.previousDay;
+  var reminderTime = const TimeOfDay(hour: 19, minute: 0);
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   final confirmed = await showDialog<bool>(
     context: context,
@@ -318,6 +322,35 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
               const SizedBox(height: 4),
               Text(appStrings(context).label('Months without this date are skipped.', 'يتم تخطي الأشهر التي لا تحتوي على هذا التاريخ.'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
             ],
+            const Divider(height: 24),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(appStrings(context).label('Reminder', 'تذكير')),
+              subtitle: Text(appStrings(context).label('Notify me before this planned recipe.', 'أرسل لي إشعارًا قبل موعد الوصفة.')),
+              value: reminderEnabled,
+              onChanged: (value) => setDialogState(() => reminderEnabled = value),
+            ),
+            if (reminderEnabled) ...[
+              DropdownButtonFormField<ReminderOffset>(
+                value: reminderOffset,
+                decoration: InputDecoration(labelText: appStrings(context).label('Remind me', 'ذكرني')),
+                items: [
+                  DropdownMenuItem(value: ReminderOffset.sameDay, child: Text(appStrings(context).label('Same day', 'في نفس اليوم'))),
+                  DropdownMenuItem(value: ReminderOffset.previousDay, child: Text(appStrings(context).label('Previous day', 'في اليوم السابق'))),
+                ],
+                onChanged: (value) => setDialogState(() => reminderOffset = value ?? reminderOffset),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.access_time),
+                title: Text(appStrings(context).label('Notification time', 'وقت الإشعار')),
+                subtitle: Text(reminderTime.format(context)),
+                onTap: () async {
+                  final picked = await showTimePicker(context: dialogContext, initialTime: reminderTime);
+                  if (picked != null) setDialogState(() => reminderTime = picked);
+                },
+              ),
+            ],
             const SizedBox(height: 8),
             Text(
               appStrings(context).label('Plans can be scheduled from today through ${MaterialLocalizations.of(context).formatMediumDate(lastAllowedDate)}. Past dates are unavailable.', 'يمكن جدولة الخطط من اليوم حتى ${MaterialLocalizations.of(context).formatMediumDate(lastAllowedDate)}. التواريخ السابقة غير متاحة.'),
@@ -351,6 +384,29 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
     if (state.mealsFor(key).any((meal) => meal.slot == slot)) continue;
     state.assignMeal(day: key, slot: slot, recipeId: recipe.id, servings: servings);
     added++;
+  }
+  if (added > 0 && reminderEnabled) {
+    final series = ReminderSeries(
+      id: 'recipe:${recipe.id}:${DateTime.now().microsecondsSinceEpoch}',
+      sourceType: ReminderType.recipe,
+      sourceId: recipe.id,
+      title: recipe.title,
+      description: appStrings(context).label('Your planned recipe is coming up.', 'اقترب موعد وصفتك المخططة.'),
+      startDate: startDate,
+      recurrence: switch (frequency) {
+        'weekly' => ReminderRecurrence.weekly,
+        'monthly' => ReminderRecurrence.monthly,
+        _ => ReminderRecurrence.once,
+      },
+      offset: reminderOffset,
+      hour: reminderTime.hour,
+      minute: reminderTime.minute,
+      isEnabled: true,
+      createdAt: DateTime.now(),
+      weekday: frequency == 'weekly' ? weekday : null,
+      monthDay: frequency == 'monthly' ? monthDay : null,
+    );
+    state.saveReminderSeries(series);
   }
   if (added > 0) PlannerScope.refresh(context);
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(

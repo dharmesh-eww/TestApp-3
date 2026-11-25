@@ -600,10 +600,8 @@ class PlannerState {
     reminderSeries[series.id] = series;
     // A changed series invalidates only its pending occurrences. Completed
     // history remains available in the notification inbox.
-    for (final occurrence in reminderOccurrences.values.where((item) =>
-        item.seriesId == series.id && item.status == ReminderStatus.pending).toList()) {
-      reminderOccurrences[occurrence.id] = occurrence.copyWith(status: ReminderStatus.cancelled);
-    }
+    reminderOccurrences.removeWhere((_, occurrence) =>
+        occurrence.seriesId == series.id && occurrence.status == ReminderStatus.pending);
   }
 
   void removeReminderSeriesForSource(String sourceId) {

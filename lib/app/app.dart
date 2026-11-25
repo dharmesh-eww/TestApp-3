@@ -17,6 +17,7 @@ import 'planner_scope.dart';
 import 'recipe_catalog_scope.dart';
 import '../localization/app_locale.dart';
 import '../features/notifications/domain/smart_reminder_service.dart';
+import '../features/notifications/domain/reminder_notification_service.dart';
 import '../features/widgets/data/gather_home_widget_service.dart';
 
 class RecipePlannerApp extends StatefulWidget {
@@ -97,6 +98,7 @@ class _RecipePlannerAppState extends State<RecipePlannerApp> {
     final catalog = [..._catalogRecipes, ...state.customRecipes.values];
     try {
       await SmartReminderService.sync(state, catalog);
+      await ReminderNotificationService.sync(state);
       await GatherHomeWidgetService.sync(state, catalog);
       final store = dependencies.repository;
       if (store != null) await store.savePlannerState(state);

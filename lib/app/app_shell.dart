@@ -6,6 +6,7 @@ import '../features/recipes/presentation/discover_screen.dart';
 import '../features/planning/presentation/plan_screen.dart';
 import '../features/groceries/presentation/grocery_screen.dart';
 import '../features/kitchen/presentation/kitchen_home_screen.dart';
+import '../features/notifications/presentation/notifications_screen.dart';
 import '../localization/app_localizations.dart';
 import 'app_tab_navigation.dart';
 import 'planner_scope.dart';
@@ -43,6 +44,18 @@ class _AppShellState extends State<AppShell> {
         body: SafeArea(
           child: Column(
             children: [
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: IconButton(
+                  tooltip: appStrings(context).label('Notifications', 'الإشعارات'),
+                  icon: Badge(
+                    label: Text('${PlannerScope.of(context).reminderOccurrences.values.where((item) => item.status.name == 'pending').length}'),
+                    isLabelVisible: PlannerScope.of(context).reminderOccurrences.values.any((item) => item.status.name == 'pending'),
+                    child: const Icon(Icons.notifications_outlined),
+                  ),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                ),
+              ),
               Expanded(
                 child: AnimatedSwitcher(
                   duration: PlannerScope.of(context).reduceMotion
