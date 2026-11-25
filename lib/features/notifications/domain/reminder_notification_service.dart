@@ -41,7 +41,8 @@ class ReminderNotificationService {
       state.reminderOccurrences[entry.key] = occurrence;
       final key = 'occurrence:${occurrence.id}';
       if (!occurrence.notificationDate.isAfter(current)) {
-        await CookingAssistService.cancelTimerNotification(key);
+        // A fired notification may still be visible in Android's notification shade.
+        // Keep it there; do not cancel its delivered notification while reconciling.
         state.activeReminderKeys.remove(key);
         continue;
       }
@@ -61,6 +62,19 @@ class ReminderNotificationService {
     final key = 'occurrence:$occurrenceId';
     await CookingAssistService.cancelTimerNotification(key);
     state.activeReminderKeys.remove(key);
+  }
+
+
+  static Future<void> cancelSeriesAlarms(PlannerState state, String seriesId) async {
+    final occurrences = state.reminderOccurrences.values
+        .where((item) => item.seriesId == seriesId && item.status == ReminderStatus.pending)
+        .toList();
+    for (final occurrence in occurrences) {
+      final key = 'occurrence:${occurrence.id}';
+      await CookingAssistService.cancelTimerNotification(key);
+      state.activeReminderKeys.remove(key);
+    }
+    invalidate();
   }
 
   static Future<void> cancelSeries(PlannerState state, String seriesId) async {

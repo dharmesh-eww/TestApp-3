@@ -149,6 +149,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       )),
     );
     if (saved != true || !context.mounted) return;
+    await ReminderNotificationService.cancelSeriesAlarms(state, seriesId);
     state.saveReminderSeries(series.copyWith(
       offset: offset,
       hour: time.hour,
