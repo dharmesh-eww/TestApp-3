@@ -88,6 +88,13 @@ class _PlanScreenState extends State<PlanScreen> {
       _PantryMealSuggestions(day: day),
       const SizedBox(height:10),
       _MealPrepChecklist(day: day),
+      const SizedBox(height:8),
+      OutlinedButton.icon(
+        key: const Key('schedule-ingredient-reminder'),
+        onPressed: () => _scheduleIngredientReminder(context),
+        icon: const Icon(Icons.notifications_active_outlined),
+        label: Text(appStrings(context).label('Schedule ingredient preparation reminder', 'جدولة تذكير تحضير المكونات')),
+      ),
       const SizedBox(height:14),
       OutlinedButton.icon(onPressed:()=>goToAppTab(context,3),icon:Icon(Icons.shopping_basket_outlined),label:Text(appStrings(context).label('Build your grocery list', 'أنشئ قائمة مشترياتك')),style:OutlinedButton.styleFrom(minimumSize:const Size(0,50))),
       const SizedBox(height:28),
@@ -99,6 +106,86 @@ class _PlanScreenState extends State<PlanScreen> {
       ..._buildUpcomingMealWidgets(context, state),
     ]);
   }
+
+  Future<void> _scheduleIngredientReminder(BuildContext context) async {
+    final state = PlannerScope.of(context);
+    var enabled = state.ingredientReminderDefaultEnabled;
+    var mode = 'before';
+    var leadMinutes = state.ingredientReminderLeadMinutes;
+    var preparationAt = DateTime.now().add(const Duration(hours: 2));
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: Text(appStrings(dialogContext).label('Ingredient preparation reminder', 'تذكير تحضير المكونات')),
+          content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(appStrings(dialogContext).label('Enable reminder', 'تفعيل التذكير')),
+              value: enabled,
+              onChanged: (value) => setDialogState(() => enabled = value),
+            ),
+            if (enabled) ...[
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(appStrings(dialogContext).label('Preparation date and time', 'تاريخ ووقت التحضير')),
+                subtitle: Text(MaterialLocalizations.of(dialogContext).formatMediumDate(preparationAt) + ' · ' + MaterialLocalizations.of(dialogContext).formatTimeOfDay(TimeOfDay.fromDateTime(preparationAt))),
+                trailing: const Icon(Icons.edit_calendar_outlined),
+                onTap: () async {
+                  final date = await showDatePicker(context: dialogContext, initialDate: preparationAt, firstDate: DateUtils.dateOnly(DateTime.now()), lastDate: DateTime.now().add(const Duration(days: 365)));
+                  if (date == null || !dialogContext.mounted) return;
+                  final time = await showTimePicker(context: dialogContext, initialTime: TimeOfDay.fromDateTime(preparationAt));
+                  if (time != null) setDialogState(() => preparationAt = DateTime(date.year, date.month, date.day, time.hour, time.minute));
+                },
+              ),
+              DropdownButtonFormField<String>(
+                value: mode,
+                decoration: InputDecoration(labelText: appStrings(dialogContext).label('Reminder timing', 'توقيت التذكير')),
+                items: [
+                  DropdownMenuItem(value: 'before', child: Text(appStrings(dialogContext).label('Before preparation', 'قبل التحضير'))),
+                  DropdownMenuItem(value: 'specific', child: Text(appStrings(dialogContext).label('At this date and time', 'في هذا التاريخ والوقت'))),
+                ],
+                onChanged: (value) => setDialogState(() => mode = value ?? mode),
+              ),
+              if (mode == 'before')
+                DropdownButtonFormField<int>(
+                  value: leadMinutes,
+                  decoration: InputDecoration(labelText: appStrings(dialogContext).label('Remind me before', 'ذكرني قبل')),
+                  items: [5, 10, 15, 30, 60, 120, 1440, 2880, 10080].map((value) => DropdownMenuItem(
+                    value: value,
+                    child: Text(value < 60 ? '$value minutes' : value < 1440 ? '${value ~/ 60} hours' : '${value ~/ 1440} days'),
+                  )).toList(),
+                  onChanged: (value) => setDialogState(() => leadMinutes = value ?? leadMinutes),
+                ),
+            ],
+          ])),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(dialogContext).label('Cancel', 'إلغاء'))),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(dialogContext).label('Save reminder', 'حفظ التذكير'))),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true || !enabled || !context.mounted) return;
+    final fireAt = mode == 'before' ? preparationAt.subtract(Duration(minutes: leadMinutes)) : preparationAt;
+    if (!fireAt.isAfter(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Choose a future reminder time.', 'اختر وقت تذكير في المستقبل.'))));
+      return;
+    }
+    await CookingAssistService.requestNotificationPermission();
+    final scheduled = await CookingAssistService.scheduleTimerNotification(
+      id: 'ingredient-preparation:${preparationAt.millisecondsSinceEpoch}',
+      title: 'Ingredient preparation reminder',
+      body: 'It is time to prepare your recipe ingredients.',
+      fireAt: fireAt,
+    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(scheduled
+        ? appStrings(context).label('Ingredient reminder scheduled.', 'تمت جدولة تذكير المكونات.')
+        : appStrings(context).label('Could not schedule the reminder. Check notification permission.', 'تعذر جدولة التذكير. تحقق من إذن الإشعارات.'))));
+    }
+  }
+
   Future<void> _showSchedulePicker(BuildContext context) async {
     final today = DateUtils.dateOnly(DateTime.now());
     Recipe? selectedRecipe;
@@ -453,7 +540,7 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
       final parts = clock.split(':');
       final plannedAt = DateTime(date.year, date.month, date.day, int.parse(parts[0]), int.parse(parts[1]));
       final fireAt = reminderMode == 'specific'
-          ? DateTime(reminderAt.year, reminderAt.month, reminderAt.day, reminderAt.hour, reminderAt.minute)
+          ? DateTime(date.year, date.month, date.day, reminderAt.hour, reminderAt.minute)
           : plannedAt.subtract(Duration(minutes: reminderLeadMinutes));
       if (fireAt.isAfter(DateTime.now())) {
         await CookingAssistService.requestNotificationPermission();
