@@ -39,6 +39,12 @@ class PlannerState {
   bool mealRemindersEnabled = false;
   bool pantryExpiryRemindersEnabled = false;
   int mealReminderMinutes = 60;
+  bool recipePlanReminderDefaultEnabled = true;
+  bool groceryReminderDefaultEnabled = true;
+  bool ingredientReminderDefaultEnabled = true;
+  int recipeReminderLeadMinutes = 60;
+  int groceryReminderLeadMinutes = 60;
+  int ingredientReminderLeadMinutes = 60;
   String measurementSystem = 'metric';
   int weekStartsOn = 1;
   String localeCode = 'en';
@@ -94,6 +100,14 @@ class PlannerState {
     'nutrition_goals': {
       'daily_calories': dailyCalorieTarget,
       'daily_protein_grams': dailyProteinTargetGrams,
+    },
+    'default_reminder_preferences': {
+      'recipe_enabled': recipePlanReminderDefaultEnabled,
+      'grocery_enabled': groceryReminderDefaultEnabled,
+      'ingredient_enabled': ingredientReminderDefaultEnabled,
+      'recipe_lead_minutes': recipeReminderLeadMinutes,
+      'grocery_lead_minutes': groceryReminderLeadMinutes,
+      'ingredient_lead_minutes': ingredientReminderLeadMinutes,
     },
     'notification_preferences': {
       'meal_reminders_enabled': mealRemindersEnabled,
@@ -356,6 +370,18 @@ class PlannerState {
       final protein = nutritionGoals['daily_protein_grams'];
       if (calories is num && calories > 0) dailyCalorieTarget = calories.round();
       if (protein is num && protein > 0) dailyProteinTargetGrams = protein.toDouble();
+    }
+    final defaultReminders = json['default_reminder_preferences'];
+    if (defaultReminders is Map) {
+      recipePlanReminderDefaultEnabled = defaultReminders['recipe_enabled'] != false;
+      groceryReminderDefaultEnabled = defaultReminders['grocery_enabled'] != false;
+      ingredientReminderDefaultEnabled = defaultReminders['ingredient_enabled'] != false;
+      final recipeLead = defaultReminders['recipe_lead_minutes'];
+      final groceryLead = defaultReminders['grocery_lead_minutes'];
+      final ingredientLead = defaultReminders['ingredient_lead_minutes'];
+      if (recipeLead is int && recipeLead >= 0 && recipeLead <= 10080) recipeReminderLeadMinutes = recipeLead;
+      if (groceryLead is int && groceryLead >= 0 && groceryLead <= 10080) groceryReminderLeadMinutes = groceryLead;
+      if (ingredientLead is int && ingredientLead >= 0 && ingredientLead <= 10080) ingredientReminderLeadMinutes = ingredientLead;
     }
     final notificationPreferences = json['notification_preferences'];
     if (notificationPreferences is Map) {
