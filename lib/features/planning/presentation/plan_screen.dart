@@ -12,6 +12,7 @@ import 'package:testapp_3/app/app_tab_navigation.dart';
 import 'package:testapp_3/features/planning/presentation/meal_calendar_screen.dart';
 import 'package:testapp_3/features/planning/presentation/nutrition_dashboard_screen.dart';
 import 'package:testapp_3/app/gather_visuals.dart';
+import 'package:testapp_3/features/cooking/domain/cooking_assist_service.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
@@ -286,6 +287,11 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
   var slot = MealSlot.dinner;
   var weekday = today.weekday;
   var monthDay = today.day;
+  final plannerState = PlannerScope.of(context);
+  var reminderEnabled = plannerState.recipePlanReminderDefaultEnabled;
+  var reminderMode = 'before';
+  var reminderLeadMinutes = plannerState.recipeReminderLeadMinutes;
+  var reminderAt = today.add(const Duration(hours: 8));
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   final confirmed = await showModalBottomSheet<bool>(
     context: context, isScrollControlled: true, useSafeArea: true,
@@ -363,6 +369,55 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
                 Text(appStrings(sheetContext).label('Months without this date are skipped.', 'يتم تخطي الأشهر التي لا تحتوي على هذا التاريخ.'), style: TextStyle(color: AppTheme.muted, fontSize: 11)),
               ],
               const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(appStrings(sheetContext).label('Schedule reminder', 'جدولة تذكير')),
+                      subtitle: Text(appStrings(sheetContext).label('Use a notification for this recipe plan.', 'استخدم إشعارًا لهذه الوصفة المخططة.')),
+                      value: reminderEnabled,
+                      onChanged: (value) => setSheetState(() => reminderEnabled = value),
+                    ),
+                    if (reminderEnabled) ...[
+                      DropdownButtonFormField<String>(
+                        value: reminderMode,
+                        decoration: InputDecoration(labelText: appStrings(sheetContext).label('Reminder timing', 'توقيت التذكير')),
+                        items: [
+                          DropdownMenuItem(value: 'before', child: Text(appStrings(sheetContext).label('Before the planned meal', 'قبل الوجبة المخططة'))),
+                          DropdownMenuItem(value: 'specific', child: Text(appStrings(sheetContext).label('At a specific date and time', 'في تاريخ ووقت محددين'))),
+                        ],
+                        onChanged: (value) => setSheetState(() => reminderMode = value ?? 'before'),
+                      ),
+                      if (reminderMode == 'before')
+                        DropdownButtonFormField<int>(
+                          value: reminderLeadMinutes,
+                          decoration: InputDecoration(labelText: appStrings(sheetContext).label('Remind me before', 'ذكرني قبل')),
+                          items: [5, 10, 15, 30, 60, 120, 1440, 2880, 10080].map((value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(value < 60 ? '$value minutes' : value < 1440 ? '${value ~/ 60} hours' : '${value ~/ 1440} days'),
+                          )).toList(),
+                          onChanged: (value) => setSheetState(() => reminderLeadMinutes = value ?? reminderLeadMinutes),
+                        )
+                      else
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(appStrings(sheetContext).label('Reminder date and time', 'تاريخ ووقت التذكير')),
+                          subtitle: Text(MaterialLocalizations.of(sheetContext).formatMediumDate(reminderAt) + ' · ' + MaterialLocalizations.of(sheetContext).formatTimeOfDay(TimeOfDay.fromDateTime(reminderAt))),
+                          trailing: const Icon(Icons.edit_calendar_outlined),
+                          onTap: () async {
+                            final date = await showDatePicker(context: sheetContext, initialDate: reminderAt.isBefore(today) ? today : reminderAt, firstDate: today, lastDate: lastAllowedDate);
+                            if (date == null || !sheetContext.mounted) return;
+                            final time = await showTimePicker(context: sheetContext, initialTime: TimeOfDay.fromDateTime(reminderAt));
+                            if (time != null) setSheetState(() => reminderAt = DateTime(date.year, date.month, date.day, time.hour, time.minute));
+                          },
+                        ),
+                    ],
+                  ]),
+                ),
+              ),
+              const SizedBox(height: 12),
               Text(appStrings(sheetContext).label('Plans can be scheduled from today through ${MaterialLocalizations.of(sheetContext).formatMediumDate(lastAllowedDate)}. Past dates are unavailable.', 'يمكن جدولة الخطط من اليوم حتى ${MaterialLocalizations.of(sheetContext).formatMediumDate(lastAllowedDate)}. التواريخ السابقة غير متاحة.'),
                 style: TextStyle(color: AppTheme.muted, fontSize: 11, height: 1.4)),
             ])),
@@ -391,6 +446,25 @@ Future<void> showRecipeScheduleDialog(BuildContext context, Recipe recipe, int s
     final key = _dateKey(date);
     if (state.mealsFor(key).any((meal) => meal.slot == slot)) continue;
     state.assignMeal(day: key, slot: slot, recipeId: recipe.id, servings: servings);
+    if (reminderEnabled) {
+      final clock = state.mealReminderTimes[slot.name] ?? switch (slot.name) {
+        'breakfast' => '08:00', 'lunch' => '12:00', 'snack' => '15:00', _ => '18:00',
+      };
+      final parts = clock.split(':');
+      final plannedAt = DateTime(date.year, date.month, date.day, int.parse(parts[0]), int.parse(parts[1]));
+      final fireAt = reminderMode == 'specific'
+          ? DateTime(reminderAt.year, reminderAt.month, reminderAt.day, reminderAt.hour, reminderAt.minute)
+          : plannedAt.subtract(Duration(minutes: reminderLeadMinutes));
+      if (fireAt.isAfter(DateTime.now())) {
+        await CookingAssistService.requestNotificationPermission();
+        await CookingAssistService.scheduleTimerNotification(
+          id: 'recipe-plan:${key}:${slot.name}:${recipe.id}',
+          title: 'Recipe preparation reminder',
+          body: 'It is time to prepare ${recipe.title}.',
+          fireAt: fireAt,
+        );
+      }
+    }
     added++;
   }
   if (added > 0) PlannerScope.refresh(context);
