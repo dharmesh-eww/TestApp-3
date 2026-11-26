@@ -7,6 +7,7 @@ import 'package:testapp_3/app/recipe_catalog_scope.dart';
 import 'package:testapp_3/features/planning/domain/meal_plan.dart';
 import 'package:testapp_3/features/groceries/presentation/grocery_lists_screen.dart';
 import 'package:testapp_3/app/gather_visuals.dart';
+import 'package:testapp_3/features/cooking/domain/cooking_assist_service.dart';
 
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
@@ -66,6 +67,13 @@ class _GroceryScreenState extends State<GroceryScreen> {
           )),
           GatherVisuals.foodMotion(size: 76),
         ]),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          key: const Key('schedule-shopping-reminder'),
+          onPressed: () => _scheduleShoppingReminder(context),
+          icon: const Icon(Icons.notifications_active_outlined),
+          label: Text(appStrings(context).label('Schedule shopping reminder', 'جدولة تذكير التسوق')),
+        ),
         const SizedBox(height: 18),
         Container(
           padding: const EdgeInsets.all(18),
@@ -371,6 +379,86 @@ class _GroceryScreenState extends State<GroceryScreen> {
             ),
       ],
     );
+  }
+
+
+  Future<void> _scheduleShoppingReminder(BuildContext context) async {
+    final state = PlannerScope.of(context);
+    var enabled = state.groceryReminderDefaultEnabled;
+    var mode = 'before';
+    var leadMinutes = state.groceryReminderLeadMinutes;
+    var shoppingAt = DateTime.now().add(const Duration(days: 1));
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: Text(appStrings(dialogContext).label('Shopping reminder', 'تذكير التسوق')),
+          content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(appStrings(dialogContext).label('Enable reminder', 'تفعيل التذكير')),
+              value: enabled,
+              onChanged: (value) => setDialogState(() => enabled = value),
+            ),
+            if (enabled) ...[
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(appStrings(dialogContext).label('Shopping date and time', 'تاريخ ووقت التسوق')),
+                subtitle: Text(MaterialLocalizations.of(dialogContext).formatMediumDate(shoppingAt) + ' · ' + MaterialLocalizations.of(dialogContext).formatTimeOfDay(TimeOfDay.fromDateTime(shoppingAt))),
+                trailing: const Icon(Icons.edit_calendar_outlined),
+                onTap: () async {
+                  final date = await showDatePicker(context: dialogContext, initialDate: shoppingAt, firstDate: DateUtils.dateOnly(DateTime.now()), lastDate: DateTime.now().add(const Duration(days: 365)));
+                  if (date == null || !dialogContext.mounted) return;
+                  final time = await showTimePicker(context: dialogContext, initialTime: TimeOfDay.fromDateTime(shoppingAt));
+                  if (time != null) setDialogState(() => shoppingAt = DateTime(date.year, date.month, date.day, time.hour, time.minute));
+                },
+              ),
+              DropdownButtonFormField<String>(
+                value: mode,
+                decoration: InputDecoration(labelText: appStrings(dialogContext).label('Reminder timing', 'توقيت التذكير')),
+                items: [
+                  DropdownMenuItem(value: 'before', child: Text(appStrings(dialogContext).label('Before shopping', 'قبل التسوق'))),
+                  DropdownMenuItem(value: 'specific', child: Text(appStrings(dialogContext).label('At this date and time', 'في هذا التاريخ والوقت'))),
+                ],
+                onChanged: (value) => setDialogState(() => mode = value ?? mode),
+              ),
+              if (mode == 'before')
+                DropdownButtonFormField<int>(
+                  value: leadMinutes,
+                  decoration: InputDecoration(labelText: appStrings(dialogContext).label('Remind me before', 'ذكرني قبل')),
+                  items: [5, 10, 15, 30, 60, 120, 1440, 2880, 10080].map((value) => DropdownMenuItem(
+                    value: value,
+                    child: Text(value < 60 ? '$value minutes' : value < 1440 ? '${value ~/ 60} hours' : '${value ~/ 1440} days'),
+                  )).toList(),
+                  onChanged: (value) => setDialogState(() => leadMinutes = value ?? leadMinutes),
+                ),
+            ],
+          ])),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(appStrings(dialogContext).label('Cancel', 'إلغاء'))),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(appStrings(dialogContext).label('Save reminder', 'حفظ التذكير'))),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true || !enabled || !context.mounted) return;
+    final fireAt = mode == 'before' ? shoppingAt.subtract(Duration(minutes: leadMinutes)) : shoppingAt;
+    if (!fireAt.isAfter(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appStrings(context).label('Choose a future reminder time.', 'اختر وقت تذكير في المستقبل.'))));
+      return;
+    }
+    await CookingAssistService.requestNotificationPermission();
+    final scheduled = await CookingAssistService.scheduleTimerNotification(
+      id: 'shopping:${shoppingAt.millisecondsSinceEpoch}',
+      title: 'Shopping reminder',
+      body: 'It is time for your shopping list.',
+      fireAt: fireAt,
+    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(scheduled
+        ? appStrings(context).label('Shopping reminder scheduled.', 'تمت جدولة تذكير التسوق.')
+        : appStrings(context).label('Could not schedule the reminder. Check notification permission.', 'تعذر جدولة التذكير. تحقق من إذن الإشعارات.'))));
+    }
   }
 
   Future<void> _editBudget(BuildContext context) async {
