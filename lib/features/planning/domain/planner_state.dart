@@ -185,6 +185,12 @@ class PlannerState {
     mealRemindersEnabled = false;
     pantryExpiryRemindersEnabled = false;
     mealReminderMinutes = 60;
+    recipePlanReminderDefaultEnabled = true;
+    groceryReminderDefaultEnabled = true;
+    ingredientReminderDefaultEnabled = true;
+    recipeReminderLeadMinutes = 60;
+    groceryReminderLeadMinutes = 60;
+    ingredientReminderLeadMinutes = 60;
     measurementSystem = 'metric';
     weekStartsOn = 1;
     localeCode = 'en';
