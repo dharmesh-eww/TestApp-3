@@ -3,6 +3,7 @@ import 'package:testapp_3/app/planner_scope.dart';
 import 'package:testapp_3/core/theme/app_theme.dart';
 import 'package:testapp_3/features/kitchen/presentation/language_selection_screen.dart';
 import 'package:testapp_3/features/kitchen/presentation/food_preferences_screen.dart';
+import 'package:testapp_3/features/kitchen/presentation/default_reminder_preferences_screen.dart';
 import 'package:testapp_3/localization/app_localizations.dart';
 import 'package:testapp_3/features/cooking/domain/cooking_assist_service.dart';
 import 'package:testapp_3/features/widgets/data/gather_home_widget_service.dart';
@@ -119,6 +120,18 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: ListTile(
+            key: const Key('open-default-reminder-preferences'),
+            leading: const Icon(Icons.notifications_active_outlined, color: AppTheme.terracotta),
+            title: Text(appStrings(context).label('Default reminder preferences', 'تفضيلات التذكير الافتراضية')),
+            subtitle: Text(appStrings(context).label('Set defaults for recipe preparation, groceries and ingredients.', 'حدد الإعدادات الافتراضية للوصفات والمشتريات والمكونات.')),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DefaultReminderPreferencesScreen())),
+          ),
+        ),
+        const SizedBox(height: 12),
         Text(appStrings(context).label('SMART REMINDERS', 'التذكيرات الذكية'), style: const TextStyle(color: AppTheme.terracotta, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
